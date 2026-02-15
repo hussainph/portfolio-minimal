@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #FBF5DE;
+  --color-surface: #EAC8A6;
+  --color-ai: #A20000;
+  --color-human: #3D74B6;
+  --color-text: #2a1d12;
+  --color-text-muted: #6b5744;
+
+  --font-sans: var(--font-manrope);
+  --font-mono: var(--font-space-mono);
+}
+
+html,
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  margin: 0;
+}
+
+@keyframes aurora-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes aurora-flow-reverse {
+  0% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-name: none !important;
+  }
+}
