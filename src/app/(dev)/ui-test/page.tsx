@@ -743,10 +743,7 @@ function MDXPrimitivesSection() {
         note="local-first · autoplay implies muted+loop+playsInline+no controls · same caption rhythm as Figure"
       >
         <article className="prose-dark">
-          <Video
-            src=""
-            caption="empty src — no real clip in the repo yet · the frame and caption are honest"
-          />
+          <Video caption="no src — the frame and caption are honest until a real clip lands" />
           <p className="font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-faint">
             Real usage:
           </p>

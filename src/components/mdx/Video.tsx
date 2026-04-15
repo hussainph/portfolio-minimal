@@ -1,7 +1,8 @@
 import { cn } from "@/lib/utils";
 
 interface VideoProps {
-  src: string;
+  /** Omit to render just the empty frame — useful for design previews. */
+  src?: string;
   poster?: string;
   caption?: string;
   /** Autoplay implies muted + loop + playsInline and removes the controls bar. */
@@ -29,17 +30,21 @@ export function Video({
   return (
     <figure className={cn("my-8 flex flex-col gap-2", className)}>
       <div className="overflow-hidden rounded-card border border-border bg-sunken">
-        <video
-          src={src}
-          poster={poster}
-          className="block w-full"
-          playsInline
-          muted={autoplay}
-          loop={autoplay}
-          autoPlay={autoplay}
-          controls={!autoplay}
-          preload={autoplay ? "auto" : "metadata"}
-        />
+        {src ? (
+          <video
+            src={src}
+            poster={poster}
+            className="block w-full"
+            playsInline
+            muted={autoplay}
+            loop={autoplay}
+            autoPlay={autoplay}
+            controls={!autoplay}
+            preload={autoplay ? "auto" : "metadata"}
+          />
+        ) : (
+          <div className="aspect-video w-full" />
+        )}
       </div>
       {caption ? (
         <figcaption className="font-mono text-[11px] uppercase tracking-[0.04em] text-faint">
