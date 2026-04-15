@@ -53,6 +53,39 @@ body {
   letter-spacing: normal;
 }
 
+/* Animated conic-gradient starting angle for the PrimaryButton shader ring.
+   Uses Houdini @property so the gradient can interpolate as a CSS property. */
+@property --ring-angle {
+  syntax: "<angle>";
+  initial-value: 45deg;
+  inherits: false;
+}
+
+@keyframes ring-spin {
+  from {
+    --ring-angle: 45deg;
+  }
+  to {
+    --ring-angle: 405deg;
+  }
+}
+
+/* ProjectHero's visual-pane shimmer — a very slow conic drift for liveness. */
+@property --shader-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes shader-drift {
+  from {
+    --shader-angle: 0deg;
+  }
+  to {
+    --shader-angle: 360deg;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
