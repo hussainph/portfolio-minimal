@@ -7,8 +7,9 @@ import { Meta } from "@/components/ui/Meta";
 import { NoteCard } from "@/components/ui/NoteCard";
 import { Separator } from "@/components/ui/Separator";
 import { ShowcaseCard } from "@/components/ui/ShowcaseCard";
-import { Tag, type TagVariant } from "@/components/ui/Tag";
+import { Tag } from "@/components/ui/Tag";
 import { TextLink } from "@/components/ui/TextLink";
+import { tagColor } from "@/lib/tagColor";
 
 export default function UITestPage() {
   if (process.env.NODE_ENV === "production") notFound();
@@ -22,7 +23,7 @@ export default function UITestPage() {
           <ColorsSection />
         </Section>
 
-        <Section number="01" title="Typography" subtitle="three fonts, three jobs">
+        <Section number="01" title="Typography" subtitle="serif for every display & heading level · italic for quotes only">
           <TypographySection />
         </Section>
 
@@ -61,7 +62,7 @@ function Header() {
   return (
     <header className="flex flex-col gap-3 pb-3">
       <Label tone="faint">UI Test · Component Library v4</Label>
-      <h1 className="font-serif text-[42px] leading-[52px] text-text">
+      <h1 className="font-serif text-[48px] leading-[52px] tracking-[-0.02em] text-text">
         Hussain Phalasiya
       </h1>
       <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
@@ -88,7 +89,7 @@ function Section({
     <section className="flex flex-col gap-6">
       <div className="flex flex-wrap items-baseline gap-4">
         <Label tone="faint">§ {number}</Label>
-        <h2 className="font-serif text-[24px] leading-[30px] text-text">
+        <h2 className="font-serif text-[24px] leading-[32px] tracking-[-0.01em] text-text">
           {title}
         </h2>
         {subtitle ? (
@@ -104,34 +105,41 @@ function Section({
 }
 
 function ColorsSection() {
-  const ground: { name: string; hex: string }[] = [
-    { name: "background", hex: "#0a0a0b" },
-    { name: "surface", hex: "#141416" },
-    { name: "elevated", hex: "#1e1e21" },
-    { name: "border", hex: "#252528" },
-    { name: "text", hex: "#f0ebe3" },
-    { name: "muted", hex: "#908a84" },
-    { name: "faint", hex: "#555250" },
+  const ground: { name: string; hex: string; role: string }[] = [
+    { name: "background", hex: "#0a0a0b", role: "page floor" },
+    { name: "sunken", hex: "#0c0c0e", role: "callout panels" },
+    { name: "surface", hex: "#141416", role: "card at rest" },
+    { name: "elevated", hex: "#1a1a1d", role: "card hover" },
+    { name: "border", hex: "#252528", role: "default edge" },
+    { name: "border-hover", hex: "#2e2e32", role: "hover edge" },
+    { name: "text", hex: "#f0ebe3", role: "hero · note body" },
+    { name: "body", hex: "#bfb8ae", role: "longform body" },
+    { name: "quote", hex: "#bfb4a8", role: "pull quote" },
+    { name: "muted", hex: "#908a84", role: "secondary" },
+    { name: "faint", hex: "#555250", role: "captions" },
   ];
 
-  const tags: { variant: TagVariant; hex: string }[] = [
-    { variant: "ai", hex: "#7B7EFF" },
-    { variant: "building", hex: "#FFB844" },
-    { variant: "design", hex: "#FF7A94" },
-    { variant: "thinking", hex: "#FFCC55" },
-    { variant: "code", hex: "#4AE0B4" },
-    { variant: "reading", hex: "#4AC0E0" },
+  // Each tag name is hashed to a deterministic OKLCH hue.
+  const tagNames = [
+    "building",
+    "ai",
+    "code",
+    "design",
+    "thinking",
+    "notes",
+    "craft",
+    "research",
   ];
 
   return (
     <div className="flex flex-col gap-10">
       <div>
         <Label tone="faint" size="xs" className="mb-3 block">
-          Ground · Deeper Dark
+          Ground · Dark Warmth v4
         </Label>
         <div className="flex flex-wrap gap-4">
           {ground.map((c) => (
-            <div key={c.name} className="flex w-[110px] flex-col gap-1.5">
+            <div key={c.name} className="flex w-[120px] flex-col gap-1.5">
               <div
                 className="h-16 w-full rounded-[3px] border border-border"
                 style={{ backgroundColor: c.hex }}
@@ -142,40 +150,105 @@ function ColorsSection() {
               <div className="font-mono text-[10px] leading-3 tracking-[0.05em] text-faint">
                 {c.hex}
               </div>
+              <div className="font-sans text-[11px] leading-[14px] tracking-[-0.03em] text-muted">
+                {c.role}
+              </div>
             </div>
           ))}
         </div>
       </div>
 
       <div>
-        <Label tone="faint" size="xs" className="mb-3 block">
-          Tags · 75% sat · 58% lightness
-        </Label>
-        <div className="flex flex-wrap items-center gap-3">
-          {tags.map((t) => (
-            <div key={t.variant} className="flex items-center gap-2">
-              <div
-                className="h-8 w-8 rounded-[3px] border border-border"
-                style={{ backgroundColor: t.hex }}
-              />
-              <Tag variant={t.variant}>#{t.variant}</Tag>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <Label tone="faint" size="xs" className="mb-3 block">
-          Accent · Text link
-        </Label>
-        <div className="flex items-center gap-3">
-          <div
-            className="h-8 w-32 rounded-[3px] border border-border"
-            style={{ backgroundColor: "#70CFD4" }}
-          />
-          <span className="font-mono text-[11px] text-faint">
-            #70CFD4 · accent-teal
+        <div className="mb-3 flex flex-wrap items-baseline gap-3">
+          <Label tone="faint" size="xs">
+            Tags · tagColor(name) = oklch(74% 0.14 hash(name) mod 360)
+          </Label>
+          <span className="font-mono text-[10px] leading-3 tracking-[0.04em] text-faint">
+            hue derived from name · chroma/lightness locked · stable across renders
           </span>
+        </div>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-baseline gap-5">
+            <span className="w-20 shrink-0 font-mono text-[11px] leading-[14px] tracking-[0.04em] text-faint">
+              Default
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {tagNames.map((n) => (
+                <Tag key={n} name={n}>
+                  #{n}
+                </Tag>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-baseline gap-5">
+            <span className="w-20 shrink-0 font-mono text-[11px] leading-[14px] tracking-[0.04em] text-accent-orange">
+              Hover
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {tagNames.slice(0, 4).map((n) => (
+                <Tag key={n} name={n} state="hover">
+                  #{n}
+                </Tag>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-baseline gap-5">
+            <span className="w-20 shrink-0 font-mono text-[11px] leading-[14px] tracking-[0.04em] text-faint">
+              Active
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {tagNames.slice(0, 4).map((n) => (
+                <Tag key={n} name={n} state="active">
+                  #{n}
+                </Tag>
+              ))}
+            </div>
+          </div>
+          <div className="mt-2 flex gap-6 rounded-card border border-border bg-sunken py-4 px-5">
+            <span className="w-20 shrink-0 font-mono text-[11px] leading-[14px] tracking-[0.04em] uppercase text-accent-orange">
+              How
+            </span>
+            <span className="font-mono text-[13px] leading-[22px] tracking-[-0.03em] text-body">
+              Pure, deterministic hash on the tag name → OKLCH hue. Same input
+              always yields the same color; no manual mapping to maintain as
+              the tag set grows.
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <Label tone="faint" size="xs" className="mb-3 block">
+          Accent · Text link + Hover emphasis
+        </Label>
+        <div className="flex flex-wrap items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div
+              className="h-8 w-16 rounded-[3px] border border-border"
+              style={{ backgroundColor: "#70CFD4" }}
+            />
+            <span className="font-mono text-[11px] text-faint">
+              #70CFD4 · accent-teal
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div
+              className="h-8 w-16 rounded-[3px] border border-border"
+              style={{ backgroundColor: "#E89878" }}
+            />
+            <span className="font-mono text-[11px] text-faint">
+              #E89878 · accent-orange
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div
+              className="h-8 w-16 rounded-[3px] border border-border"
+              style={{ backgroundColor: tagColor("building") }}
+            />
+            <span className="font-mono text-[11px] text-faint">
+              oklch(74% 0.14 · #building hue)
+            </span>
+          </div>
         </div>
       </div>
     </div>
@@ -184,48 +257,57 @@ function ColorsSection() {
 
 function TypographySection() {
   return (
-    <div className="flex flex-col gap-6">
-      <Specimen label="Display · Instrument Serif Regular · 42px / 52px">
-        <div className="font-serif text-[42px] leading-[52px] text-text">
-          Trust Is the Bottleneck
+    <div className="flex flex-col gap-7">
+      <Specimen label="Display · Instrument Serif · 48 / 52 · -2%">
+        <div className="font-serif text-[48px] leading-[52px] tracking-[-0.02em] text-text">
+          The things I&apos;m building, breaking, and thinking about.
         </div>
       </Specimen>
-      <Specimen label="H1 · Instrument Serif Regular · 28px">
-        <div className="font-serif text-[28px] leading-[34px] text-text">
+      <Specimen label="H1 · Instrument Serif · 32 / 38 · -1.5%">
+        <div className="font-serif text-[32px] leading-[38px] tracking-[-0.015em] text-text">
+          Why I think trust is the real bottleneck in AI
+        </div>
+      </Specimen>
+      <Specimen label="H2 · Instrument Serif · 24 / 32 · -1%">
+        <div className="font-serif text-[24px] leading-[32px] tracking-[-0.01em] text-text">
           The Memory-Trust Paradox
         </div>
       </Specimen>
-      <Specimen label="H2 · DM Sans 500 · 22px / -3%">
-        <div className="font-sans text-[22px] leading-[28px] tracking-[-0.03em] font-medium text-text">
-          Building in the Gap
+      <Specimen label="H3 · Instrument Serif · 19 / 26 · -1%">
+        <div className="font-serif text-[19px] leading-[26px] tracking-[-0.01em] text-text">
+          Progressive delegation as a design pattern
         </div>
       </Specimen>
-      <Specimen label="H3 · DM Sans 500 · 18px / -3%">
-        <div className="font-sans text-[18px] leading-[24px] tracking-[-0.03em] font-medium text-text">
-          Craft Over Hype, Every Time
+      <Specimen label="Pull Quote · Instrument Serif Italic · 24 / 34 · color #BFB4A8">
+        <div
+          className="max-w-[640px] border-l-2 pl-5"
+          style={{ borderColor: tagColor("building") }}
+        >
+          <div className="font-serif italic text-[24px] leading-[34px] tracking-[-0.01em] text-quote">
+            Trust is the bottleneck, not capability. The best AI products build
+            trust ramps, not capability mountains.
+          </div>
         </div>
       </Specimen>
-      <Specimen label="Pull Quote · Instrument Serif Italic · 22px · muted">
-        <div className="font-serif italic text-[22px] leading-[30px] text-muted">
-          I guess what I&apos;m saying is, the best AI products aren&apos;t the
-          most autonomous ones — they&apos;re the ones that make you feel like
-          you&apos;re still driving.
-        </div>
-      </Specimen>
-      <Specimen label="Body · DM Sans 400 · 15px · -3% · 1.65 line-height">
-        <p className="font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-text">
-          I feel like the real problem with most AI products isn&apos;t
-          capability, right? It&apos;s that they sort of skip the trust-building
-          part entirely and go straight to &quot;look what I can do&quot; — and
-          then people don&apos;t use them.
+      <Specimen label="Body · DM Sans 400 · 16 / 24 · -3% · color #BFB8AE">
+        <p className="max-w-[640px] font-sans text-[16px] leading-[24px] tracking-[-0.03em] text-body">
+          I&apos;ve been thinking about this a lot lately — the way we build AI
+          products assumes people will just hand over context. But that&apos;s
+          not how trust works. You earn it incrementally, through small moments
+          of competence.
         </p>
       </Specimen>
-      <Specimen label="System · JetBrains Mono · 11px · tags / timestamps / code">
+      <Specimen label="Small · DM Sans · 13 / 20 · color #908A84">
+        <div className="font-sans text-[13px] leading-[20px] tracking-[-0.03em] text-muted">
+          8 min read · 2.4k words · last updated apr 2026
+        </div>
+      </Specimen>
+      <Specimen label="System · JetBrains Mono · 11 / 16 · tags · timestamps · code">
         <div className="flex flex-wrap items-center gap-3">
           <Meta>Apr 13, 2026</Meta>
           <Meta>·</Meta>
           <Meta>4 min</Meta>
-          <Tag variant="building">#building</Tag>
+          <Tag name="building">#building</Tag>
           <span className="font-mono text-[15px] leading-6 text-text">
             const trust = f(transparency)
           </span>
@@ -237,7 +319,7 @@ function TypographySection() {
 
 function TextLinkSection() {
   return (
-    <p className="font-sans text-[17px] leading-[28px] tracking-[-0.03em] text-text max-w-[600px]">
+    <p className="max-w-[600px] font-sans text-[17px] leading-[28px] tracking-[-0.03em] text-text-link">
       Most of what I&apos;m thinking about right now is in{" "}
       <TextLink href="#memory-trust">The Memory-Trust Paradox</TextLink>, with a
       sidebar piece on{" "}
@@ -300,7 +382,7 @@ function PrimitivesSection() {
         />
       </CardLane>
 
-      <CardLane label="Bento — three iterations, picked one highlighted in #code teal">
+      <CardLane label="Bento — v4 asymmetric layout, one featured tile + two stacked alternates">
         <BentoShowcase
           tags={["code", "building"]}
           timestamp="apr 11 · iterations"
@@ -335,7 +417,7 @@ function CardLane({
 function ToolbarSection() {
   return (
     <div className="flex flex-col gap-4">
-      <p className="font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-muted max-w-[600px]">
+      <p className="max-w-[600px] font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-muted">
         The toolbar at the bottom of this page is the real component. It uses{" "}
         <code className="font-mono text-[13px] text-text">
           useToolbarVisibility
@@ -344,7 +426,7 @@ function ToolbarSection() {
         scrolled past 200px), and slides back in on cursor movement, scroll, or
         keypress. Try it — scroll, then sit still.
       </p>
-      <ul className="flex flex-col gap-1.5 font-mono text-[11px] leading-[18px] tracking-[0.04em] text-faint max-w-[600px]">
+      <ul className="flex max-w-[600px] flex-col gap-1.5 font-mono text-[11px] leading-[18px] tracking-[0.04em] text-faint">
         <li>spring · stiffness 260 · damping 22 · mass 1</li>
         <li>backdrop-filter · blur 24px · bg #14141699</li>
         <li>auto-hide · 3000ms idle · scroll &gt; 200px</li>
