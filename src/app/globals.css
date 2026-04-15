@@ -95,3 +95,11 @@ body {
     animation-name: none !important;
   }
 }
+
+/* MDX prose — minimal scoped tweaks. The HTML-element map in
+   mdx-components.tsx does the heavy lifting; this container reset keeps the
+   first child from inheriting its sibling-margin so it butts up cleanly against
+   the page header. Phase 6 tightens typography further. */
+.prose-dark > :first-child {
+  margin-top: 0;
+}
