@@ -2,6 +2,7 @@ import "server-only";
 import { assertNever } from "@/lib/assertNever";
 import { getItemBySlug } from "./loader";
 import { deriveExcerpt } from "./derive";
+import { routeFor } from "./routes";
 import type { ContentItem } from "./types";
 
 export interface RefPreview {
@@ -33,28 +34,8 @@ export async function getRefPreview(
     title: previewTitle(item),
     excerpt: previewExcerpt(item),
     tags: item.frontmatter.tags ?? [],
-    href: hrefFor(item),
+    href: routeFor(item),
   };
-}
-
-/**
- * Same routing logic as `<Ref>`'s `routeFor`. Kept inline rather than imported
- * because Ref lives in `src/components/mdx/` (UI layer) and this helper sits
- * in the content layer — neither side should depend on the other.
- */
-function hrefFor(item: ContentItem): string {
-  switch (item.kind) {
-    case "note":
-      return `/n/${item.frontmatter.slug}`;
-    case "post":
-      return `/blog/${item.frontmatter.slug}`;
-    case "showcase":
-      return `/showcases/${item.frontmatter.slug}`;
-    case "project":
-      return `/projects/${item.frontmatter.slug}`;
-    default:
-      return assertNever(item);
-  }
 }
 
 /**

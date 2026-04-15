@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { GLOW_NEUTRAL_BASE } from "@/lib/tagGlow";
 import { cn } from "@/lib/utils";
 
 export type FigureGlow = "warm" | "cool" | "pink" | "amber";
@@ -8,6 +9,8 @@ interface FigureProps {
   alt?: string;
   caption?: string;
   glow?: FigureGlow;
+  /** Set on the first above-the-fold figure so next/image skips lazy-loading. */
+  priority?: boolean;
   className?: string;
 }
 
@@ -31,6 +34,7 @@ export function Figure({
   alt = "",
   caption,
   glow,
+  priority,
   className,
 }: FigureProps) {
   return (
@@ -38,7 +42,8 @@ export function Figure({
       <div
         className={cn(
           "relative aspect-video w-full overflow-hidden rounded-card border border-border",
-          "bg-gradient-to-br from-[#1f1f22] to-[#161618]",
+          "bg-gradient-to-br",
+          GLOW_NEUTRAL_BASE,
         )}
       >
         {glow ? (
@@ -53,6 +58,7 @@ export function Figure({
             src={src}
             alt={alt}
             fill
+            priority={priority}
             className="object-cover"
             sizes="(min-width: 768px) 600px, 100vw"
           />

@@ -25,10 +25,10 @@ export function NotePage({ item }: NotePageProps) {
           <span>back</span>
         </Link>
 
-        <header className="flex flex-col gap-4">
+        <header className="flex flex-col gap-5">
           <div className="flex flex-wrap items-center gap-2">
             {frontmatter.tags.map((t) => (
-              <Tag key={t} name={t}>
+              <Tag key={t} as="display" name={t}>
                 #{t}
               </Tag>
             ))}

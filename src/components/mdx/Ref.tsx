@@ -2,33 +2,13 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { assertNever } from "@/lib/assertNever";
 import { cn } from "@/lib/utils";
-import { getItemBySlug } from "@/lib/content";
+import { getItemBySlug, routeFor } from "@/lib/content";
 import type { ContentItem } from "@/lib/content";
 
 interface RefProps {
   slug: string;
   children?: ReactNode;
   className?: string;
-}
-
-/**
- * Resolve a slug to its route. The loader stores both feed items and projects
- * in the same `bySlug` map, so we can recover the content kind without extra
- * IO and send the reader to the right section of the site.
- */
-function routeFor(item: ContentItem): string {
-  switch (item.kind) {
-    case "note":
-      return `/n/${item.frontmatter.slug}`;
-    case "post":
-      return `/blog/${item.frontmatter.slug}`;
-    case "showcase":
-      return `/showcases/${item.frontmatter.slug}`;
-    case "project":
-      return `/projects/${item.frontmatter.slug}`;
-    default:
-      return assertNever(item);
-  }
 }
 
 /**

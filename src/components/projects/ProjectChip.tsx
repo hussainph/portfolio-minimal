@@ -48,7 +48,7 @@ export function ProjectChip({
     >
       <span
         aria-hidden="true"
-        className="absolute top-0 left-0 h-full w-[3px] rounded-l-card opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        className="absolute top-0 left-0 h-full w-[3px] rounded-l-card opacity-40 transition-opacity duration-200 group-hover:opacity-100"
         style={{ backgroundColor: stripeColor }}
       />
 
