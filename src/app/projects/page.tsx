@@ -7,10 +7,25 @@ import { Label } from "@/components/ui/Label";
 import { ProjectHero } from "@/components/ui/ProjectHero";
 import { loadAll } from "@/lib/content";
 import type { ProjectWithTimeline } from "@/lib/content";
+import { SITE_URL } from "@/lib/siteUrl";
+
+const PROJECTS_DESCRIPTION =
+  "What I'm working on, what I shipped, what I'm breaking.";
 
 export const metadata: Metadata = {
-  title: "Projects · Hussain Phalasiya",
-  description: "What I'm working on, what I shipped, what I'm breaking.",
+  title: "Projects",
+  description: PROJECTS_DESCRIPTION,
+  openGraph: {
+    title: "Projects",
+    description: PROJECTS_DESCRIPTION,
+    type: "website",
+    url: `${SITE_URL}/projects`,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Projects",
+    description: PROJECTS_DESCRIPTION,
+  },
 };
 
 const TIER_DESCRIPTORS: Record<ProjectWithTimeline["frontmatter"]["tier"], string> = {

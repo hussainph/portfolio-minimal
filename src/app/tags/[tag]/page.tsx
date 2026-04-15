@@ -6,6 +6,7 @@ import { BottomToolbar } from "@/components/ui/BottomToolbar";
 import { Meta } from "@/components/ui/Meta";
 import { tagColor } from "@/lib/tagColor";
 import { loadAll } from "@/lib/content";
+import { SITE_URL } from "@/lib/siteUrl";
 
 interface RouteParams {
   tag: string;
@@ -27,9 +28,24 @@ export async function generateMetadata({
   const index = await loadAll();
   if (!index.byTag.has(tag)) return {};
 
+  const title = `#${tag}`;
+  const description = `Everything tagged #${tag}.`;
+  const url = `${SITE_URL}/tags/${tag}`;
+
   return {
-    title: `#${tag} · Hussain Phalasiya`,
-    description: `Everything tagged #${tag}.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      url,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 

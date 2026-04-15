@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NotePage } from "@/components/content/NotePage";
 import { deriveExcerpt, getItemBySlug, loadAll } from "@/lib/content";
 import type { NoteItem } from "@/lib/content";
+import { SITE_URL } from "@/lib/siteUrl";
 
 interface RouteParams {
   slug: string;
@@ -27,10 +28,24 @@ export async function generateMetadata({
   const title =
     item.frontmatter.title?.trim() || firstLine(item.raw) || "note";
   const description = deriveExcerpt(item.raw, 160);
+  const url = `${SITE_URL}/n/${item.frontmatter.slug}`;
 
   return {
-    title: `${title} · Hussain Phalasiya`,
+    title,
     description,
+    openGraph: {
+      title,
+      description,
+      type: "article",
+      url,
+      publishedTime: item.frontmatter.published.toISOString(),
+      tags: item.frontmatter.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
   };
 }
 

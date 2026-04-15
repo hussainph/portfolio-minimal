@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { InterfaceKit } from "interface-kit/react";
+import { SITE_URL } from "@/lib/siteUrl";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -25,10 +26,32 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500"],
 });
 
+const SITE_NAME = "Hussain Phalasiya";
+const SITE_DESCRIPTION =
+  "Personal feed — notes, posts, and projects. A Twitter + Substack hybrid.";
+
 export const metadata: Metadata = {
-  title: "Hussain Phalasiya",
-  description:
-    "Personal feed — notes, posts, and projects. A Twitter + Substack hybrid.",
+  metadataBase: new URL(SITE_URL),
+  // Per-route titles flow through the template; routes return bare titles
+  // (no " · Hussain Phalasiya" suffix) and the template appends the site
+  // name once. The `default` covers routes that don't set a title at all.
+  title: {
+    default: SITE_NAME,
+    template: `%s · ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

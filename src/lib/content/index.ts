@@ -1,6 +1,8 @@
 export { loadAll, getItemBySlug } from "./loader";
 export { computeReadingTimeMinutes, deriveExcerpt, formatFeedTimestamp } from "./derive";
 export { renderMDXBody } from "./mdx";
+export { getRefPreview } from "./preview";
+export type { RefPreview } from "./preview";
 export type {
   ContentIndex,
   ContentItem,

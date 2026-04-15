@@ -43,14 +43,56 @@ function defaultLabel(item: ContentItem): string {
 }
 
 /**
+ * Compact title string for the `data-ref-title` attribute. Mirrors
+ * `getRefPreview`'s logic but stays inline so we don't double-resolve the
+ * slug — Phase 8 hover code reads this attribute first and only fetches the
+ * full preview when it commits to opening a card.
+ */
+function previewTitleFor(item: ContentItem): string {
+  if (item.kind === "post" || item.kind === "project") {
+    return item.frontmatter.title;
+  }
+  if (item.kind === "showcase") {
+    const authored = item.frontmatter.title?.trim();
+    if (authored) return authored;
+    const isMulti =
+      item.frontmatter.variant === "bento" ||
+      item.frontmatter.variant === "grid";
+    if (isMulti) {
+      const picked = item.frontmatter.images.find((img) => img.picked === true);
+      if (picked?.caption) return picked.caption;
+    }
+    return item.frontmatter.images[0]?.caption ?? item.frontmatter.slug;
+  }
+  // note: prefer authored title, then the first non-empty body line so refs
+  // to title-less notes still surface a meaningful preview headline.
+  const authored = item.frontmatter.title?.trim();
+  if (authored) return authored;
+  const firstBodyLine = item.raw
+    .split(/\n/)
+    .map((l) => l.trim())
+    .find((l) => l.length > 0);
+  return firstBodyLine || item.frontmatter.slug;
+}
+
+function clip(value: string, max: number): string {
+  if (value.length <= max) return value;
+  return `${value.slice(0, max - 1).trim()}…`;
+}
+
+/**
  * Cross-reference link for MDX bodies. The author writes
  * `<Ref slug="trust-ramps" />` and the component resolves the slug against the
- * content index, emits a real `<Link>`, and hangs a `data-ref-slug` attribute
- * for the future hover-preview (Phase 7). Styling matches `TextLink` so refs
- * sit in prose identically to regular links.
+ * content index, emits a real `<Link>`, and hangs `data-ref-*` attributes for
+ * the future hover-preview. Styling matches `TextLink` so refs sit in prose
+ * identically to regular links.
  *
  * Missing slugs render a visible-but-safe fallback in both dev and prod —
  * dev gets a louder accent so broken refs are obvious while authoring.
+ *
+ * Phase 8 adds the hover interaction against `data-ref-*` attributes; the
+ * full payload (excerpt, tags, etc.) comes from `getRefPreview` server-side
+ * on demand.
  */
 export async function Ref({ slug, children, className }: RefProps) {
   const item = await getItemBySlug(slug);
@@ -75,11 +117,14 @@ export async function Ref({ slug, children, className }: RefProps) {
   }
 
   const label = children ?? defaultLabel(item);
+  const refTitle = clip(previewTitleFor(item), 60);
 
   return (
     <Link
       href={routeFor(item)}
       data-ref-slug={slug}
+      data-ref-kind={item.kind}
+      data-ref-title={refTitle}
       className={cn(
         "font-sans text-[17px] leading-[22px] tracking-[-0.03em] transition-colors duration-150",
         "text-text-link underline decoration-accent-teal decoration-dashed decoration-1 underline-offset-[5px]",
