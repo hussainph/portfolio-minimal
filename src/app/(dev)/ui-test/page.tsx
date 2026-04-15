@@ -1,4 +1,8 @@
 import { notFound } from "next/navigation";
+import { CodeBlock } from "@/components/mdx/CodeBlock";
+import { Figure } from "@/components/mdx/Figure";
+import { Ref } from "@/components/mdx/Ref";
+import { Video } from "@/components/mdx/Video";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { ProjectChip } from "@/components/projects/ProjectChip";
 import { BlogPostCard } from "@/components/ui/BlogPostCard";
@@ -99,6 +103,14 @@ export default function UITestPage() {
           subtitle="sticks above the feed · URL-driven · click the active chip to clear"
         >
           <FilterChipRowSection />
+        </Section>
+
+        <Section
+          number="09"
+          title="MDX primitives"
+          subtitle="shared components globally available in every MDX body"
+        >
+          <MDXPrimitivesSection />
         </Section>
       </div>
 
@@ -680,6 +692,113 @@ function FilterChipRowSection() {
         <li>state · useSearchParams (Suspense-wrapped) reads ?tag</li>
         <li>active chip · href falls back to pathname so the click clears the filter</li>
       </ul>
+    </div>
+  );
+}
+
+function MDXPrimitivesSection() {
+  // Real prose-dark wrapper so first/last-child margin resets behave like
+  // the actual /n/ and /blog/ pages. Each subsection is its own little post.
+  return (
+    <div className="flex max-w-[640px] flex-col gap-12">
+      <SpecimenBlock
+        label="<Ref>"
+        note="cross-reference link · resolves slug → route via the content index · dashed teal underline matches TextLink"
+      >
+        <article className="prose-dark">
+          <p className="font-sans text-[16px] leading-[24px] tracking-[-0.03em] text-body">
+            Feels related to{" "}
+            <Ref slug="trust-ramps">trust ramps</Ref> — you don&apos;t ask
+            the model to prove its reasoning upfront, you design the shape
+            of a good answer.
+          </p>
+          <p className="font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-faint">
+            A broken slug like{" "}
+            <Ref slug="this-doesnt-exist">this one</Ref> renders the
+            dev-mode warning state — orange dashed border, fail loudly.
+          </p>
+        </article>
+      </SpecimenBlock>
+
+      <SpecimenBlock
+        label="<Figure>"
+        note="framed image · 16:9 · optional mood glow under a neutral base · 11px mono caption · echoes the ShowcaseCard tile"
+      >
+        <article className="prose-dark">
+          <Figure
+            src=""
+            glow="warm"
+            caption="warm — placeholder src · the frame is honest, the image isn't"
+          />
+          <Figure
+            src=""
+            glow="cool"
+            caption="cool"
+          />
+        </article>
+      </SpecimenBlock>
+
+      <SpecimenBlock
+        label="<Video>"
+        note="local-first · autoplay implies muted+loop+playsInline+no controls · same caption rhythm as Figure"
+      >
+        <article className="prose-dark">
+          <Video
+            src=""
+            caption="empty src — no real clip in the repo yet · the frame and caption are honest"
+          />
+          <p className="font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-faint">
+            Real usage:
+          </p>
+          <pre className="my-5 overflow-x-auto rounded-card border border-border bg-sunken p-4 font-mono text-[13px] leading-[22px] text-body">
+{`<Video
+  src="/clips/clawbox-hover.mp4"
+  poster="/clips/clawbox-hover.jpg"
+  caption="hover state · 4s loop"
+  autoplay
+/>`}
+          </pre>
+        </article>
+      </SpecimenBlock>
+
+      <SpecimenBlock
+        label="<CodeBlock>"
+        note="filename chrome wraps a rehype-pretty-code <pre> · without filename it degrades to the bare children"
+      >
+        <article className="prose-dark">
+          <CodeBlock filename="src/lib/example.ts" language="ts">
+            <pre className="overflow-x-auto bg-sunken p-4 font-mono text-[13px] leading-[22px] text-body">
+{`export function add(a: number, b: number): number {
+  return a + b;
+}`}
+            </pre>
+          </CodeBlock>
+        </article>
+      </SpecimenBlock>
+    </div>
+  );
+}
+
+function SpecimenBlock({
+  label,
+  note,
+  children,
+}: {
+  label: string;
+  note: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-baseline gap-3">
+        <span className="font-mono text-[11px] leading-[14px] tracking-[0.04em] text-accent-orange">
+          {label}
+        </span>
+        <span className="font-mono text-[10px] leading-3 tracking-[0.05em] text-faint">
+          {note}
+        </span>
+      </div>
+      {children}
     </div>
   );
 }

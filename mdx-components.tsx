@@ -1,6 +1,9 @@
 import type { MDXComponents } from "mdx/types";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { CodeBlock } from "@/components/mdx/CodeBlock";
+import { Figure } from "@/components/mdx/Figure";
 import { Ref } from "@/components/mdx/Ref";
+import { Video } from "@/components/mdx/Video";
 import { TextLink } from "@/components/ui/TextLink";
 
 /**
@@ -10,7 +13,8 @@ import { TextLink } from "@/components/ui/TextLink";
  * directly in the MDX file that uses them.
  *
  * Phase 1 shipped typography + TextLink. Phase 5 adds Ref (cross-reference
- * links). Phase 6 adds Figure, Video, CodeBlock.
+ * links). Phase 6 adds Figure, Video, CodeBlock — framed media + filename
+ * chrome that wraps the rehype-pretty-code output without re-styling it.
  */
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -102,4 +106,7 @@ export const sharedComponents: MDXComponents = {
     <em className="italic text-text" {...props} />
   ),
   Ref,
+  Figure,
+  Video,
+  CodeBlock,
 };
