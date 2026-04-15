@@ -1,4 +1,6 @@
 import { notFound } from "next/navigation";
+import { ProjectCard } from "@/components/projects/ProjectCard";
+import { ProjectChip } from "@/components/projects/ProjectChip";
 import { BlogPostCard } from "@/components/ui/BlogPostCard";
 import { BentoShowcase } from "@/components/ui/BentoShowcase";
 import { BottomToolbar } from "@/components/ui/BottomToolbar";
@@ -81,6 +83,14 @@ export default function UITestPage() {
           subtitle="live at the bottom of this page — scroll to test auto-hide"
         >
           <ToolbarSection />
+        </Section>
+
+        <Section
+          number="07"
+          title="Project cards"
+          subtitle="showcase · smaller · bitesized"
+        >
+          <ProjectCardsSection />
         </Section>
 
         <Section
@@ -593,6 +603,50 @@ function ToolbarSection() {
         <li>auto-hide · 3000ms idle · scroll &gt; 200px</li>
         <li>prefers-reduced-motion · simple fade, no spring</li>
       </ul>
+    </div>
+  );
+}
+
+function ProjectCardsSection() {
+  return (
+    <div className="flex flex-col gap-10">
+      <CardLane label="Showcase tier — ProjectHero, full two-pane headliner">
+        <ProjectHero
+          badge="Now · headliner"
+          tags={["building", "ai", "design"]}
+          title="Clawbox"
+          subtitle="An arcade you can program. Physics, prizes, and a hand that learns to want things."
+          meta={[
+            { label: "status", value: "v0.4 · launching may" },
+            { label: "posts", value: "3 — notes, designs, builds" },
+            { label: "latest", value: "shader physics · apr 13" },
+          ]}
+          primaryCta={{ label: "Open project", href: "#clawbox-card" }}
+          secondaryCta={{ label: "See the stream", href: "#clawbox-card" }}
+          visualBadge="live shader · hover to interact"
+        />
+      </CardLane>
+
+      <CardLane label="Smaller tier — ProjectCard, mid-weight, CTA nudge on hover">
+        <ProjectCard
+          slug="structured-output-playground"
+          tags={["code", "ai"]}
+          title="Structured output playground"
+          subtitle="A browser tool for poking at JSON-mode outputs across models. You paste a schema, it shows you where the model is about to lie."
+          status="v0.2 · iterating"
+          ctaLabel="See the thread"
+        />
+      </CardLane>
+
+      <CardLane label="Bitesized tier — ProjectChip, compact one-line row">
+        <ProjectChip
+          slug="weekend-loop"
+          title="Weekend Loop"
+          tags={["code", "building"]}
+          subtitle="A 48-hour experiment in a feed that never stops loading."
+          status="shipped · retired"
+        />
+      </CardLane>
     </div>
   );
 }

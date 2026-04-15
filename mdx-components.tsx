@@ -1,5 +1,6 @@
 import type { MDXComponents } from "mdx/types";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { Ref } from "@/components/mdx/Ref";
 import { TextLink } from "@/components/ui/TextLink";
 
 /**
@@ -8,8 +9,8 @@ import { TextLink } from "@/components/ui/TextLink";
  * one-off per-post embeds live in src/components/embeds/ and are imported
  * directly in the MDX file that uses them.
  *
- * For Phase 1 this is typography + TextLink only. Phase 6 adds Figure, Video,
- * CodeBlock, Ref.
+ * Phase 1 shipped typography + TextLink. Phase 5 adds Ref (cross-reference
+ * links). Phase 6 adds Figure, Video, CodeBlock.
  */
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
@@ -100,4 +101,5 @@ export const sharedComponents: MDXComponents = {
   em: (props: ComponentPropsWithoutRef<"em">) => (
     <em className="italic text-text" {...props} />
   ),
+  Ref,
 };
