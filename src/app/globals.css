@@ -1,24 +1,22 @@
 @import "tailwindcss";
 
 @theme {
-  /* Ground (Dark Warmth) */
-  --color-background: #0a0a0b;
-  --color-surface: #141416;
-  --color-elevated: #1e1e21;
-  --color-border: #252528;
-  --color-text: #f0ebe3;
-  --color-muted: #908a84;
-  --color-faint: #555250;
+  /* Ground — Dark Warmth v4 */
+  --color-background: #0a0a0b; /* page floor */
+  --color-sunken: #0c0c0e;     /* callout panels, motion spec, reading frames */
+  --color-surface: #141416;    /* card at rest */
+  --color-elevated: #1a1a1d;   /* card hover + subtle dividers */
+  --color-border: #252528;     /* default card/section border */
+  --color-border-hover: #2e2e32; /* card hover border, toolbar pill border */
+  --color-text: #f0ebe3;       /* hero + note body */
+  --color-text-link: #e8e1d4;  /* inline text link (default state) */
+  --color-body: #bfb8ae;       /* longform body + card hover excerpt */
+  --color-quote: #bfb4a8;      /* pull quote, warmer than body */
+  --color-muted: #908a84;      /* secondary text */
+  --color-faint: #555250;      /* captions, disabled glyphs */
+  --color-visited: #4e8590;    /* visited text link (muted teal) */
 
-  /* Tags — 75% sat / 58% lightness, only hue varies */
-  --color-tag-ai: #7b7eff;
-  --color-tag-building: #ffb844;
-  --color-tag-design: #ff7a94;
-  --color-tag-thinking: #ffcc55;
-  --color-tag-code: #4ae0b4;
-  --color-tag-reading: #4ac0e0;
-
-  /* Accents */
+  /* Accents — one warm, one cool; only two permitted outside tag hues */
   --color-accent-teal: #70cfd4;
   --color-accent-orange: #e89878;
 
@@ -28,7 +26,9 @@
   --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 
   /* Radius */
+  --radius-xs: 2px;
   --radius-card: 4px;
+  --radius-panel: 10px;
   --radius-pill: 9999px;
 }
 

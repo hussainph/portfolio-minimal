@@ -1,47 +1,57 @@
 import { cn } from "@/lib/utils";
+import { tagColor } from "@/lib/tagColor";
 
-export type TagVariant =
-  | "ai"
-  | "building"
-  | "design"
-  | "thinking"
-  | "code"
-  | "reading";
+export type TagState = "default" | "hover" | "active";
 
 interface TagProps {
-  variant: TagVariant;
+  /**
+   * The tag's underlying name (no `#` prefix). The hue is derived from
+   * this string via `tagColor()` — stable across renders and builds.
+   */
+  name: string;
+  /**
+   * Visual state. `active` renders a solid fill with near-black text for
+   * selected filter chips; `hover` is a brighter tint used in interactive
+   * specimens; `default` is the resting state.
+   */
+  state?: TagState;
+  /**
+   * Back-compat convenience — sugar for `state="active"`.
+   */
   active?: boolean;
   children: React.ReactNode;
   className?: string;
 }
 
-// Static class lookups so Tailwind can extract them at build time.
-const RESTING: Record<TagVariant, string> = {
-  ai: "bg-tag-ai/10 border-tag-ai/20 text-tag-ai",
-  building: "bg-tag-building/10 border-tag-building/20 text-tag-building",
-  design: "bg-tag-design/10 border-tag-design/20 text-tag-design",
-  thinking: "bg-tag-thinking/10 border-tag-thinking/20 text-tag-thinking",
-  code: "bg-tag-code/10 border-tag-code/20 text-tag-code",
-  reading: "bg-tag-reading/10 border-tag-reading/20 text-tag-reading",
+const ALPHAS: Record<TagState, { bg: number; border: number }> = {
+  default: { bg: 0.094, border: 0.188 }, // matches Paper's HEX18 / HEX30
+  hover: { bg: 0.188, border: 0.333 },   // matches HEX30 / HEX55
+  active: { bg: 1, border: 1 },
 };
 
-const ACTIVE: Record<TagVariant, string> = {
-  ai: "bg-tag-ai/20 border-tag-ai/30 text-tag-ai",
-  building: "bg-tag-building/20 border-tag-building/30 text-tag-building",
-  design: "bg-tag-design/20 border-tag-design/30 text-tag-design",
-  thinking: "bg-tag-thinking/20 border-tag-thinking/30 text-tag-thinking",
-  code: "bg-tag-code/20 border-tag-code/30 text-tag-code",
-  reading: "bg-tag-reading/20 border-tag-reading/30 text-tag-reading",
-};
+export function Tag({
+  name,
+  state,
+  active = false,
+  children,
+  className,
+}: TagProps) {
+  const resolved: TagState = state ?? (active ? "active" : "default");
+  const alphas = ALPHAS[resolved];
+  const color = tagColor(name);
 
-export function Tag({ variant, active = false, children, className }: TagProps) {
   return (
     <span
       className={cn(
         "inline-flex items-center rounded-pill border py-1 px-3 font-mono text-[11px] leading-[14px]",
-        active ? ACTIVE[variant] : RESTING[variant],
+        resolved === "active" ? "font-bold text-background" : null,
         className,
       )}
+      style={{
+        backgroundColor: tagColor(name, alphas.bg),
+        borderColor: tagColor(name, alphas.border),
+        color: resolved === "active" ? undefined : color,
+      }}
     >
       {children}
     </span>

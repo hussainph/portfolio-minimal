@@ -32,9 +32,9 @@ export function TextLink({
       rel={external ? "noopener noreferrer" : undefined}
       className={cn(
         "group inline-flex items-center gap-2 font-sans text-[17px] leading-[22px] tracking-[-0.03em] transition-colors duration-150",
-        "text-text underline decoration-accent-teal decoration-dashed decoration-1 underline-offset-[5px]",
+        "text-text-link underline decoration-accent-teal decoration-dashed decoration-1 underline-offset-[5px]",
         "hover:text-accent-teal hover:decoration-solid hover:decoration-[1.5px]",
-        "visited:text-[#4e8590] visited:decoration-[#4e8590]",
+        "visited:text-visited visited:decoration-visited",
         className,
       )}
     >

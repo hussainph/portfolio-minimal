@@ -1,24 +1,16 @@
 import { cn } from "@/lib/utils";
-import { Tag, type TagVariant } from "./Tag";
+import { tagColor } from "@/lib/tagColor";
+import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Icon } from "./Icon";
 
 interface NoteCardProps {
-  tags: TagVariant[];
+  tags: string[];
   timestamp: string;
   body: string;
   engagement?: { replies?: number; likes?: number };
   className?: string;
 }
-
-const STRIPE: Record<TagVariant, string> = {
-  ai: "bg-tag-ai",
-  building: "bg-tag-building",
-  design: "bg-tag-design",
-  thinking: "bg-tag-thinking",
-  code: "bg-tag-code",
-  reading: "bg-tag-reading",
-};
 
 export function NoteCard({
   tags,
@@ -27,27 +19,25 @@ export function NoteCard({
   engagement = {},
   className,
 }: NoteCardProps) {
-  const stripeColor = STRIPE[tags[0] ?? "building"];
+  const stripeColor = tagColor(tags[0] ?? "building");
 
   return (
     <div
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3 rounded-card border bg-surface border-border pt-5 pb-4 px-5 transition-colors duration-200",
-        "hover:bg-elevated hover:border-[#2e2e32]",
+        "hover:bg-elevated hover:border-border-hover",
         className,
       )}
     >
       <span
         aria-hidden="true"
-        className={cn(
-          "absolute top-0 left-0 h-full w-[3px] rounded-l-card opacity-0 transition-opacity duration-200 group-hover:opacity-100",
-          stripeColor,
-        )}
+        className="absolute top-0 left-0 h-full w-[3px] rounded-l-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={{ backgroundColor: stripeColor }}
       />
 
       <div className="flex items-center gap-2">
         {tags.map((t) => (
-          <Tag key={t} variant={t}>
+          <Tag key={t} name={t}>
             #{t}
           </Tag>
         ))}

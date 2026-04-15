@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils";
-import { Tag, type TagVariant } from "./Tag";
+import { tagColor } from "@/lib/tagColor";
+import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Icon } from "./Icon";
 
 interface BlogPostCardProps {
-  tags: TagVariant[];
+  tags: string[];
   timestamp: string;
   readTime: string;
   title: string;
@@ -13,24 +14,6 @@ interface BlogPostCardProps {
   engagement?: { replies?: number; likes?: number };
   className?: string;
 }
-
-const STRIPE: Record<TagVariant, string> = {
-  ai: "bg-tag-ai",
-  building: "bg-tag-building",
-  design: "bg-tag-design",
-  thinking: "bg-tag-thinking",
-  code: "bg-tag-code",
-  reading: "bg-tag-reading",
-};
-
-const LIKE_HOVER: Record<TagVariant, string> = {
-  ai: "group-hover:text-tag-ai",
-  building: "group-hover:text-tag-building",
-  design: "group-hover:text-tag-design",
-  thinking: "group-hover:text-tag-thinking",
-  code: "group-hover:text-tag-code",
-  reading: "group-hover:text-tag-reading",
-};
 
 export function BlogPostCard({
   tags,
@@ -42,29 +25,27 @@ export function BlogPostCard({
   engagement = {},
   className,
 }: BlogPostCardProps) {
-  const stripeColor = STRIPE[tags[0] ?? "building"];
-  const likeHover = LIKE_HOVER[tags[0] ?? "design"];
+  const primaryTag = tags[0] ?? "building";
+  const stripeColor = tagColor(primaryTag);
 
   return (
     <a
       href={href}
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-7 no-underline transition-colors duration-200",
-        "hover:bg-elevated hover:border-[#2e2e32]",
+        "hover:bg-elevated hover:border-border-hover",
         className,
       )}
     >
       <span
         aria-hidden="true"
-        className={cn(
-          "absolute top-0 left-0 h-full w-[3px] rounded-l-card opacity-0 transition-opacity duration-200 group-hover:opacity-100",
-          stripeColor,
-        )}
+        className="absolute top-0 left-0 h-full w-[3px] rounded-l-card opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={{ backgroundColor: stripeColor }}
       />
 
       <div className="flex items-center gap-2">
         {tags.map((t) => (
-          <Tag key={t} variant={t}>
+          <Tag key={t} name={t}>
             #{t}
           </Tag>
         ))}
@@ -77,7 +58,7 @@ export function BlogPostCard({
         {title}
       </h3>
 
-      <p className="font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-[#bfb8ae]">
+      <p className="font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body">
         {excerpt}
       </p>
 
@@ -92,17 +73,7 @@ export function BlogPostCard({
             </span>
           ) : null}
           {engagement.likes !== undefined ? (
-            <span
-              className={cn(
-                "flex items-center gap-1.5 transition-colors duration-200",
-                likeHover,
-              )}
-            >
-              <Icon name="like" size={14} />
-              <span className="font-mono text-[11px] leading-[14px]">
-                {engagement.likes}
-              </span>
-            </span>
+            <LikeIndicator count={engagement.likes} tagName={primaryTag} />
           ) : null}
           <Icon name="bookmark" size={14} />
         </div>
@@ -119,5 +90,20 @@ export function BlogPostCard({
         </div>
       </div>
     </a>
+  );
+}
+
+function LikeIndicator({ count, tagName }: { count: number; tagName: string }) {
+  // Hover color comes from the hash — can't use a static utility class, so
+  // swap via CSS custom property at the group level.
+  const color = tagColor(tagName);
+  return (
+    <span
+      className="flex items-center gap-1.5 transition-colors duration-200 group-hover:[color:var(--like-hover)]"
+      style={{ "--like-hover": color } as React.CSSProperties}
+    >
+      <Icon name="like" size={14} />
+      <span className="font-mono text-[11px] leading-[14px]">{count}</span>
+    </span>
   );
 }
