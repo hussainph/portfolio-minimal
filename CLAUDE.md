@@ -4,98 +4,59 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Minimalist portfolio website built as an AI chat interface with generative UI. The entire experience is a single chat stream — no traditional page layouts. The AI can tool-call pre-made UI components (genUI engine) to render rich portfolio content inline within the conversation.
+Personal MDX-based blog — a Twitter + Substack hybrid. Single-column reverse-chronological feed mixing three primitives: short-form **notes**, long-form **blog posts**, and project **showcases**. Header with subtle ambient glow, hashtag filter chips, then the stream.
 
 ## Commands
 
 ```bash
 bun install              # Install dependencies
-bun run dev              # Start dev server (default: localhost:3000)
+bun run dev              # Start dev server (localhost:3000)
 bun run build            # Build for production
 bun run start            # Start production server
-bun run lint             # Run ESLint checks
+bun run lint             # ESLint
 ```
 
 ## Tech Stack
 
-- **Framework:** Next.js (App Router) with strict TypeScript
+- **Framework:** Next.js 16 (App Router) with strict TypeScript
 - **Package manager:** Bun
+- **Styling:** Tailwind CSS v4 (CSS-first via `@theme`)
 - **Animation:** Framer Motion
-- **Styling:** Tailwind CSS v4
-- **AI:** Anthropic Claude API (raw SDK, no LangChain/Vercel AI SDK)
-- **Fonts:** Manrope (human text), Space Mono (AI text) — loaded via `next/font/google`
+- **Fonts:** Instrument Serif (display + post titles + pull quotes), DM Sans (body + UI), JetBrains Mono (tags + timestamps + code) — all via `next/font/google`
+
+MDX (`@next/mdx`) is planned but not wired up yet — content will live as `.mdx` files mapped through `mdx-components.tsx` to the design-system primitives.
+
+## Design System
+
+The Dark Warmth design system is the source of truth for all visual decisions. **Always read [.claude/docs/01-design-system.md](.claude/docs/01-design-system.md) before making styling decisions.** Pinned reference: Paper file [Component Library v4](https://app.paper.design/file/01KP2D4WXCKYD9AQGXGMJZKGPK/1-0/2TN-0).
+
+Tokens live in [src/app/globals.css](src/app/globals.css) under `@theme`. Component implementations live in [src/components/ui/](src/components/ui/). Visual specimen page at `/ui-test` (dev only).
 
 ## Architecture
 
-### Chat Stream Model
-
-The app is a single full-screen chat stream. There are no chat bubbles or boxes — messages render as plain text lines separated by subtle gradient dividers. Each message row has a small (36x36) gradient orb indicator:
-
-- **AI orb:** Bluish-green gradient, subtle color shifting animation
-- **Human orb:** Reddish-orange gradient, subtle color shifting animation
-
-The text input has no visible textbox — only a minimal signifier (blinking cursor) indicates where the user types.
-
-### GenUI Engine
-
-The AI doesn't just return text — it can tool-call pre-made React components that render inline in the chat stream. This is the core differentiator: portfolio content (projects, skills, experience, etc.) appears as rich generative UI within the conversation.
-
-Key pieces:
-- **Component registry:** Maps component names to React components so the AI can reference them by string ID
-- **Tool definitions:** Anthropic tool-use format definitions that tell Claude which UI components it can invoke and what props they accept
-- **Stream renderer:** Parses the AI response stream, detects tool-use blocks, and renders the corresponding React component inline with the chat message
-
 ### Route Structure
 
-Next.js App Router file-based routing. The app is essentially a single-page experience:
-- `src/app/page.tsx` — Main chat interface
-- `src/app/api/chat/route.ts` — Chat API endpoint that proxies to Anthropic
+- `src/app/page.tsx` — Home (the feed)
+- `src/app/(dev)/ui-test/page.tsx` — Component library specimen, dev-only (404s in production)
+- `src/app/api/chat/route.ts` — Stub, currently unused
 
 ### Key Directories
 
-- `src/components/chat/` — Chat stream, message rows, orbs, input area
-- `src/components/genui/` — Pre-made genUI components (project cards, skill displays, etc.)
-- `src/engine/` — GenUI engine: component registry, tool definitions, stream parsing
-- `src/stores/` — State management for chat state, message history
-- `src/types/` — Shared TypeScript types for messages, tools, components
+- `src/components/ui/` — Design-system primitives (Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, BottomToolbar, Icon, Meta, Label, Separator)
+- `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
 
 ### Import Alias
 
-Use `@/` to import from the `src/` directory (configured in `tsconfig.json`):
+Use `@/` to import from `src/`:
 ```ts
-import { Something } from "@/components/chat/Something";
+import { NoteCard } from "@/components/ui/NoteCard";
 ```
-
-## Design Principles
-
-- **Pure minimalism.** Every element must earn its place. Default to removing, not adding.
-- **Swiss design aesthetic.** Strong typography hierarchy, intentional whitespace, grid-aware layouts.
-- **Animation with purpose.** Use Framer Motion for meaningful transitions — entrances, state changes, attention. No decorative animation.
-- **Two-font system.** Manrope (or similar modern sans-serif) for human text. Space Mono for all AI-generated text. No mixing.
-- **Muted palette.** Near-black backgrounds, off-white text, color only in the orbs and subtle gradients.
 
 ## Animation Approach
 
-All animations use Framer Motion. Use the `/interface-craft` skill for:
-- Designing storyboard animations (stage-driven sequencing DSL)
-- Tuning animation values with DialKit (live control panels)
-- Design critique and audit of UI polish
+All animations use Framer Motion. Use the `/interface-craft` skill for storyboard animations (stage DSL), live-tuning with DialKit, and polish audits.
 
-Common animation patterns:
-- Message entrance: fade-up with subtle spring
-- Orb idle: continuous gradient shift between two colors (CSS or motion values)
-- GenUI component mount: orchestrated stagger entrance
-- Typing indicator: pulsing opacity on cursor
-
-## AI Integration
-
-Direct Anthropic SDK usage (`@anthropic-ai/sdk`). The chat endpoint:
-1. Receives message history from the client
-2. Sends to Claude with tool definitions for all registered genUI components
-3. Streams the response back using SSE
-4. Client-side parser handles `text` blocks (rendered as chat text) and `tool_use` blocks (rendered as genUI components)
-
-The system prompt should instruct Claude to act as the portfolio owner and use genUI tools to showcase work when relevant.
+The bottom toolbar uses a spring (`stiffness: 260, damping: 22, mass: 1`) and respects `prefers-reduced-motion` (falls back to a simple fade).
 
 ## Git Conventions
 
@@ -103,7 +64,10 @@ The system prompt should instruct Claude to act as the portfolio owner and use g
 
 ## TypeScript Conventions
 
-- Strict mode enabled in `tsconfig.json`
+- Strict mode enabled
 - Prefer `interface` over `type` for object shapes
-- All genUI component props must have explicit interfaces
-- Tool definitions should be typed to match their component prop interfaces
+- All component props have explicit interfaces
+
+## Voice
+
+All copy uses the `hussain-voice` skill. Tentative conclusions, spiral structure, hedging as voice, self-aware asides, casual profanity as texture. Never sounds like LinkedIn.
