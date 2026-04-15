@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { assertNever } from "@/lib/assertNever";
 import { cn } from "@/lib/utils";
 import { getItemBySlug } from "@/lib/content";
 import type { ContentItem } from "@/lib/content";
@@ -25,6 +26,8 @@ function routeFor(item: ContentItem): string {
       return `/showcases/${item.frontmatter.slug}`;
     case "project":
       return `/projects/${item.frontmatter.slug}`;
+    default:
+      return assertNever(item);
   }
 }
 
@@ -49,30 +52,36 @@ function defaultLabel(item: ContentItem): string {
  * full preview when it commits to opening a card.
  */
 function previewTitleFor(item: ContentItem): string {
-  if (item.kind === "post" || item.kind === "project") {
-    return item.frontmatter.title;
-  }
-  if (item.kind === "showcase") {
-    const authored = item.frontmatter.title?.trim();
-    if (authored) return authored;
-    const isMulti =
-      item.frontmatter.variant === "bento" ||
-      item.frontmatter.variant === "grid";
-    if (isMulti) {
-      const picked = item.frontmatter.images.find((img) => img.picked === true);
-      if (picked?.caption) return picked.caption;
+  switch (item.kind) {
+    case "post":
+    case "project":
+      return item.frontmatter.title;
+    case "showcase": {
+      const authored = item.frontmatter.title?.trim();
+      if (authored) return authored;
+      const isMulti =
+        item.frontmatter.variant === "bento" ||
+        item.frontmatter.variant === "grid";
+      if (isMulti) {
+        const picked = item.frontmatter.images.find((img) => img.picked === true);
+        if (picked?.caption) return picked.caption;
+      }
+      return item.frontmatter.images[0]?.caption ?? item.frontmatter.slug;
     }
-    return item.frontmatter.images[0]?.caption ?? item.frontmatter.slug;
+    case "note": {
+      // Prefer authored title, then the first non-empty body line so refs to
+      // title-less notes still surface a meaningful preview headline.
+      const authored = item.frontmatter.title?.trim();
+      if (authored) return authored;
+      const firstBodyLine = item.raw
+        .split(/\n/)
+        .map((l) => l.trim())
+        .find((l) => l.length > 0);
+      return firstBodyLine || item.frontmatter.slug;
+    }
+    default:
+      return assertNever(item);
   }
-  // note: prefer authored title, then the first non-empty body line so refs
-  // to title-less notes still surface a meaningful preview headline.
-  const authored = item.frontmatter.title?.trim();
-  if (authored) return authored;
-  const firstBodyLine = item.raw
-    .split(/\n/)
-    .map((l) => l.trim())
-    .find((l) => l.length > 0);
-  return firstBodyLine || item.frontmatter.slug;
 }
 
 function clip(value: string, max: number): string {

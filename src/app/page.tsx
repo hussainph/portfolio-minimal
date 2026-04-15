@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { FeedList } from "@/components/feed/FeedList";
 import { BottomToolbar } from "@/components/ui/BottomToolbar";
 import { FilterChipRow } from "@/components/ui/FilterChipRow";
@@ -16,6 +17,7 @@ interface HomeProps {
 export default async function Home({ searchParams }: HomeProps) {
   const [index, { tag }] = await Promise.all([loadAll(), searchParams]);
   const activeTag = typeof tag === "string" ? tag : undefined;
+  if (activeTag && !index.byTag.has(activeTag)) notFound();
   // Deterministic alphabetical order so chip layout is stable across requests.
   const tagPool = Array.from(index.byTag.keys()).sort();
 

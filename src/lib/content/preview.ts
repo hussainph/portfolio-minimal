@@ -1,4 +1,5 @@
 import "server-only";
+import { assertNever } from "@/lib/assertNever";
 import { getItemBySlug } from "./loader";
 import { deriveExcerpt } from "./derive";
 import type { ContentItem } from "./types";
@@ -51,6 +52,8 @@ function hrefFor(item: ContentItem): string {
       return `/showcases/${item.frontmatter.slug}`;
     case "project":
       return `/projects/${item.frontmatter.slug}`;
+    default:
+      return assertNever(item);
   }
 }
 
@@ -79,6 +82,8 @@ function previewTitle(item: ContentItem): string {
       }
       return item.frontmatter.images[0]?.caption ?? item.frontmatter.slug;
     }
+    default:
+      return assertNever(item);
   }
 }
 
@@ -96,6 +101,8 @@ function previewExcerpt(item: ContentItem): string {
       return deriveExcerpt(item.raw, 160);
     case "project":
       return item.frontmatter.subtitle;
+    default:
+      return assertNever(item);
   }
 }
 

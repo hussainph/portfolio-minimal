@@ -23,6 +23,24 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
   };
 }
 
+const INTERNAL_HOSTS = new Set([
+  "phalasiya.dev",
+  "www.phalasiya.dev",
+  "localhost",
+]);
+
+function isExternalHref(href: string | undefined): boolean {
+  if (!href) return false;
+  if (!/^https?:\/\//i.test(href)) return false;
+  try {
+    const { hostname } = new URL(href);
+    if (INTERNAL_HOSTS.has(hostname)) return false;
+    return !hostname.endsWith(".phalasiya.dev");
+  } catch {
+    return false;
+  }
+}
+
 export const sharedComponents: MDXComponents = {
   h1: (props: ComponentPropsWithoutRef<"h1">) => (
     <h1
@@ -75,9 +93,7 @@ export const sharedComponents: MDXComponents = {
     </blockquote>
   ),
   a: ({ href, children, ...rest }: ComponentPropsWithoutRef<"a">) => {
-    const isExternal = Boolean(
-      href && /^https?:\/\//.test(href) && !href.includes("phalasiya"),
-    );
+    const isExternal = isExternalHref(href);
     return (
       <TextLink href={href ?? "#"} external={isExternal} {...rest}>
         {children}
