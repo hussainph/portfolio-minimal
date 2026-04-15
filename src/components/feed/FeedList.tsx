@@ -111,6 +111,7 @@ function ShowcaseRow({ item }: { item: ShowcaseItem }) {
   if (frontmatter.variant === "bento" && cardImages.length === 3) {
     return (
       <BentoShowcase
+        href={`/showcases/${frontmatter.slug}`}
         tags={frontmatter.tags}
         timestamp={formatFeedTimestamp(frontmatter.published)}
         body={body}
@@ -124,6 +125,7 @@ function ShowcaseRow({ item }: { item: ShowcaseItem }) {
 
   return (
     <ShowcaseCard
+      href={`/showcases/${frontmatter.slug}`}
       tags={frontmatter.tags}
       timestamp={formatFeedTimestamp(frontmatter.published)}
       body={body}
