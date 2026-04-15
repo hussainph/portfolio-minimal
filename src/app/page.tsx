@@ -1,5 +1,6 @@
 import { FeedList } from "@/components/feed/FeedList";
 import { BottomToolbar } from "@/components/ui/BottomToolbar";
+import { FilterChipRow } from "@/components/ui/FilterChipRow";
 import { loadAll } from "@/lib/content";
 
 const SOCIAL_LINKS = [
@@ -8,14 +9,22 @@ const SOCIAL_LINKS = [
   { label: "email", href: "mailto:hussain@phalasiya.dev" },
 ];
 
-export default async function Home() {
-  const index = await loadAll();
+interface HomeProps {
+  searchParams: Promise<{ tag?: string | string[] }>;
+}
+
+export default async function Home({ searchParams }: HomeProps) {
+  const [index, { tag }] = await Promise.all([loadAll(), searchParams]);
+  const activeTag = typeof tag === "string" ? tag : undefined;
+  // Deterministic alphabetical order so chip layout is stable across requests.
+  const tagPool = Array.from(index.byTag.keys()).sort();
 
   return (
     <main className="min-h-screen bg-background text-text">
       <div className="mx-auto flex max-w-[720px] flex-col gap-14 px-12 pt-16 pb-48">
         <Header />
-        <FeedList items={index.items} />
+        <FilterChipRow tags={tagPool} />
+        <FeedList items={index.items} activeTag={activeTag} />
       </div>
       <BottomToolbar activeTab="stream" />
     </main>

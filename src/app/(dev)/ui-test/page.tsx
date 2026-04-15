@@ -82,6 +82,14 @@ export default function UITestPage() {
         >
           <ToolbarSection />
         </Section>
+
+        <Section
+          number="08"
+          title="Tag filter bar"
+          subtitle="sticks above the feed · URL-driven · click the active chip to clear"
+        >
+          <FilterChipRowSection />
+        </Section>
       </div>
 
       {/* The toolbar lives here — fixed, visibility hook driven. */}
@@ -584,6 +592,39 @@ function ToolbarSection() {
         <li>backdrop-filter · blur 24px · bg #14141699</li>
         <li>auto-hide · 3000ms idle · scroll &gt; 200px</li>
         <li>prefers-reduced-motion · simple fade, no spring</li>
+      </ul>
+    </div>
+  );
+}
+
+function FilterChipRowSection() {
+  return (
+    <div className="flex flex-col gap-4">
+      {/*
+        The page-level FilterChipRow at the top is a real instance with the
+        full sticky behavior. This specimen is a contained copy — overflow on
+        the wrapper makes it the scroll/sticky context, so the chip row pins
+        to the section, not the viewport, while you read.
+      */}
+      <div className="relative max-h-[160px] overflow-y-auto rounded-card border border-border bg-sunken px-12 py-4">
+        <FilterChipRow tags={FILTER_TAG_POOL} />
+        <p className="mt-4 max-w-[520px] font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-body">
+          Scroll inside this frame to see the chip row stay pinned to the top
+          while the prose underneath moves. On the real home page the row
+          uses the page itself as the scroll context and a backdrop blur
+          softens whatever passes underneath.
+        </p>
+        <p className="mt-3 max-w-[520px] font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-body">
+          Each chip is a real <code className="font-mono text-[13px] text-text">{`<Link>`}</code> to{" "}
+          <code className="font-mono text-[13px] text-text">{`?tag={name}`}</code> — clicking
+          updates the URL and the server re-renders the filtered feed. Click
+          the active chip to drop the filter.
+        </p>
+      </div>
+      <ul className="flex max-w-[600px] flex-col gap-1.5 font-mono text-[11px] leading-[18px] tracking-[0.04em] text-faint">
+        <li>position · sticky top-0 z-20 · negative gutter to bleed full-width</li>
+        <li>state · useSearchParams (Suspense-wrapped) reads ?tag</li>
+        <li>active chip · href falls back to pathname so the click clears the filter</li>
       </ul>
     </div>
   );
