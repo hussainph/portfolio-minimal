@@ -6,7 +6,9 @@ import { tagColor } from "@/lib/tagColor";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Icon } from "./Icon";
+import { StatusChip } from "./StatusChip";
 import type { ShowcaseImage } from "./ShowcaseCard";
+import type { PostStatus } from "./types";
 
 interface BentoShowcaseProps {
   tags: string[];
@@ -15,6 +17,7 @@ interface BentoShowcaseProps {
   /** Exactly three tiles — a picked featured tile + two stacked alternates. */
   images: [ShowcaseImage, ShowcaseImage, ShowcaseImage];
   engagement?: { replies?: number; likes?: number };
+  status?: PostStatus;
   className?: string;
 }
 
@@ -57,6 +60,7 @@ export function BentoShowcase({
   body,
   images,
   engagement = {},
+  status = "shipped",
   className,
 }: BentoShowcaseProps) {
   const router = useRouter();
@@ -74,6 +78,7 @@ export function BentoShowcase({
     <div
       className={cn(
         "relative flex max-w-[600px] flex-col gap-3.5 rounded-panel border border-[#1a1a1d] bg-sunken p-5",
+        status === "thinking" && "border-dashed",
         className,
       )}
     >
@@ -83,14 +88,25 @@ export function BentoShowcase({
             #{t}
           </Tag>
         ))}
+        <StatusChip status={status} />
         <Meta>· {timestamp}</Meta>
       </div>
 
-      <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-[#e8e1d4]">
+      <p
+        className={cn(
+          "font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-[#e8e1d4]",
+          status === "parked" && "opacity-70",
+        )}
+      >
         {body}
       </p>
 
-      <div className="flex h-[280px] gap-2">
+      <div
+        className={cn(
+          "flex h-[280px] gap-2",
+          status === "parked" && "opacity-70",
+        )}
+      >
         <FeaturedTile image={featured} accentColor={accentColor} />
         <div className="flex grow flex-col gap-2">
           {alts.map((image, idx) => (
@@ -99,7 +115,12 @@ export function BentoShowcase({
         </div>
       </div>
 
-      <div className="flex items-center gap-[18px] pt-0.5 text-faint">
+      <div
+        className={cn(
+          "flex items-center gap-[18px] pt-0.5 text-faint",
+          status === "parked" && "opacity-70",
+        )}
+      >
         {engagement.replies !== undefined ? (
           <span className="flex items-center gap-1">
             <span className="font-mono text-[11px] leading-[14px]">↩</span>

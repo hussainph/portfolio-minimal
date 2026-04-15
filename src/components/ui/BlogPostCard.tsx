@@ -6,6 +6,8 @@ import { tagColor } from "@/lib/tagColor";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Icon } from "./Icon";
+import { StatusChip } from "./StatusChip";
+import type { PostStatus } from "./types";
 
 interface BlogPostCardProps {
   tags: string[];
@@ -15,6 +17,7 @@ interface BlogPostCardProps {
   excerpt: string;
   href?: string;
   engagement?: { replies?: number; likes?: number };
+  status?: PostStatus;
   className?: string;
 }
 
@@ -26,6 +29,7 @@ export function BlogPostCard({
   excerpt,
   href = "#",
   engagement = {},
+  status = "shipped",
   className,
 }: BlogPostCardProps) {
   const router = useRouter();
@@ -40,6 +44,7 @@ export function BlogPostCard({
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-7 no-underline transition-colors duration-200",
         "hover:bg-elevated hover:border-border-hover",
+        status === "thinking" && "border-dashed",
         className,
       )}
     >
@@ -55,20 +60,36 @@ export function BlogPostCard({
             #{t}
           </Tag>
         ))}
+        <StatusChip status={status} />
         <Meta>
           · {timestamp} · {readTime}
         </Meta>
       </div>
 
-      <h3 className="font-serif text-[28px] leading-[34px] tracking-[-0.015em] text-text">
+      <h3
+        className={cn(
+          "font-serif text-[28px] leading-[34px] tracking-[-0.015em] text-text",
+          status === "parked" && "opacity-70",
+        )}
+      >
         {title}
       </h3>
 
-      <p className="font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body">
+      <p
+        className={cn(
+          "font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body",
+          status === "parked" && "opacity-70",
+        )}
+      >
         {excerpt}
       </p>
 
-      <div className="mt-1 flex items-center justify-between">
+      <div
+        className={cn(
+          "mt-1 flex items-center justify-between",
+          status === "parked" && "opacity-70",
+        )}
+      >
         <div className="flex items-center gap-[18px] text-faint transition-colors duration-200 group-hover:text-muted">
           {engagement.replies !== undefined ? (
             <span className="flex items-center gap-1.5">

@@ -7,6 +7,8 @@ import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Label } from "./Label";
 import { Icon } from "./Icon";
+import { StatusChip } from "./StatusChip";
+import type { PostStatus } from "./types";
 
 export interface ShowcaseImage {
   /** Bottom-right (single) or bottom-left (multi) caption inside the tile. */
@@ -23,6 +25,7 @@ interface ShowcaseCardProps {
   body: string;
   images: ShowcaseImage[];
   engagement?: { replies?: number; likes?: number };
+  status?: PostStatus;
   className?: string;
 }
 
@@ -46,6 +49,7 @@ export function ShowcaseCard({
   body,
   images,
   engagement = {},
+  status = "shipped",
   className,
 }: ShowcaseCardProps) {
   const router = useRouter();
@@ -57,6 +61,7 @@ export function ShowcaseCard({
     <div
       className={cn(
         "relative flex max-w-[600px] flex-col gap-3.5 rounded-card border border-border bg-surface p-5",
+        status === "thinking" && "border-dashed",
         className,
       )}
     >
@@ -66,20 +71,33 @@ export function ShowcaseCard({
             #{t}
           </Tag>
         ))}
+        <StatusChip status={status} />
         <Meta>· {timestamp}</Meta>
       </div>
 
-      <p className="font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-text">
+      <p
+        className={cn(
+          "font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-text",
+          status === "parked" && "opacity-70",
+        )}
+      >
         {body}
       </p>
 
-      {images.length === 1 ? (
-        <SingleTile image={images[0]!} />
-      ) : (
-        <EqualTiles images={images} primaryTag={primaryTag} />
-      )}
+      <div className={cn(status === "parked" && "opacity-70")}>
+        {images.length === 1 ? (
+          <SingleTile image={images[0]!} />
+        ) : (
+          <EqualTiles images={images} primaryTag={primaryTag} />
+        )}
+      </div>
 
-      <div className="flex items-center gap-5 text-faint">
+      <div
+        className={cn(
+          "flex items-center gap-5 text-faint",
+          status === "parked" && "opacity-70",
+        )}
+      >
         {engagement.replies !== undefined ? (
           <span className="flex items-center gap-1.5">
             <Icon name="reply" />
