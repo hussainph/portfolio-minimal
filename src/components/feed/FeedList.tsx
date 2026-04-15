@@ -46,6 +46,16 @@ export function FeedList({ items, activeTag }: FeedListProps) {
     ? items.filter((item) => item.frontmatter.tags.includes(activeTag))
     : items;
 
+  if (filtered.length === 0) {
+    return (
+      <div className="py-16 text-center font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
+        {activeTag
+          ? `Nothing tagged #${activeTag} yet.`
+          : "Nothing here yet — check back soon."}
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col">
       {filtered.map((item, idx) => (

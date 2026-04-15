@@ -101,8 +101,20 @@ function validate(raw: RawEntry): Frontmatter {
   }
 }
 
+async function compileBody(raw: RawEntry) {
+  try {
+    return await renderMDXBody(raw.body);
+  } catch (err) {
+    throw new Error(
+      `Failed to compile MDX in ${raw.relPath}:\n${
+        err instanceof Error ? err.message : String(err)
+      }`,
+    );
+  }
+}
+
 async function buildFeedItem(raw: RawEntry, fm: FeedFrontmatter): Promise<FeedItem> {
-  const content = await renderMDXBody(raw.body);
+  const content = await compileBody(raw);
   const readingTimeMinutes = computeReadingTimeMinutes(raw.body);
 
   if (fm.type === "note") {
@@ -143,7 +155,7 @@ async function buildFeedItem(raw: RawEntry, fm: FeedFrontmatter): Promise<FeedIt
 }
 
 async function buildProjectItem(raw: RawEntry, fm: ProjectFrontmatter): Promise<ProjectItem> {
-  const content = await renderMDXBody(raw.body);
+  const content = await compileBody(raw);
   const readingTimeMinutes = computeReadingTimeMinutes(raw.body);
   return {
     kind: "project",
