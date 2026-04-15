@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
+import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Icon } from "./Icon";
-import { StatusChip } from "./StatusChip";
-import type { PostStatus } from "./types";
 
 interface BlogPostCardProps {
   tags: string[];
@@ -18,7 +16,6 @@ interface BlogPostCardProps {
   excerpt: string;
   href?: string;
   engagement?: { replies?: number; likes?: number };
-  status?: PostStatus;
   className?: string;
 }
 
@@ -30,28 +27,24 @@ export function BlogPostCard({
   excerpt,
   href = "#",
   engagement = {},
-  status = "shipped",
   className,
 }: BlogPostCardProps) {
-  const router = useRouter();
   const primaryTag = tags[0] ?? "building";
-  const stripeColor = tagColor(primaryTag);
-  const onFilterClick = (name: string) =>
-    router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
+  const onFilterClick = useTagFilterToggle();
+  const stripeStyle = buildStripeStyle(tags);
 
   return (
     <article
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-7 transition-colors duration-200",
         "hover:bg-surface-hover hover:border-border-hover",
-        status === "thinking" && "border-dashed",
         className,
       )}
     >
       <span
         aria-hidden="true"
         className="absolute top-0 left-0 h-full w-[3px] rounded-l-card opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-        style={{ backgroundColor: stripeColor }}
+        style={stripeStyle}
       />
 
       <div className="flex items-center gap-2">
@@ -66,18 +59,12 @@ export function BlogPostCard({
             #{t}
           </Tag>
         ))}
-        <StatusChip status={status} />
         <Meta>
           · {timestamp} · {readTime}
         </Meta>
       </div>
 
-      <h3
-        className={cn(
-          "font-serif text-[28px] leading-[34px] tracking-[-0.015em] text-text",
-          status === "parked" && "opacity-70",
-        )}
-      >
+      <h3 className="font-serif text-[28px] leading-[34px] tracking-[-0.015em] text-text">
         <Link
           href={href}
           className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
@@ -86,21 +73,11 @@ export function BlogPostCard({
         </Link>
       </h3>
 
-      <p
-        className={cn(
-          "font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body",
-          status === "parked" && "opacity-70",
-        )}
-      >
+      <p className="font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body">
         {excerpt}
       </p>
 
-      <div
-        className={cn(
-          "mt-1 flex items-center justify-between",
-          status === "parked" && "opacity-70",
-        )}
-      >
+      <div className="mt-1 flex items-center justify-between">
         <div className="flex items-center gap-[18px] text-faint transition-colors duration-200 group-hover:text-muted">
           {engagement.replies !== undefined ? (
             <span className="flex items-center gap-1.5">
@@ -129,6 +106,27 @@ export function BlogPostCard({
       </div>
     </article>
   );
+}
+
+/**
+ * Stripe is a simple solid color for single-tag cards; for multi-tag cards it
+ * becomes a slightly-tilted gradient that cycles through every tag's hue and
+ * loops back to the first color (so the animation hand-off is seamless). The
+ * 4s linear loop is fast enough to notice on hover, slow enough to stay out
+ * of the way while reading the card.
+ */
+function buildStripeStyle(tags: string[]): React.CSSProperties {
+  if (tags.length <= 1) {
+    return { backgroundColor: tagColor(tags[0] ?? "building") };
+  }
+  const ordered = [...tags, tags[0]!];
+  const stops = ordered.map((t) => tagColor(t)).join(", ");
+  return {
+    backgroundImage: `linear-gradient(172deg, ${stops})`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "repeat-y",
+    animation: "stripe-cycle 4s linear infinite",
+  };
 }
 
 function LikeIndicator({ count, tagName }: { count: number; tagName: string }) {

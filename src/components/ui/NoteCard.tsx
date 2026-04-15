@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
+import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Icon } from "./Icon";
-import { StatusChip } from "./StatusChip";
-import type { PostStatus } from "./types";
 
 interface NoteCardProps {
   tags: string[];
@@ -16,7 +14,6 @@ interface NoteCardProps {
   body: string;
   href?: string;
   engagement?: { replies?: number; likes?: number };
-  status?: PostStatus;
   className?: string;
 }
 
@@ -26,20 +23,16 @@ export function NoteCard({
   body,
   href = "#",
   engagement = {},
-  status = "shipped",
   className,
 }: NoteCardProps) {
-  const router = useRouter();
   const stripeColor = tagColor(tags[0] ?? "building");
-  const onFilterClick = (name: string) =>
-    router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
+  const onFilterClick = useTagFilterToggle();
 
   return (
     <article
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3 rounded-card border bg-surface border-border pt-5 pb-4 px-5 transition-colors duration-200",
         "hover:bg-surface-hover hover:border-border-hover",
-        status === "thinking" && "border-dashed",
         className,
       )}
     >
@@ -61,7 +54,6 @@ export function NoteCard({
             #{t}
           </Tag>
         ))}
-        <StatusChip status={status} />
         <Link
           href={href}
           className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
@@ -70,21 +62,11 @@ export function NoteCard({
         </Link>
       </div>
 
-      <p
-        className={cn(
-          "font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-text",
-          status === "parked" && "opacity-70",
-        )}
-      >
+      <p className="font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-text">
         {body}
       </p>
 
-      <div
-        className={cn(
-          "mt-1 flex items-center gap-5 text-faint transition-colors duration-200 group-hover:text-muted",
-          status === "parked" && "opacity-70",
-        )}
-      >
+      <div className="mt-1 flex items-center gap-5 text-faint transition-colors duration-200 group-hover:text-muted">
         {engagement.replies !== undefined ? (
           <span className="flex items-center gap-1.5">
             <Icon name="reply" />

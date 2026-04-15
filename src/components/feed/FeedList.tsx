@@ -31,8 +31,8 @@ import {
 
 interface FeedListProps {
   items: FeedItem[];
-  /** When present, only renders items carrying this tag. */
-  activeTag?: string;
+  /** AND-filter: rendered items must carry every listed tag. Empty = no filter. */
+  activeTags?: string[];
 }
 
 /**
@@ -41,16 +41,19 @@ interface FeedListProps {
  * siblings. The switch uses `assertNever` in the default branch so that
  * adding a new content kind later triggers a compile error here.
  */
-export function FeedList({ items, activeTag }: FeedListProps) {
-  const filtered = activeTag
-    ? items.filter((item) => item.frontmatter.tags.includes(activeTag))
-    : items;
+export function FeedList({ items, activeTags = [] }: FeedListProps) {
+  const filtered =
+    activeTags.length === 0
+      ? items
+      : items.filter((item) =>
+          activeTags.every((t) => item.frontmatter.tags.includes(t)),
+        );
 
   if (filtered.length === 0) {
     return (
       <div className="py-16 text-center font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
-        {activeTag
-          ? `Nothing tagged #${activeTag} yet.`
+        {activeTags.length > 0
+          ? `Nothing tagged ${activeTags.map((t) => `#${t}`).join(" + ")} yet.`
           : "Nothing here yet — check back soon."}
       </div>
     );

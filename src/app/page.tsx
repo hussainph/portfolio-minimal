@@ -3,6 +3,7 @@ import { FeedList } from "@/components/feed/FeedList";
 import { BottomToolbar } from "@/components/ui/BottomToolbar";
 import { FilterChipRow } from "@/components/ui/FilterChipRow";
 import { loadAll } from "@/lib/content";
+import { parseTagSearchParams } from "@/lib/tagParams";
 
 const SOCIAL_LINKS = [
   { label: "github / hphalasiya", href: "https://github.com/hphalasiya" },
@@ -11,13 +12,14 @@ const SOCIAL_LINKS = [
 ];
 
 interface HomeProps {
-  searchParams: Promise<{ tag?: string | string[] }>;
+  searchParams: Promise<{ tags?: string | string[]; tag?: string | string[] }>;
 }
 
 export default async function Home({ searchParams }: HomeProps) {
-  const [index, { tag }] = await Promise.all([loadAll(), searchParams]);
-  const activeTag = typeof tag === "string" ? tag : undefined;
-  if (activeTag && !index.byTag.has(activeTag)) notFound();
+  const [index, raw] = await Promise.all([loadAll(), searchParams]);
+  const activeTags = parseTagSearchParams(raw);
+  const unknown = activeTags.find((t) => !index.byTag.has(t));
+  if (unknown) notFound();
   // Deterministic alphabetical order so chip layout is stable across requests.
   const tagPool = Array.from(index.byTag.keys()).sort();
 
@@ -26,7 +28,7 @@ export default async function Home({ searchParams }: HomeProps) {
       <div className="mx-auto flex max-w-[720px] flex-col gap-14 px-12 pt-16 pb-48">
         <Header />
         <FilterChipRow tags={tagPool} />
-        <FeedList items={index.items} activeTag={activeTag} />
+        <FeedList items={index.items} activeTags={activeTags} />
       </div>
       <BottomToolbar activeTab="stream" />
     </main>

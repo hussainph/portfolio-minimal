@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { CodeBlock } from "@/components/mdx/CodeBlock";
 import { Figure } from "@/components/mdx/Figure";
+import { PullQuote } from "@/components/mdx/PullQuote";
 import { Ref } from "@/components/mdx/Ref";
 import { Video } from "@/components/mdx/Video";
 import { ProjectCard } from "@/components/projects/ProjectCard";
@@ -342,16 +343,11 @@ function TypographySection() {
           Progressive delegation as a design pattern
         </div>
       </Specimen>
-      <Specimen label="Pull Quote · Instrument Serif Italic · 24 / 34 · color #BFB4A8">
-        <div
-          className="max-w-[640px] border-l-2 pl-5"
-          style={{ borderColor: tagColor("building") }}
-        >
-          <div className="font-serif italic text-[24px] leading-[34px] tracking-[-0.01em] text-quote">
-            Trust is the bottleneck, not capability. The best AI products build
-            trust ramps, not capability mountains.
-          </div>
-        </div>
+      <Specimen label="Pull Quote · <PullQuote tag='building'> · border auto-tints to the primary-tag hue">
+        <PullQuote tag="building">
+          Trust is the bottleneck, not capability. The best AI products build
+          trust ramps, not capability mountains.
+        </PullQuote>
       </Specimen>
       <Specimen label="Body · DM Sans 400 · 16 / 24 · -3% · color #BFB8AE">
         <p className="max-w-[640px] font-sans text-[16px] leading-[24px] tracking-[-0.03em] text-body">
@@ -425,29 +421,9 @@ function PrimitivesSection() {
         />
       </CardLane>
 
-      <CardLane label="Note card · thinking — dashed outline + chip for work in progress">
-        <NoteCard
-          tags={["ai"]}
-          timestamp="apr 11 · 2:15am"
-          body={`Half-formed thought: maybe the reason agent loops feel fragile isn't the model, it's that we give the agent a goal before it has enough context to know what "done" looks like. Still turning this over.`}
-          engagement={{ replies: 1, likes: 4 }}
-          status="thinking"
-        />
-      </CardLane>
-
-      <CardLane label="Note card · parked — dimmed content + chip for shelved / failures">
-        <NoteCard
-          tags={["code"]}
-          timestamp="mar 29 · archived"
-          body={`Tried building a shared-context layer between two agents using a vector store. Shipped, ran the evals, then realized the cross-agent latency made the whole thing slower than just restating context. Parking this until the latency numbers move.`}
-          engagement={{ replies: 0, likes: 2 }}
-          status="parked"
-        />
-      </CardLane>
-
-      <CardLane label="Blog post card — flat heading, hover to see Read → nudge + color shift">
+      <CardLane label="Blog post card — hover for the tag-color stripe gradient + Read → nudge">
         <BlogPostCard
-          tags={["design", "thinking"]}
+          tags={["design", "thinking", "ai"]}
           timestamp="apr 8"
           readTime="8 min"
           title="The Memory-Trust Paradox: why your AI product can't remember and users won't let it"
@@ -456,15 +432,14 @@ function PrimitivesSection() {
         />
       </CardLane>
 
-      <CardLane label="Blog post card · thinking — status travels across card types">
+      <CardLane label="Blog post card · single tag — stripe stays solid, no gradient">
         <BlogPostCard
           tags={["research"]}
           timestamp="apr 2"
-          readTime="draft · 3 min so far"
+          readTime="4 min"
           title="On why most AI agent benchmarks measure the wrong thing"
-          excerpt="Working on this one. Current draft argues the field has optimized for single-turn success rates when the interesting failure modes are all multi-turn. Need more examples before I ship it."
+          excerpt="The field has optimized for single-turn success rates when the interesting failure modes are all multi-turn. This is a quick tour of what that actually means in practice."
           engagement={{ replies: 6, likes: 11 }}
-          status="thinking"
         />
       </CardLane>
 
@@ -681,16 +656,16 @@ function FilterChipRowSection() {
           softens whatever passes underneath.
         </p>
         <p className="mt-3 max-w-[520px] font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-body">
-          Each chip is a real <code className="font-mono text-[13px] text-text">{`<Link>`}</code> to{" "}
-          <code className="font-mono text-[13px] text-text">{`?tag={name}`}</code> — clicking
-          updates the URL and the server re-renders the filtered feed. Click
-          the active chip to drop the filter.
+          Multi-select: each chip toggles into/out of{" "}
+          <code className="font-mono text-[13px] text-text">{`?tags=a,b,c`}</code> and the
+          server re-renders the feed filtered by AND. Click the last active
+          chip to drop the filter.
         </p>
       </div>
       <ul className="flex max-w-[600px] flex-col gap-1.5 font-mono text-[11px] leading-[18px] tracking-[0.04em] text-faint">
         <li>position · sticky top-0 z-20 · negative gutter to bleed full-width</li>
-        <li>state · useSearchParams (Suspense-wrapped) reads ?tag</li>
-        <li>active chip · href falls back to pathname so the click clears the filter</li>
+        <li>state · useSearchParams (Suspense-wrapped) reads ?tags csv · AND logic</li>
+        <li>toggle · click a chip to add it · click again to remove · empty set clears the query</li>
       </ul>
     </div>
   );
@@ -716,6 +691,22 @@ function MDXPrimitivesSection() {
             A broken slug like{" "}
             <Ref slug="this-doesnt-exist">this one</Ref> renders the
             dev-mode warning state — orange dashed border, fail loudly.
+          </p>
+        </article>
+      </SpecimenBlock>
+
+      <SpecimenBlock
+        label="<PullQuote>"
+        note="italic serif quote · left border auto-colors from the post's first frontmatter tag · override by passing a `tag` prop"
+      >
+        <article className="prose-dark">
+          <PullQuote tag="ai">
+            The model needs context to be useful, but users don&apos;t trust it
+            enough to share it. That&apos;s the loop.
+          </PullQuote>
+          <p className="font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-faint">
+            Inside an MDX body you can drop <code className="font-mono text-[13px] text-text">{`<PullQuote>`}</code> without a tag —
+            the loader binds it to the post&apos;s primary tag automatically.
           </p>
         </article>
       </SpecimenBlock>

@@ -30,7 +30,7 @@ type TagDisplay = TagBase & { as?: "display" };
 
 /**
  * Renders as `<Link>` (next/link). Used by `FilterChipRow` where each
- * chip is a real URL target (`?tag=foo`). `scroll={false}` is baked in so
+ * chip is a real URL target (`?tags=a,b,c`). `scroll={false}` is baked in so
  * applying a filter doesn't jump the page back to the top.
  */
 type TagLink = TagBase & { as: "link"; href: string };
@@ -38,8 +38,8 @@ type TagLink = TagBase & { as: "link"; href: string };
 /**
  * Renders as `<button>`. Used inside feed cards — the card itself is
  * wrapped in an overlay `<Link>`, so nesting another anchor would be
- * invalid HTML. A filter click fires `onClick` (typically
- * `router.replace("?tag=foo", { scroll: false })`).
+ * invalid HTML. A filter click fires `onClick` — typically the shared
+ * `useTagFilterToggle()` handler which toggles the tag in the csv query.
  */
 type TagFilter = TagBase & { as: "filter"; onClick: () => void };
 

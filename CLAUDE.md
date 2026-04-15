@@ -52,11 +52,11 @@ Tokens live in [src/app/globals.css](src/app/globals.css) under `@theme`. Compon
 
 ### Key Directories
 
-- `src/components/ui/` — Design-system primitives (Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, FilterChipRow, StatusChip, PrimaryButton, ProjectHero, BottomToolbar, Icon, Meta, Label, Separator)
+- `src/components/ui/` — Design-system primitives (Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, FilterChipRow, PrimaryButton, ProjectHero, BottomToolbar, Icon, Meta, Label, Separator)
 - `src/components/projects/` — ProjectCard, ProjectChip (smaller and bitesized tiers)
 - `src/components/content/` — Per-route page templates (NotePage, PostPage, ShowcasePage, ProjectPage)
 - `src/components/feed/` — FeedList (renders filtered/sorted items)
-- `src/components/mdx/` — Shared MDX primitives (Ref, Figure, Video, CodeBlock). Available globally in `.mdx` bodies.
+- `src/components/mdx/` — Shared MDX primitives (Ref, Figure, Video, CodeBlock, PullQuote). Available globally in `.mdx` bodies; the loader binds `PullQuote` (and markdown `>` blockquotes) to the post's first tag for hue.
 - `src/components/embeds/` — One-off interactive per-post components (tier-2). Import directly in `.mdx` bodies.
 - `src/lib/content/` — CMS loader: schema (Zod), types, loader (loadAll + React.cache), derive (reading time, excerpt), mdx (compileMDX), preview, index
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)

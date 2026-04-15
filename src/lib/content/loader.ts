@@ -11,6 +11,8 @@ import type {
 } from "./schema";
 import { computeReadingTimeMinutes, deriveExcerpt } from "./derive";
 import { renderMDXBody } from "./mdx";
+import { PullQuote } from "@/components/mdx/PullQuote";
+import { createElement, type ReactNode } from "react";
 import type {
   ContentIndex,
   ContentItem,
@@ -101,9 +103,17 @@ function validate(raw: RawEntry): Frontmatter {
   }
 }
 
-async function compileBody(raw: RawEntry) {
+async function compileBody(raw: RawEntry, primaryTag: string) {
   try {
-    return await renderMDXBody(raw.body);
+    return await renderMDXBody(raw.body, {
+      PullQuote: ({ tag, children }: { tag?: string; children: ReactNode }) =>
+        createElement(PullQuote, { tag: tag ?? primaryTag, children }),
+      // Markdown `> quote` blocks render as tag-tinted PullQuotes too, so a
+      // post's quote styling is the same whether the author wrote markdown
+      // syntax or the explicit <PullQuote> tag.
+      blockquote: ({ children }: { children?: ReactNode }) =>
+        createElement(PullQuote, { tag: primaryTag, children }),
+    });
   } catch (err) {
     throw new Error(
       `Failed to compile MDX in ${raw.relPath}:\n${
@@ -114,7 +124,7 @@ async function compileBody(raw: RawEntry) {
 }
 
 async function buildFeedItem(raw: RawEntry, fm: FeedFrontmatter): Promise<FeedItem> {
-  const content = await compileBody(raw);
+  const content = await compileBody(raw, fm.tags[0] ?? "building");
   const readingTimeMinutes = computeReadingTimeMinutes(raw.body);
 
   if (fm.type === "note") {
@@ -155,7 +165,7 @@ async function buildFeedItem(raw: RawEntry, fm: FeedFrontmatter): Promise<FeedIt
 }
 
 async function buildProjectItem(raw: RawEntry, fm: ProjectFrontmatter): Promise<ProjectItem> {
-  const content = await compileBody(raw);
+  const content = await compileBody(raw, fm.tags[0] ?? "building");
   const readingTimeMinutes = computeReadingTimeMinutes(raw.body);
   return {
     kind: "project",
