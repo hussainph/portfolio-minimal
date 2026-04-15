@@ -107,12 +107,12 @@ async function compileBody(raw: RawEntry, primaryTag: string) {
   try {
     return await renderMDXBody(raw.body, {
       PullQuote: ({ tag, children }: { tag?: string; children: ReactNode }) =>
-        createElement(PullQuote, { tag: tag ?? primaryTag, children }),
+        createElement(PullQuote, { tag: tag ?? primaryTag }, children),
       // Markdown `> quote` blocks render as tag-tinted PullQuotes too, so a
       // post's quote styling is the same whether the author wrote markdown
       // syntax or the explicit <PullQuote> tag.
       blockquote: ({ children }: { children?: ReactNode }) =>
-        createElement(PullQuote, { tag: primaryTag, children }),
+        createElement(PullQuote, { tag: primaryTag }, children),
     });
   } catch (err) {
     throw new Error(

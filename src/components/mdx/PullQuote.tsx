@@ -5,7 +5,7 @@ import { tagColor } from "@/lib/tagColor";
 interface PullQuoteProps {
   /** When set, the left border picks up the tag's hue. Posts auto-bind this to the first frontmatter tag. */
   tag?: string;
-  children: ReactNode;
+  children?: ReactNode;
   className?: string;
 }
 
