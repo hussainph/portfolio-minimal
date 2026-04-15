@@ -3,6 +3,11 @@
 import { Suspense } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import {
+  parseTagsQuery,
+  serializeTagsQuery,
+  toggleTagInList,
+} from "@/lib/tagParams";
 import { Tag } from "./Tag";
 
 interface FilterChipRowProps {
@@ -12,9 +17,10 @@ interface FilterChipRowProps {
 }
 
 /**
- * Sticky row of filter chips pinned above the feed. Each chip is a
- * `<Tag as="link">` that navigates to `?tag={name}`; clicking the active
- * chip links back to the bare pathname, clearing the filter.
+ * Sticky row of filter chips pinned above the feed. Multi-select, AND logic:
+ * clicking a chip toggles it into/out of the `?tags=a,b,c` csv. Active chips
+ * render in their selected state; clicking an active chip removes it from the
+ * set (so the last click clears the filter entirely).
  *
  * `useSearchParams` forces dynamic rendering in Next 16 unless wrapped in
  * `<Suspense>` — we wrap here so callers don't have to remember.
@@ -22,7 +28,10 @@ interface FilterChipRowProps {
 function FilterChipRowInner({ tags, className }: FilterChipRowProps) {
   const pathname = usePathname();
   const params = useSearchParams();
-  const activeTag = params.get("tag");
+  const activeTags = parseTagsQuery(
+    [params.get("tags"), params.get("tag")].filter(Boolean) as string[],
+  );
+  const activeSet = new Set(activeTags);
 
   return (
     <div
@@ -36,10 +45,10 @@ function FilterChipRowInner({ tags, className }: FilterChipRowProps) {
         filter
       </span>
       {tags.map((t) => {
-        const isActive = t === activeTag;
-        const href = isActive
-          ? pathname
-          : `${pathname}?tag=${encodeURIComponent(t)}`;
+        const isActive = activeSet.has(t);
+        const nextTags = toggleTagInList(activeTags, t);
+        const suffix = serializeTagsQuery(nextTags);
+        const href = suffix ? `${pathname}${suffix}` : pathname;
         return (
           <Tag
             key={t}

@@ -88,6 +88,19 @@ body {
   }
 }
 
+/* BlogPostCard hover stripe — cycles through the card's tag colors when the
+   gradient is applied. Works because the stripe's gradient starts and ends
+   with the same color (the card component closes the loop), so shifting
+   background-position by one full height is visually seamless. */
+@keyframes stripe-cycle {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 -100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

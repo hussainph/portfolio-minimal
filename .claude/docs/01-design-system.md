@@ -155,8 +155,7 @@ Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, 
 
 | Component | Purpose |
 |-----------|---------|
-| [FilterChipRow](../../src/components/ui/FilterChipRow.tsx) | Sticky filter row above feed. `Tag` pills as `<Link>`s, URL-driven (`?tag=...`). Wrapped in `<Suspense>` for dynamic searchParams |
-| [StatusChip](../../src/components/ui/StatusChip.tsx) | Post status badge (thinking / parked). Shipped posts render nothing. Appears alongside tag pills in card headers |
+| [FilterChipRow](../../src/components/ui/FilterChipRow.tsx) | Sticky filter row above feed. Multi-select via `?tags=a,b,c` (AND), with tag clicks toggling. Wrapped in `<Suspense>` for dynamic searchParams |
 
 ### Primitives
 

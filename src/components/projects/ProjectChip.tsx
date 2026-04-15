@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
+import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { Icon } from "@/components/ui/Icon";
 import { Meta } from "@/components/ui/Meta";
 import { Tag } from "@/components/ui/Tag";
@@ -33,10 +33,8 @@ export function ProjectChip({
   status,
   className,
 }: ProjectChipProps) {
-  const router = useRouter();
   const stripeColor = tagColor(tags[0] ?? "building");
-  const onFilterClick = (name: string) =>
-    router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
+  const onFilterClick = useTagFilterToggle();
 
   return (
     <article

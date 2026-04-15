@@ -52,13 +52,14 @@ export function ProjectHero({
   return (
     <div
       className={cn(
-        "relative flex w-full min-h-[420px] overflow-hidden rounded-md border border-border bg-[#0f0f11]",
+        "relative flex w-full flex-col-reverse overflow-hidden rounded-md border border-border bg-[#0f0f11]",
+        "md:flex-row md:min-h-[420px]",
         className,
       )}
     >
-      {/* Left — editorial pane */}
+      {/* Editorial pane — left on desktop, below the shader banner on mobile */}
       <div
-        className="flex w-[45%] shrink-0 flex-col justify-center gap-5 py-14 px-12"
+        className="flex w-full shrink-0 flex-col justify-center gap-5 py-10 px-6 md:w-[45%] md:py-14 md:px-12"
         style={{
           backgroundImage:
             "linear-gradient(180deg in oklab, oklab(14.5% 0.0006 -0.002) 0%, oklab(16.9% 0.001 -0.004) 100%)",
@@ -73,7 +74,7 @@ export function ProjectHero({
         </div>
 
         <div className="flex flex-col gap-2">
-          <h2 className="font-serif text-[72px] leading-[69px] tracking-[-0.03em] text-text">
+          <h2 className="font-serif text-[48px] leading-[52px] tracking-[-0.03em] text-text md:text-[72px] md:leading-[69px]">
             {title}
           </h2>
           <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
@@ -100,9 +101,9 @@ export function ProjectHero({
         </div>
       </div>
 
-      {/* Right — shader visual pane */}
+      {/* Shader visual pane — right-half on desktop, short banner on mobile */}
       <div
-        className="relative grow overflow-hidden animate-[shader-drift_45s_linear_infinite]"
+        className="relative h-40 w-full grow overflow-hidden animate-[shader-drift_45s_linear_infinite] md:h-auto md:w-auto"
         style={{
           backgroundImage:
             "radial-gradient(circle farthest-corner at 40% 55% in oklab, oklab(65.4% 0.029 -0.185) 0%, oklab(70.7% 0.079 -0.123) 20%, oklab(81.7% -0.139 0.026) 40%, oklab(83% 0.037 0.146) 65%, oklab(16.9% 0.001 -0.004) 90%)",
@@ -170,16 +171,19 @@ function SecondaryCtaShell({ cta }: { cta: ProjectHeroCta }) {
   const props = cta.href
     ? { href: cta.href }
     : { type: "button" as const, onClick: cta.onClick };
+  // Mirrors the TextLink atom — 17px DM Sans, -3% tracking, dashed teal
+  // underline that resolves to a solid teal on hover. Keeps the trailing
+  // arrow so it still reads as a directional CTA.
   return (
     <Component
-      className="group inline-flex items-center gap-2 font-sans text-[14px] leading-[18px] tracking-[-0.03em] text-body no-underline transition-[color,gap] duration-200 hover:gap-2.5 hover:text-text"
+      className="group inline-flex items-center gap-2 font-sans text-[17px] leading-[22px] tracking-[-0.03em] text-text-link underline decoration-accent-teal decoration-dashed decoration-1 underline-offset-[5px] transition-[color,gap] duration-150 hover:gap-2.5 hover:text-accent-teal hover:decoration-solid hover:decoration-[1.5px]"
       {...props}
     >
       <span>{cta.label}</span>
       <Icon
         name="arrow-right"
         size={14}
-        className="transition-transform duration-200 group-hover:translate-x-0.5"
+        className="no-underline opacity-80 transition-transform duration-200 group-hover:translate-x-0.5"
       />
     </Component>
   );

@@ -123,6 +123,9 @@ All of these are globally available in `.mdx` bodies — no imports needed:
 | `<Figure src="..." caption="..." glow="..." />` | Framed image; `glow` is optional (warm/cool/pink/amber) |
 | `<Video src="..." poster="..." autoplay />` | Embedded video |
 | `<CodeBlock language="js" filename="..." />` | Explicit code block (rarely needed) |
+| `<PullQuote>…</PullQuote>` | Pull quote — italic serif, left border auto-tints from the post's first tag. Pass `tag="name"` to override. |
+
+Markdown `> quote` blocks compile through `<PullQuote>` too, so the styling is identical whether you write markdown syntax or the explicit component.
 
 Typography mapping is automatic: `#` → H1, `##` → H2, `###` → H3, `**bold**` → strong emphasis, ` ```js code ``` ` → syntax-highlighted block.
 

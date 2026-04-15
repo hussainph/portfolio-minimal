@@ -2,6 +2,7 @@ import type { MDXComponents } from "mdx/types";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import { CodeBlock } from "@/components/mdx/CodeBlock";
 import { Figure } from "@/components/mdx/Figure";
+import { PullQuote } from "@/components/mdx/PullQuote";
 import { Ref } from "@/components/mdx/Ref";
 import { Video } from "@/components/mdx/Video";
 import { TextLink } from "@/components/ui/TextLink";
@@ -83,14 +84,8 @@ export const sharedComponents: MDXComponents = {
   ),
   blockquote: ({
     children,
-    ...rest
   }: ComponentPropsWithoutRef<"blockquote"> & { children?: ReactNode }) => (
-    <blockquote
-      className="my-6 border-l-2 border-accent-orange pl-5 font-serif italic text-[24px] leading-[34px] tracking-[-0.01em] text-quote"
-      {...rest}
-    >
-      {children}
-    </blockquote>
+    <PullQuote>{children}</PullQuote>
   ),
   a: ({ href, children, ...rest }: ComponentPropsWithoutRef<"a">) => {
     const isExternal = isExternalHref(href);
@@ -125,4 +120,5 @@ export const sharedComponents: MDXComponents = {
   Figure,
   Video,
   CodeBlock,
+  PullQuote,
 };

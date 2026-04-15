@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
+import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Icon } from "./Icon";
-import { StatusChip } from "./StatusChip";
 import type { ShowcaseImage } from "./ShowcaseCard";
-import type { PostStatus } from "./types";
 
 interface BentoShowcaseProps {
   tags: string[];
@@ -20,7 +18,6 @@ interface BentoShowcaseProps {
   images: [ShowcaseImage, ShowcaseImage, ShowcaseImage];
   href?: string;
   engagement?: { replies?: number; likes?: number };
-  status?: PostStatus;
   className?: string;
 }
 
@@ -37,14 +34,11 @@ export function BentoShowcase({
   images,
   href = "#",
   engagement = {},
-  status = "shipped",
   className,
 }: BentoShowcaseProps) {
-  const router = useRouter();
   const primaryTag = tags[0] ?? "building";
   const accentColor = tagColor(primaryTag);
-  const onFilterClick = (name: string) =>
-    router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
+  const onFilterClick = useTagFilterToggle();
 
   const pickedIdx = images.findIndex((image) => image.picked);
   const featuredIdx = pickedIdx === -1 ? 0 : pickedIdx;
@@ -56,7 +50,6 @@ export function BentoShowcase({
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3.5 rounded-panel border border-[#1a1a1d] bg-sunken p-5 transition-colors duration-200",
         "hover:bg-sunken-hover hover:border-border-hover",
-        status === "thinking" && "border-dashed",
         className,
       )}
     >
@@ -72,7 +65,6 @@ export function BentoShowcase({
             #{t}
           </Tag>
         ))}
-        <StatusChip status={status} />
         <Link
           href={href}
           className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
@@ -81,21 +73,11 @@ export function BentoShowcase({
         </Link>
       </div>
 
-      <p
-        className={cn(
-          "font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-[#e8e1d4]",
-          status === "parked" && "opacity-70",
-        )}
-      >
+      <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-[#e8e1d4]">
         {body}
       </p>
 
-      <div
-        className={cn(
-          "flex h-[280px] gap-2",
-          status === "parked" && "opacity-70",
-        )}
-      >
+      <div className="flex h-[280px] gap-2">
         <FeaturedTile
           image={featured}
           primaryTag={primaryTag}
@@ -108,12 +90,7 @@ export function BentoShowcase({
         </div>
       </div>
 
-      <div
-        className={cn(
-          "flex items-center gap-[18px] pt-0.5 text-faint",
-          status === "parked" && "opacity-70",
-        )}
-      >
+      <div className="flex items-center gap-[18px] pt-0.5 text-faint">
         {engagement.replies !== undefined ? (
           <span className="flex items-center gap-1.5">
             <Icon name="reply" size={14} />
