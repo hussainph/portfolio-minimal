@@ -5,6 +5,8 @@ import { BottomToolbar } from "@/components/ui/BottomToolbar";
 import { Label } from "@/components/ui/Label";
 import { Meta } from "@/components/ui/Meta";
 import { NoteCard } from "@/components/ui/NoteCard";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
+import { ProjectHero } from "@/components/ui/ProjectHero";
 import { Separator } from "@/components/ui/Separator";
 import { ShowcaseCard } from "@/components/ui/ShowcaseCard";
 import { Tag } from "@/components/ui/Tag";
@@ -45,6 +47,22 @@ export default function UITestPage() {
 
         <Section
           number="04"
+          title="Primary button"
+          subtitle="flat at rest · shader ring wakes on hover · disabled is honest"
+        >
+          <PrimaryButtonSection />
+        </Section>
+
+        <Section
+          number="05"
+          title="Project hero"
+          subtitle="headliner — two-pane, serif display, drifting shader visual"
+        >
+          <ProjectHeroSection />
+        </Section>
+
+        <Section
+          number="06"
           title="Bottom toolbar"
           subtitle="live at the bottom of this page — scroll to test auto-hide"
         >
@@ -410,6 +428,93 @@ function CardLane({
     <div className="flex flex-col gap-3">
       <Label tone="faint">{label}</Label>
       {children}
+    </div>
+  );
+}
+
+function PrimaryButtonSection() {
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex items-start gap-8">
+        <Label tone="faint" size="xs" className="w-20 shrink-0 pt-3">
+          Rest
+        </Label>
+        <div className="flex items-center gap-10">
+          <PrimaryButton>Read the thinking</PrimaryButton>
+          <span className="max-w-[280px] font-mono text-[10px] leading-4 tracking-[0.02em] text-faint">
+            near-black fill · 1.5px neutral ring · no color. lets the word do
+            the work.
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-8">
+        <span className="w-20 shrink-0 pt-3 font-mono text-[11px] leading-[14px] tracking-[0.04em] text-accent-orange">
+          Hover
+        </span>
+        <div className="flex items-center gap-10">
+          <PrimaryButton>Read the thinking</PrimaryButton>
+          <span className="max-w-[280px] font-mono text-[10px] leading-4 tracking-[0.02em] text-faint">
+            conic gradient on the ring, rotates continuously while hovered.
+            glow bloom outside.
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-start gap-8">
+        <Label tone="faint" size="xs" className="w-20 shrink-0 pt-3">
+          Disabled
+        </Label>
+        <div className="flex items-center gap-10">
+          <PrimaryButton disabled>Read the thinking</PrimaryButton>
+          <span className="max-w-[280px] font-mono text-[10px] leading-4 tracking-[0.02em] text-faint">
+            ring drops to flat neutral, fill desaturates, cursor not-allowed.
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-2 flex gap-8 rounded-card border border-border bg-sunken py-4 px-5">
+        <span className="w-20 shrink-0 font-mono text-[11px] leading-[14px] tracking-[0.04em] uppercase text-accent-orange">
+          Motion
+        </span>
+        <div className="flex grow flex-col gap-2">
+          <p className="font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-body">
+            On hover the ring animates: conic gradient rotates ~6s linear
+            infinite via a CSS <code className="font-mono text-[13px] text-text">@property</code>.
+            Fades in over 300ms so the color doesn&apos;t pop. Only the hovered
+            button animates — no global scheduler needed.
+          </p>
+          <p className="font-mono text-[10px] leading-3 tracking-[0.02em] text-faint">
+            prefers-reduced-motion · ring stays static, color still fades in on
+            hover so the affordance is legible
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProjectHeroSection() {
+  return (
+    <div className="flex flex-col gap-4">
+      <ProjectHero
+        badge="Now · headliner"
+        tags={["building", "ai", "design"]}
+        title="Clawbox"
+        subtitle="An arcade you can program. Physics, prizes, and a hand that learns to want things."
+        meta={[
+          { label: "status", value: "v0.4 · launching may" },
+          { label: "posts", value: "28 — notes, designs, builds" },
+          { label: "latest", value: "shader physics · apr 13" },
+        ]}
+        primaryCta={{ label: "Open project", href: "#clawbox" }}
+        secondaryCta={{ label: "See the stream", href: "#stream" }}
+        visualBadge="live shader · hover to interact"
+      />
+      <p className="max-w-[600px] font-mono text-[10px] leading-4 tracking-[0.04em] text-faint">
+        data-driven: pass tags, title, subtitle, meta rows, and CTAs — the
+        visual + badges are props-only, no Clawbox-specific copy is hardcoded.
+      </p>
     </div>
   );
 }
