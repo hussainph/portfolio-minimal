@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
 import { Tag } from "./Tag";
@@ -45,7 +48,10 @@ export function ShowcaseCard({
   engagement = {},
   className,
 }: ShowcaseCardProps) {
+  const router = useRouter();
   const primaryTag = tags[0] ?? "building";
+  const onFilterClick = (name: string) =>
+    router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
 
   return (
     <div
@@ -56,7 +62,7 @@ export function ShowcaseCard({
     >
       <div className="flex items-center gap-2">
         {tags.map((t) => (
-          <Tag key={t} name={t}>
+          <Tag key={t} as="filter" name={t} onClick={() => onFilterClick(t)}>
             #{t}
           </Tag>
         ))}

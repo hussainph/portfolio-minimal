@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
 import { Tag } from "./Tag";
@@ -19,7 +22,10 @@ export function NoteCard({
   engagement = {},
   className,
 }: NoteCardProps) {
+  const router = useRouter();
   const stripeColor = tagColor(tags[0] ?? "building");
+  const onFilterClick = (name: string) =>
+    router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
 
   return (
     <div
@@ -37,7 +43,7 @@ export function NoteCard({
 
       <div className="flex items-center gap-2">
         {tags.map((t) => (
-          <Tag key={t} name={t}>
+          <Tag key={t} as="filter" name={t} onClick={() => onFilterClick(t)}>
             #{t}
           </Tag>
         ))}

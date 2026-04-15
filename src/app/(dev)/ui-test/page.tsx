@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { BlogPostCard } from "@/components/ui/BlogPostCard";
 import { BentoShowcase } from "@/components/ui/BentoShowcase";
 import { BottomToolbar } from "@/components/ui/BottomToolbar";
+import { FilterChipRow } from "@/components/ui/FilterChipRow";
 import { Label } from "@/components/ui/Label";
 import { Meta } from "@/components/ui/Meta";
 import { NoteCard } from "@/components/ui/NoteCard";
@@ -13,6 +14,17 @@ import { Tag } from "@/components/ui/Tag";
 import { TextLink } from "@/components/ui/TextLink";
 import { tagColor } from "@/lib/tagColor";
 
+const FILTER_TAG_POOL = [
+  "building",
+  "ai",
+  "code",
+  "design",
+  "thinking",
+  "notes",
+  "craft",
+  "research",
+];
+
 export default function UITestPage() {
   if (process.env.NODE_ENV === "production") notFound();
 
@@ -20,6 +32,8 @@ export default function UITestPage() {
     <main className="min-h-screen bg-background text-text">
       <div className="mx-auto flex max-w-[960px] flex-col gap-16 px-12 pt-16 pb-48">
         <Header />
+
+        <FilterChipRow tags={FILTER_TAG_POOL} />
 
         <Section number="00" title="Colors" subtitle="ground · tags · accent">
           <ColorsSection />

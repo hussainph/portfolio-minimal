@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
 import { Tag } from "./Tag";
@@ -56,8 +59,11 @@ export function BentoShowcase({
   engagement = {},
   className,
 }: BentoShowcaseProps) {
+  const router = useRouter();
   const primaryTag = tags[0] ?? "building";
   const accentColor = tagColor(primaryTag);
+  const onFilterClick = (name: string) =>
+    router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
 
   const pickedIdx = images.findIndex((image) => image.picked);
   const featuredIdx = pickedIdx === -1 ? 0 : pickedIdx;
@@ -73,7 +79,7 @@ export function BentoShowcase({
     >
       <div className="flex items-center gap-2.5">
         {tags.map((t) => (
-          <Tag key={t} name={t}>
+          <Tag key={t} as="filter" name={t} onClick={() => onFilterClick(t)}>
             #{t}
           </Tag>
         ))}

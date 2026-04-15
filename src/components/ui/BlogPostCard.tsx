@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
 import { Tag } from "./Tag";
@@ -25,8 +28,11 @@ export function BlogPostCard({
   engagement = {},
   className,
 }: BlogPostCardProps) {
+  const router = useRouter();
   const primaryTag = tags[0] ?? "building";
   const stripeColor = tagColor(primaryTag);
+  const onFilterClick = (name: string) =>
+    router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
 
   return (
     <a
@@ -45,7 +51,7 @@ export function BlogPostCard({
 
       <div className="flex items-center gap-2">
         {tags.map((t) => (
-          <Tag key={t} name={t}>
+          <Tag key={t} as="filter" name={t} onClick={() => onFilterClick(t)}>
             #{t}
           </Tag>
         ))}
