@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
@@ -13,6 +14,7 @@ interface NoteCardProps {
   tags: string[];
   timestamp: string;
   body: string;
+  href?: string;
   engagement?: { replies?: number; likes?: number };
   status?: PostStatus;
   className?: string;
@@ -22,6 +24,7 @@ export function NoteCard({
   tags,
   timestamp,
   body,
+  href = "#",
   engagement = {},
   status = "shipped",
   className,
@@ -32,7 +35,7 @@ export function NoteCard({
     router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
 
   return (
-    <div
+    <article
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3 rounded-card border bg-surface border-border pt-5 pb-4 px-5 transition-colors duration-200",
         "hover:bg-elevated hover:border-border-hover",
@@ -48,12 +51,23 @@ export function NoteCard({
 
       <div className="flex items-center gap-2">
         {tags.map((t) => (
-          <Tag key={t} as="filter" name={t} onClick={() => onFilterClick(t)}>
+          <Tag
+            key={t}
+            as="filter"
+            name={t}
+            onClick={() => onFilterClick(t)}
+            className="relative z-10"
+          >
             #{t}
           </Tag>
         ))}
         <StatusChip status={status} />
-        <Meta>· {timestamp}</Meta>
+        <Link
+          href={href}
+          className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
+        >
+          <Meta>· {timestamp}</Meta>
+        </Link>
       </div>
 
       <p
@@ -87,13 +101,21 @@ export function NoteCard({
             </span>
           </span>
         ) : null}
-        <button type="button" aria-label="Save" className="hover:text-text">
+        <button
+          type="button"
+          aria-label="Save"
+          className="relative z-10 hover:text-text"
+        >
           <Icon name="bookmark" />
         </button>
-        <button type="button" aria-label="Share" className="hover:text-text">
+        <button
+          type="button"
+          aria-label="Share"
+          className="relative z-10 hover:text-text"
+        >
           <Icon name="share" />
         </button>
       </div>
-    </div>
+    </article>
   );
 }

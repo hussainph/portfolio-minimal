@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
@@ -39,10 +40,9 @@ export function BlogPostCard({
     router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
 
   return (
-    <a
-      href={href}
+    <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-7 no-underline transition-colors duration-200",
+        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-7 transition-colors duration-200",
         "hover:bg-elevated hover:border-border-hover",
         status === "thinking" && "border-dashed",
         className,
@@ -56,7 +56,13 @@ export function BlogPostCard({
 
       <div className="flex items-center gap-2">
         {tags.map((t) => (
-          <Tag key={t} as="filter" name={t} onClick={() => onFilterClick(t)}>
+          <Tag
+            key={t}
+            as="filter"
+            name={t}
+            onClick={() => onFilterClick(t)}
+            className="relative z-10"
+          >
             #{t}
           </Tag>
         ))}
@@ -72,7 +78,12 @@ export function BlogPostCard({
           status === "parked" && "opacity-70",
         )}
       >
-        {title}
+        <Link
+          href={href}
+          className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
+        >
+          {title}
+        </Link>
       </h3>
 
       <p
@@ -116,7 +127,7 @@ export function BlogPostCard({
           />
         </div>
       </div>
-    </a>
+    </article>
   );
 }
 

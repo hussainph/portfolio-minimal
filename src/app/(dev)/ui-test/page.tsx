@@ -441,7 +441,7 @@ function PrimitivesSection() {
           tags={["design"]}
           timestamp="apr 10 · small idea"
           body="Tried a different approach to the onboarding tooltip — ambient instead of intrusive. Small texture fragment shows up and fades. Feels way less like being yelled at."
-          images={[{ caption: "ONBOARDING · V3", glow: "amber" }]}
+          images={[{ caption: "ONBOARDING · V3" }]}
           engagement={{ replies: 5, likes: 34 }}
         />
       </CardLane>
@@ -452,9 +452,9 @@ function PrimitivesSection() {
           timestamp="apr 11 · iterations"
           body="Three takes on the tool-use UI for Volli. Ended up liking v2 most — the side-rail keeps the context without hijacking the read."
           images={[
-            { caption: "V1", glow: "warm" },
-            { caption: "V2 ← picked", glow: "cool", picked: true },
-            { caption: "V3", glow: "pink" },
+            { caption: "V1" },
+            { caption: "V2 ← picked", picked: true },
+            { caption: "V3" },
           ]}
           engagement={{ replies: 8, likes: 21 }}
         />

@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
+import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Label } from "./Label";
@@ -13,8 +15,6 @@ import type { PostStatus } from "./types";
 export interface ShowcaseImage {
   /** Bottom-right (single) or bottom-left (multi) caption inside the tile. */
   caption: string;
-  /** Color tint of the radial glow. Maps to a tag variant. */
-  glow?: "warm" | "cool" | "pink" | "amber";
   /** Marks a tile as the chosen variant — border + caption pick up the first tag's color. */
   picked?: boolean;
 }
@@ -24,30 +24,18 @@ interface ShowcaseCardProps {
   timestamp: string;
   body: string;
   images: ShowcaseImage[];
+  href?: string;
   engagement?: { replies?: number; likes?: number };
   status?: PostStatus;
   className?: string;
 }
-
-const GLOW_BASE: Record<NonNullable<ShowcaseImage["glow"]>, string> = {
-  warm: "from-[#1f1f22] to-[#161618]",
-  cool: "from-[#1d2422] to-[#15191a]",
-  pink: "from-[#22191c] to-[#181416]",
-  amber: "from-[#22201a] to-[#171614]",
-};
-
-const GLOW_OVERLAY: Record<NonNullable<ShowcaseImage["glow"]>, string> = {
-  warm: "bg-[radial-gradient(circle_at_30%_40%,rgba(255,184,68,0.18),transparent_55%)]",
-  cool: "bg-[radial-gradient(circle_at_50%_50%,rgba(74,224,180,0.22),transparent_60%)]",
-  pink: "bg-[radial-gradient(circle_at_60%_60%,rgba(255,122,148,0.16),transparent_60%)]",
-  amber: "bg-[radial-gradient(circle_at_30%_40%,rgba(255,204,85,0.16),transparent_55%)]",
-};
 
 export function ShowcaseCard({
   tags,
   timestamp,
   body,
   images,
+  href = "#",
   engagement = {},
   status = "shipped",
   className,
@@ -58,21 +46,33 @@ export function ShowcaseCard({
     router.replace(`?tag=${encodeURIComponent(name)}`, { scroll: false });
 
   return (
-    <div
+    <article
       className={cn(
-        "relative flex max-w-[600px] flex-col gap-3.5 rounded-card border border-border bg-surface p-5",
+        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border border-border bg-surface p-5 transition-colors duration-200",
+        "hover:bg-elevated hover:border-border-hover",
         status === "thinking" && "border-dashed",
         className,
       )}
     >
       <div className="flex items-center gap-2">
         {tags.map((t) => (
-          <Tag key={t} as="filter" name={t} onClick={() => onFilterClick(t)}>
+          <Tag
+            key={t}
+            as="filter"
+            name={t}
+            onClick={() => onFilterClick(t)}
+            className="relative z-10"
+          >
             #{t}
           </Tag>
         ))}
         <StatusChip status={status} />
-        <Meta>· {timestamp}</Meta>
+        <Link
+          href={href}
+          className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
+        >
+          <Meta>· {timestamp}</Meta>
+        </Link>
       </div>
 
       <p
@@ -86,7 +86,7 @@ export function ShowcaseCard({
 
       <div className={cn(status === "parked" && "opacity-70")}>
         {images.length === 1 ? (
-          <SingleTile image={images[0]!} />
+          <SingleTile image={images[0]!} primaryTag={primaryTag} />
         ) : (
           <EqualTiles images={images} primaryTag={primaryTag} />
         )}
@@ -116,20 +116,28 @@ export function ShowcaseCard({
         ) : null}
         <Icon name="bookmark" />
       </div>
-    </div>
+    </article>
   );
 }
 
-function SingleTile({ image }: { image: ShowcaseImage }) {
-  const glow = image.glow ?? "warm";
+function SingleTile({
+  image,
+  primaryTag,
+}: {
+  image: ShowcaseImage;
+  primaryTag: string;
+}) {
   return (
     <div
       className={cn(
         "relative h-60 w-full overflow-hidden rounded-[3px] border border-border bg-gradient-to-br",
-        GLOW_BASE[glow],
+        GLOW_NEUTRAL_BASE,
       )}
     >
-      <div className={cn("absolute inset-0", GLOW_OVERLAY[glow])} />
+      <div
+        className="absolute inset-0"
+        style={{ backgroundImage: tileGlow(primaryTag, "strong") }}
+      />
       <div className="absolute bottom-3 right-3">
         <Label tone="faint" size="xs">
           {image.caption}
@@ -149,33 +157,38 @@ function EqualTiles({
   const pickedColor = tagColor(primaryTag);
   return (
     <div className="flex gap-1.5">
-      {images.map((image, idx) => {
-        const glow = image.glow ?? "warm";
-        return (
+      {images.map((image, idx) => (
+        <div
+          key={idx}
+          className={cn(
+            "relative aspect-square flex-1 overflow-hidden rounded-[3px] border bg-gradient-to-br",
+            GLOW_NEUTRAL_BASE,
+            image.picked ? "border-transparent" : "border-border",
+          )}
+          style={image.picked ? { borderColor: pickedColor } : undefined}
+        >
           <div
-            key={idx}
-            className={cn(
-              "relative aspect-square flex-1 overflow-hidden rounded-[3px] border bg-gradient-to-br",
-              GLOW_BASE[glow],
-              image.picked ? "border-transparent" : "border-border",
-            )}
-            style={image.picked ? { borderColor: pickedColor } : undefined}
-          >
-            <div className={cn("absolute inset-0", GLOW_OVERLAY[glow])} />
-            <div className="absolute bottom-2 left-2">
-              <span
-                className={cn(
-                  "font-mono text-[9px] leading-3 tracking-[0.05em]",
-                  image.picked ? "font-bold" : "text-faint",
-                )}
-                style={image.picked ? { color: pickedColor } : undefined}
-              >
-                {image.caption}
-              </span>
-            </div>
+            className="absolute inset-0"
+            style={{
+              backgroundImage: tileGlow(
+                primaryTag,
+                image.picked ? "strong" : "weak",
+              ),
+            }}
+          />
+          <div className="absolute bottom-2 left-2">
+            <span
+              className={cn(
+                "font-mono text-[9px] leading-3 tracking-[0.05em]",
+                image.picked ? "font-bold" : "text-faint",
+              )}
+              style={image.picked ? { color: pickedColor } : undefined}
+            >
+              {image.caption}
+            </span>
           </div>
-        );
-      })}
+        </div>
+      ))}
     </div>
   );
 }
