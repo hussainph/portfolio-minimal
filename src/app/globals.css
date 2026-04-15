@@ -1,15 +1,35 @@
 @import "tailwindcss";
 
 @theme {
-  --color-background: #FBF5DE;
-  --color-surface: #EAC8A6;
-  --color-ai: #A20000;
-  --color-human: #3D74B6;
-  --color-text: #2a1d12;
-  --color-text-muted: #6b5744;
+  /* Ground (Dark Warmth) */
+  --color-background: #0a0a0b;
+  --color-surface: #141416;
+  --color-elevated: #1e1e21;
+  --color-border: #252528;
+  --color-text: #f0ebe3;
+  --color-muted: #908a84;
+  --color-faint: #555250;
 
-  --font-sans: var(--font-manrope);
-  --font-mono: var(--font-space-mono);
+  /* Tags — 75% sat / 58% lightness, only hue varies */
+  --color-tag-ai: #7b7eff;
+  --color-tag-building: #ffb844;
+  --color-tag-design: #ff7a94;
+  --color-tag-thinking: #ffcc55;
+  --color-tag-code: #4ae0b4;
+  --color-tag-reading: #4ac0e0;
+
+  /* Accents */
+  --color-accent-teal: #70cfd4;
+  --color-accent-orange: #e89878;
+
+  /* Type stack */
+  --font-serif: var(--font-instrument-serif), Georgia, serif;
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  /* Radius */
+  --radius-card: 4px;
+  --radius-pill: 9999px;
 }
 
 html,
@@ -17,32 +37,20 @@ body {
   background-color: var(--color-background);
   color: var(--color-text);
   font-family: var(--font-sans);
+  letter-spacing: -0.03em;
   min-height: 100vh;
   margin: 0;
 }
 
-@keyframes aurora-flow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+/* Scope -3% tracking to DM Sans only; reset for serif and mono children. */
+.font-serif,
+[class*="font-serif"] {
+  letter-spacing: normal;
 }
 
-@keyframes aurora-flow-reverse {
-  0% {
-    background-position: 100% 50%;
-  }
-  50% {
-    background-position: 0% 50%;
-  }
-  100% {
-    background-position: 100% 50%;
-  }
+.font-mono,
+[class*="font-mono"] {
+  letter-spacing: normal;
 }
 
 @media (prefers-reduced-motion: reduce) {
