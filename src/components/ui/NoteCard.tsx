@@ -38,7 +38,7 @@ export function NoteCard({
     <article
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3 rounded-card border bg-surface border-border pt-5 pb-4 px-5 transition-colors duration-200",
-        "hover:bg-elevated hover:border-border-hover",
+        "hover:bg-surface-hover hover:border-border-hover",
         status === "thinking" && "border-dashed",
         className,
       )}

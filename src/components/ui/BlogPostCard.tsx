@@ -43,7 +43,7 @@ export function BlogPostCard({
     <article
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-7 transition-colors duration-200",
-        "hover:bg-elevated hover:border-border-hover",
+        "hover:bg-surface-hover hover:border-border-hover",
         status === "thinking" && "border-dashed",
         className,
       )}

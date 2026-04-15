@@ -55,7 +55,7 @@ export function BentoShowcase({
     <article
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3.5 rounded-panel border border-[#1a1a1d] bg-sunken p-5 transition-colors duration-200",
-        "hover:bg-elevated hover:border-border-hover",
+        "hover:bg-sunken-hover hover:border-border-hover",
         status === "thinking" && "border-dashed",
         className,
       )}

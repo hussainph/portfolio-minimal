@@ -49,7 +49,7 @@ export function ShowcaseCard({
     <article
       className={cn(
         "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border border-border bg-surface p-5 transition-colors duration-200",
-        "hover:bg-elevated hover:border-border-hover",
+        "hover:bg-surface-hover hover:border-border-hover",
         status === "thinking" && "border-dashed",
         className,
       )}

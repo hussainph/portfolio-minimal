@@ -2,12 +2,14 @@
 
 @theme {
   /* Ground — Dark Warmth v4 */
-  --color-background: #0a0a0b; /* page floor */
-  --color-sunken: #0c0c0e;     /* callout panels, motion spec, reading frames */
-  --color-surface: #141416;    /* card at rest */
-  --color-elevated: #1a1a1d;   /* card hover + subtle dividers */
-  --color-border: #252528;     /* default card/section border */
-  --color-border-hover: #2e2e32; /* card hover border, toolbar pill border */
+  --color-background: #0a0a0b;   /* page floor */
+  --color-sunken: #0c0c0e;       /* callout panels, motion spec, reading frames */
+  --color-sunken-hover: #0f0f11; /* sunken-based card hover — subtle lift over sunken */
+  --color-surface: #141416;      /* card at rest */
+  --color-surface-hover: #17171a; /* surface-based card hover — subtle lift over surface */
+  --color-elevated: #1a1a1d;     /* subtle dividers (hairlines, inner panels) */
+  --color-border: #252528;       /* default card/section border */
+  --color-border-hover: #2a2a2d; /* card hover border, toolbar pill border — softened */
   --color-text: #f0ebe3;       /* hero + note body */
   --color-text-link: #e8e1d4;  /* inline text link (default state) */
   --color-body: #bfb8ae;       /* longform body + card hover excerpt */
