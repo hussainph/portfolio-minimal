@@ -24,7 +24,7 @@ bun run lint             # ESLint
 - **Animation:** Framer Motion
 - **Fonts:** Instrument Serif (display + post titles + pull quotes), DM Sans (body + UI), JetBrains Mono (tags + timestamps + code) — all via `next/font/google`
 
-MDX (`@next/mdx`) is planned but not wired up yet — content will live as `.mdx` files mapped through `mdx-components.tsx` to the design-system primitives.
+MDX is wired via `next-mdx-remote/rsc` in `src/lib/content/mdx.ts`. Content lives as `.mdx` files in `content/` (outside `src/`), compiled at runtime with `remark-gfm`, `remark-smartypants`, `rehype-pretty-code` (Shiki `github-dark-dimmed`).
 
 ## Design System
 
@@ -32,18 +32,36 @@ The Dark Warmth design system is the source of truth for all visual decisions. *
 
 Tokens live in [src/app/globals.css](src/app/globals.css) under `@theme`. Component implementations live in [src/components/ui/](src/components/ui/). Visual specimen page at `/ui-test` (dev only).
 
+**Content architecture:** For how the CMS works, see [.claude/docs/03-content-architecture.md](.claude/docs/03-content-architecture.md). For authoring instructions (frontmatter, Markdown primitives, cross-references), see [.claude/docs/04-authoring-guide.md](.claude/docs/04-authoring-guide.md).
+
 ## Architecture
 
 ### Route Structure
 
-- `src/app/page.tsx` — Home (the feed)
+- `src/app/page.tsx` — Home feed with tag filter (`?tag=...` searchParams)
+- `src/app/n/[slug]/page.tsx` — Note permalink
+- `src/app/blog/[slug]/page.tsx` — Blog post
+- `src/app/showcases/[slug]/page.tsx` — Showcase detail
+- `src/app/projects/page.tsx` — Projects index
+- `src/app/projects/[slug]/page.tsx` — Project detail with conditional timeline
+- `src/app/tags/[tag]/page.tsx` — Tag archive (filtered feed)
 - `src/app/(dev)/ui-test/page.tsx` — Component library specimen, dev-only (404s in production)
+- `src/app/sitemap.ts` — Dynamic XML sitemap
+- `src/app/robots.ts` — robots.txt
 - `src/app/api/chat/route.ts` — Stub, currently unused
 
 ### Key Directories
 
-- `src/components/ui/` — Design-system primitives (Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, BottomToolbar, Icon, Meta, Label, Separator)
+- `src/components/ui/` — Design-system primitives (Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, FilterChipRow, StatusChip, PrimaryButton, ProjectHero, BottomToolbar, Icon, Meta, Label, Separator)
+- `src/components/projects/` — ProjectCard, ProjectChip (smaller and bitesized tiers)
+- `src/components/content/` — Per-route page templates (NotePage, PostPage, ShowcasePage, ProjectPage)
+- `src/components/feed/` — FeedList (renders filtered/sorted items)
+- `src/components/mdx/` — Shared MDX primitives (Ref, Figure, Video, CodeBlock). Available globally in `.mdx` bodies.
+- `src/components/embeds/` — One-off interactive per-post components (tier-2). Import directly in `.mdx` bodies.
+- `src/lib/content/` — CMS loader: schema (Zod), types, loader (loadAll + React.cache), derive (reading time, excerpt), mdx (compileMDX), preview, index
 - `src/lib/utils.ts` — `cn()` helper (clsx + tailwind-merge)
+- `src/lib/tagColor.ts` — Hash tag name to OKLCH hue
+- `src/lib/tagGlow.ts` — Derive tile glow from tag name
 
 ### Import Alias
 
@@ -51,6 +69,10 @@ Use `@/` to import from `src/`:
 ```ts
 import { NoteCard } from "@/components/ui/NoteCard";
 ```
+
+## Content Authoring
+
+Write content as `.mdx` files in `content/notes/`, `content/posts/`, `content/showcases/`, or `content/projects/<slug>/`. Add frontmatter (YAML header) with metadata and tags. For the full cheatsheet, slug rules, how to link to projects, and available MDX primitives (`<Ref>`, `<Figure>`, `<Video>`, `<CodeBlock>`), see [.claude/docs/04-authoring-guide.md](.claude/docs/04-authoring-guide.md).
 
 ## Animation Approach
 

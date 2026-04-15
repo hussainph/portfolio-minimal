@@ -79,6 +79,20 @@ The Tag component uses alpha channels for state:
 
 Active tags invert to near-black text on the saturated fill.
 
+### Tile Glow — Tag-derived visual mood
+
+Showcase cards and images in post bodies use a tile glow: a radial gradient with color derived from a tag name, so the visual mood follows content naturally. Implemented via [tileGlow()](../../src/lib/tagGlow.ts):
+
+```
+tileGlow(tagName, intensity) → radial-gradient(...)
+```
+
+Two intensities:
+- `strong` — the picked / featured tile in multi-tile layouts (22% alpha)
+- `weak` — alternates, sitting alongside the feature (12% alpha)
+
+Both layer over a neutral base gradient (`from-[#1f1f22] to-[#161618]`). **Exception:** `<Figure>` components in MDX bodies use a fixed `glow` prop (warm/cool/pink/amber) to signal deliberate visual mood independent of tag context.
+
 ### Accents — Two only
 
 Outside tag hues, only two color accents are permitted anywhere in the UI:
@@ -119,32 +133,57 @@ Phosphor Light weight. Rest state in `faint`. On active/interaction, icons inher
 
 ## Components
 
-Thirteen primitives live under [src/components/ui/](../../src/components/ui/). Specimens: [§00–§06 on /ui-test](../../src/app/(dev)/ui-test/page.tsx).
-
 ### Content cards (feed primitives)
 
 | Component | Shape | Notes |
 |-----------|-------|-------|
-| [NoteCard](../../src/components/ui/NoteCard.tsx) | Short-form — tags, timestamp, body, optional engagement | Hover reveals tag-colored left stripe + elevated bg |
-| [BlogPostCard](../../src/components/ui/BlogPostCard.tsx) | Long-form — adds title (H2 serif), excerpt (muted), read time, `href` | Hover shifts "Read →" into a nudge state |
-| [ShowcaseCard](../../src/components/ui/ShowcaseCard.tsx) | Design work — body + `images[]` with `{caption, glow, picked?}` | 1-tile or grid variant |
-| [BentoShowcase](../../src/components/ui/BentoShowcase.tsx) | Exactly 3 images — fixed 280px height; 1 featured tile (55%, left) + 2 stacked alternates (45%, right). "FEATURED" badge on the picked tile | Used for comparison sets |
+| [NoteCard](../../src/components/ui/NoteCard.tsx) | Short-form — tags, timestamp, body, optional engagement | Whole card clickable via overlay link; hover reveals tag-colored left stripe + elevated bg |
+| [BlogPostCard](../../src/components/ui/BlogPostCard.tsx) | Long-form — adds title (H2 serif), excerpt (muted), read time | Overlay link + hover nudge on "Read →" label |
+| [ShowcaseCard](../../src/components/ui/ShowcaseCard.tsx) | Design work — body + `images[]` with `{caption, glow, picked?}` | 1-tile or grid variant; overlay link pattern |
+| [BentoShowcase](../../src/components/ui/BentoShowcase.tsx) | Exactly 3 images — fixed 280px height; 1 featured (55%, left) + 2 stacked (45%, right). "FEATURED" badge on picked tile | Used for comparison sets; overlay link pattern |
 
-`ShowcaseImage` glow variants: `warm`, `cool`, `pink`, `amber`. Ambient radial gradients, not real images — until real images arrive the glow slot carries the visual weight.
+Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, decorative until real images arrive).
+
+### Project cards (smaller tier)
+
+| Component | Shape | Notes |
+|-----------|-------|-------|
+| [ProjectCard](../../src/components/projects/ProjectCard.tsx) | Mid-weight project card — serif title, muted subtitle, status meta, CTA nudge | Overlay link pattern; tag chips interactive |
+| [ProjectChip](../../src/components/projects/ProjectChip.tsx) | Lightweight compact row (~40–52px) — title, optional subtitle, tags, status | Bitesized tier; overlay link pattern |
+
+### Filter & status
+
+| Component | Purpose |
+|-----------|---------|
+| [FilterChipRow](../../src/components/ui/FilterChipRow.tsx) | Sticky filter row above feed. `Tag` pills as `<Link>`s, URL-driven (`?tag=...`). Wrapped in `<Suspense>` for dynamic searchParams |
+| [StatusChip](../../src/components/ui/StatusChip.tsx) | Post status badge (thinking / parked). Shipped posts render nothing. Appears alongside tag pills in card headers |
 
 ### Primitives
 
 | Component | Purpose |
 |-----------|---------|
-| [Tag](../../src/components/ui/Tag.tsx) | Pill with generative hue. States: default / hover / active (plus legacy `active` boolean) |
+| [Tag](../../src/components/ui/Tag.tsx) | Pill with generative hue. Polymorphic: `as="display"` (span), `as="link"` (Link), `as="filter"` (button). States: default / hover / active |
 | [TextLink](../../src/components/ui/TextLink.tsx) | Cream + dashed teal underline at rest → solid teal hover → muted teal when visited. External links show a trailing arrow |
 | [Meta](../../src/components/ui/Meta.tsx) | 11px JB Mono, `muted` or `faint` tone. For timestamps, separators, small metadata |
 | [Label](../../src/components/ui/Label.tsx) | Uppercase JB Mono system label. Size `xs` (9px) or `sm` (11px), tones `faint` / `muted` / `text` |
 | [Separator](../../src/components/ui/Separator.tsx) | 1px border-top between feed items |
 | [Icon](../../src/components/ui/Icon.tsx) | Phosphor Light: reply, like, bookmark, share, arrow-right, arrow-up-right, search, menu, grid, user |
 | [PrimaryButton](../../src/components/ui/PrimaryButton.tsx) | See Motion section below. Polymorphic (`<button>` or `<a>`) |
-| [ProjectHero](../../src/components/ui/ProjectHero.tsx) | Headliner. Two-pane: editorial left (serif display title, subtitle, meta table, CTAs) + drifting shader visual right. Data-driven — no copy hardcoded |
+| [ProjectHero](../../src/components/ui/ProjectHero.tsx) | Headliner. Two-pane: editorial left (serif display title, subtitle, meta table, CTAs) + drifting shader visual right |
 | [BottomToolbar](../../src/components/ui/BottomToolbar.tsx) | Fixed bottom nav. 3 tabs (stream / projects / about) + search. Auto-hides after 3s idle past 200px scroll |
+
+### MDX content primitives
+
+| Component | Purpose |
+|-----------|---------|
+| [Ref](../../src/components/mdx/Ref.tsx) | Cross-reference link. Resolves slugs to routes; globally available in `.mdx` bodies |
+| [Figure](../../src/components/mdx/Figure.tsx) | Framed image for post bodies. Glow prop maps fixed moods (warm/cool/pink/amber); omit for neutral |
+| [Video](../../src/components/mdx/Video.tsx) | Embedded video with optional poster and autoplay |
+| [CodeBlock](../../src/components/mdx/CodeBlock.tsx) | Explicit code block (usually unnecessary; fenced ` ```js ``` ` blocks auto-render) |
+
+### Overlay link pattern
+
+**Cards are clickable while inner elements stay interactive.** Implementation: `<Link>` wraps the card; its child has `before:absolute before:inset-0` so the pseudo-element becomes the clickable layer. Tag pills, buttons, and other tappable elements sit above the pseudo-element in stacking order. Applied to `NoteCard`, `BlogPostCard`, `ShowcaseCard`, `BentoShowcase`, `ProjectCard`, `ProjectChip`.
 
 ---
 
