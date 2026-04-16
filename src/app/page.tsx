@@ -25,7 +25,7 @@ export default async function Home({ searchParams }: HomeProps) {
 
   return (
     <main className="min-h-screen bg-background text-text">
-      <div className="mx-auto flex max-w-[720px] flex-col gap-14 px-12 pt-16 pb-48">
+      <div className="mx-auto flex max-w-[720px] flex-col gap-10 px-5 pt-10 pb-36 sm:gap-12 sm:px-8 sm:pt-14 sm:pb-44 md:gap-14 md:px-12 md:pt-16 md:pb-48">
         <Header />
         <FilterChipRow tags={tagPool} />
         <FeedList items={index.items} activeTags={activeTags} />
@@ -38,7 +38,7 @@ export default async function Home({ searchParams }: HomeProps) {
 function Header() {
   return (
     <header className="flex flex-col gap-4">
-      <h1 className="font-serif text-[48px] leading-[52px] tracking-[-0.02em] text-text">
+      <h1 className="font-serif text-[32px] leading-[36px] tracking-[-0.02em] text-text sm:text-[40px] sm:leading-[44px] md:text-[48px] md:leading-[52px]">
         Hussain Phalasiya
       </h1>
       <p className="max-w-[560px] font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">

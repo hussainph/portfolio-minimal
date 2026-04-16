@@ -11,7 +11,7 @@ export function Meta({ children, tone = "faint", className }: MetaProps) {
   return (
     <span
       className={cn(
-        "font-mono text-[11px] leading-[14px] tracking-[0.02em]",
+        "font-mono text-[11px] leading-[14px] tracking-[0.02em] whitespace-nowrap",
         tone === "faint" ? "text-faint" : "text-muted",
         className,
       )}

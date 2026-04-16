@@ -6,7 +6,7 @@ import { tagColor } from "@/lib/tagColor";
 import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
-import { Icon } from "./Icon";
+import { EngagementButton } from "./EngagementButton";
 
 interface NoteCardProps {
   tags: string[];
@@ -31,7 +31,7 @@ export function NoteCard({
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3 rounded-card border bg-surface border-border pt-5 pb-4 px-5 transition-colors duration-200",
+        "group relative flex max-w-[600px] flex-col gap-3 rounded-card border bg-surface border-border pt-4 pb-3 px-4 transition-colors duration-200 sm:pt-5 sm:pb-4 sm:px-5",
         "hover:bg-surface-hover hover:border-border-hover",
         className,
       )}
@@ -42,7 +42,7 @@ export function NoteCard({
         style={{ backgroundColor: stripeColor }}
       />
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
         {tags.map((t) => (
           <Tag
             key={t}
@@ -62,41 +62,19 @@ export function NoteCard({
         </Link>
       </div>
 
-      <p className="font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-text">
+      <p className="font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-text sm:text-[15px] sm:leading-[25px]">
         {body}
       </p>
 
-      <div className="mt-1 flex items-center gap-5 text-faint transition-colors duration-200 group-hover:text-muted">
+      <div className="mt-1 flex items-center gap-3 text-faint sm:gap-4">
         {engagement.replies !== undefined ? (
-          <span className="flex items-center gap-1.5">
-            <Icon name="reply" />
-            <span className="font-mono text-[11px] leading-[14px]">
-              {engagement.replies}
-            </span>
-          </span>
+          <EngagementButton icon="reply" label="Reply" count={engagement.replies} />
         ) : null}
         {engagement.likes !== undefined ? (
-          <span className="flex items-center gap-1.5">
-            <Icon name="like" />
-            <span className="font-mono text-[11px] leading-[14px]">
-              {engagement.likes}
-            </span>
-          </span>
+          <EngagementButton icon="like" label="Like" count={engagement.likes} />
         ) : null}
-        <button
-          type="button"
-          aria-label="Save"
-          className="relative z-10 hover:text-text"
-        >
-          <Icon name="bookmark" />
-        </button>
-        <button
-          type="button"
-          aria-label="Share"
-          className="relative z-10 hover:text-text"
-        >
-          <Icon name="share" />
-        </button>
+        <EngagementButton icon="bookmark" label="Save" />
+        <EngagementButton icon="share" label="Share" />
       </div>
     </article>
   );

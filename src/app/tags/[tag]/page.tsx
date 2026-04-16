@@ -68,7 +68,7 @@ export default async function TagArchiveRoute({
 
   return (
     <main className="min-h-screen bg-background text-text">
-      <div className="mx-auto flex max-w-[720px] flex-col gap-10 px-12 pt-16 pb-48">
+      <div className="mx-auto flex max-w-[720px] flex-col gap-8 px-5 pt-10 pb-36 sm:gap-9 sm:px-8 sm:pt-14 sm:pb-44 md:gap-10 md:px-12 md:pt-16 md:pb-48">
         <Link
           href="/"
           className="inline-flex w-fit items-center gap-1.5 font-mono text-[11px] leading-[14px] tracking-[0.04em] text-faint no-underline transition-colors duration-150 hover:text-muted"
@@ -78,7 +78,7 @@ export default async function TagArchiveRoute({
         </Link>
 
         <header className="flex flex-col gap-3">
-          <h1 className="font-serif text-[48px] leading-[52px] tracking-[-0.02em] text-text">
+          <h1 className="font-serif text-[32px] leading-[36px] tracking-[-0.02em] text-text sm:text-[40px] sm:leading-[44px] md:text-[48px] md:leading-[52px]">
             <span style={{ color: hashColor }}>#</span>
             {tag}
           </h1>

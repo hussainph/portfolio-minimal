@@ -38,7 +38,7 @@ export function Figure({
   className,
 }: FigureProps) {
   return (
-    <figure className={cn("my-8 flex flex-col gap-2", className)}>
+    <figure className={cn("my-6 flex flex-col gap-2 sm:my-8", className)}>
       <div
         className={cn(
           "relative aspect-video w-full overflow-hidden rounded-card border border-border",
@@ -65,7 +65,7 @@ export function Figure({
         ) : null}
       </div>
       {caption ? (
-        <figcaption className="font-mono text-[11px] uppercase tracking-[0.04em] text-faint">
+        <figcaption className="font-mono text-[10px] uppercase tracking-[0.04em] text-faint sm:text-[11px]">
           {caption}
         </figcaption>
       ) : null}

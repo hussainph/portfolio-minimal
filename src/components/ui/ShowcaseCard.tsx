@@ -8,7 +8,7 @@ import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Label } from "./Label";
-import { Icon } from "./Icon";
+import { EngagementButton } from "./EngagementButton";
 
 export interface ShowcaseImage {
   /** Bottom-right (single) or bottom-left (multi) caption inside the tile. */
@@ -42,12 +42,12 @@ export function ShowcaseCard({
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border border-border bg-surface p-5 transition-colors duration-200",
+        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border border-border bg-surface p-4 transition-colors duration-200 sm:p-5",
         "hover:bg-surface-hover hover:border-border-hover",
         className,
       )}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
         {tags.map((t) => (
           <Tag
             key={t}
@@ -79,24 +79,14 @@ export function ShowcaseCard({
         )}
       </div>
 
-      <div className="flex items-center gap-5 text-faint">
+      <div className="flex items-center gap-3 text-faint sm:gap-4">
         {engagement.replies !== undefined ? (
-          <span className="flex items-center gap-1.5">
-            <Icon name="reply" />
-            <span className="font-mono text-[11px] leading-[14px]">
-              {engagement.replies}
-            </span>
-          </span>
+          <EngagementButton icon="reply" label="Reply" count={engagement.replies} />
         ) : null}
         {engagement.likes !== undefined ? (
-          <span className="flex items-center gap-1.5">
-            <Icon name="like" />
-            <span className="font-mono text-[11px] leading-[14px]">
-              {engagement.likes}
-            </span>
-          </span>
+          <EngagementButton icon="like" label="Like" count={engagement.likes} />
         ) : null}
-        <Icon name="bookmark" />
+        <EngagementButton icon="bookmark" label="Save" />
       </div>
     </article>
   );
@@ -112,7 +102,7 @@ function SingleTile({
   return (
     <div
       className={cn(
-        "relative h-60 w-full overflow-hidden rounded-[3px] border border-border bg-gradient-to-br",
+        "relative h-48 w-full overflow-hidden rounded-[3px] border border-border bg-gradient-to-br sm:h-60",
         GLOW_NEUTRAL_BASE,
       )}
     >

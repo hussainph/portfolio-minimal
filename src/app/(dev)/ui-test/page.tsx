@@ -37,7 +37,7 @@ export default function UITestPage() {
 
   return (
     <main className="min-h-screen bg-background text-text">
-      <div className="mx-auto flex max-w-[960px] flex-col gap-16 px-12 pt-16 pb-48">
+      <div className="mx-auto flex max-w-[960px] flex-col gap-12 px-5 pt-10 pb-36 sm:gap-14 sm:px-8 sm:pt-14 sm:pb-44 md:gap-16 md:px-12 md:pt-16 md:pb-48">
         <Header />
 
         <FilterChipRow tags={FILTER_TAG_POOL} />
@@ -125,7 +125,7 @@ function Header() {
   return (
     <header className="flex flex-col gap-3 pb-3">
       <Label tone="faint">UI Test · Component Library v4</Label>
-      <h1 className="font-serif text-[48px] leading-[52px] tracking-[-0.02em] text-text">
+      <h1 className="font-serif text-[32px] leading-[36px] tracking-[-0.02em] text-text sm:text-[40px] sm:leading-[44px] md:text-[48px] md:leading-[52px]">
         Hussain Phalasiya
       </h1>
       <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
@@ -152,7 +152,7 @@ function Section({
     <section className="flex flex-col gap-6">
       <div className="flex flex-wrap items-baseline gap-4">
         <Label tone="faint">§ {number}</Label>
-        <h2 className="font-serif text-[24px] leading-[32px] tracking-[-0.01em] text-text">
+        <h2 className="font-serif text-[20px] leading-[28px] tracking-[-0.01em] text-text sm:text-[22px] sm:leading-[30px] md:text-[24px] md:leading-[32px]">
           {title}
         </h2>
         {subtitle ? (
@@ -647,7 +647,7 @@ function FilterChipRowSection() {
         the wrapper makes it the scroll/sticky context, so the chip row pins
         to the section, not the viewport, while you read.
       */}
-      <div className="relative max-h-[160px] overflow-y-auto rounded-card border border-border bg-sunken px-12 py-4">
+      <div className="relative max-h-[160px] overflow-y-auto rounded-card border border-border bg-sunken px-5 py-4 sm:px-8 md:px-12">
         <FilterChipRow tags={FILTER_TAG_POOL} />
         <p className="mt-4 max-w-[520px] font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-body">
           Scroll inside this frame to see the chip row stay pinned to the top

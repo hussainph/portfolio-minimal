@@ -7,7 +7,7 @@ import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
-import { Icon } from "./Icon";
+import { EngagementButton } from "./EngagementButton";
 import type { ShowcaseImage } from "./ShowcaseCard";
 
 interface BentoShowcaseProps {
@@ -48,12 +48,12 @@ export function BentoShowcase({
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-panel border border-[#1a1a1d] bg-sunken p-5 transition-colors duration-200",
+        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-panel border border-[#1a1a1d] bg-sunken p-4 transition-colors duration-200 sm:p-5",
         "hover:bg-sunken-hover hover:border-border-hover",
         className,
       )}
     >
-      <div className="flex items-center gap-2.5">
+      <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
         {tags.map((t) => (
           <Tag
             key={t}
@@ -77,7 +77,7 @@ export function BentoShowcase({
         {body}
       </p>
 
-      <div className="flex h-[280px] gap-2">
+      <div className="flex h-[220px] gap-2 sm:h-[280px]">
         <FeaturedTile
           image={featured}
           primaryTag={primaryTag}
@@ -90,30 +90,24 @@ export function BentoShowcase({
         </div>
       </div>
 
-      <div className="flex items-center gap-[18px] pt-0.5 text-faint">
+      <div className="flex items-center gap-3 pt-0.5 text-faint sm:gap-4">
         {engagement.replies !== undefined ? (
-          <span className="flex items-center gap-1.5">
-            <Icon name="reply" size={14} />
-            <span className="font-mono text-[11px] leading-[14px]">
-              {engagement.replies}
-            </span>
-          </span>
+          <EngagementButton
+            icon="reply"
+            label="Reply"
+            count={engagement.replies}
+            iconSize={14}
+          />
         ) : null}
         {engagement.likes !== undefined ? (
-          <span className="flex items-center gap-1.5">
-            <Icon name="like" size={14} />
-            <span className="font-mono text-[11px] leading-[14px]">
-              {engagement.likes}
-            </span>
-          </span>
+          <EngagementButton
+            icon="like"
+            label="Like"
+            count={engagement.likes}
+            iconSize={14}
+          />
         ) : null}
-        <button
-          type="button"
-          aria-label="Save"
-          className="relative z-10 flex items-center gap-1 hover:text-muted"
-        >
-          <Icon name="bookmark" size={14} />
-        </button>
+        <EngagementButton icon="bookmark" label="Save" iconSize={14} />
       </div>
     </article>
   );

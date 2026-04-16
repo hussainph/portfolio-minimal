@@ -132,6 +132,7 @@ body {
 }
 .prose-dark pre {
   max-width: 100%;
+  overflow-x: auto;
 }
 .prose-dark pre code {
   background-color: transparent;

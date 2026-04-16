@@ -60,7 +60,7 @@ export function Tag(props: TagProps) {
   const isInteractive = as === "link" || as === "filter";
 
   const sharedClass = cn(
-    "inline-flex items-center rounded-pill border py-1 px-3 font-mono text-[11px] leading-[14px]",
+    "inline-flex items-center rounded-pill border py-1.5 px-3 font-mono text-[11px] leading-[14px] sm:py-1",
     resolved === "active" ? "font-bold text-background" : null,
     isInteractive ? "cursor-pointer transition-colors duration-150" : null,
     className,

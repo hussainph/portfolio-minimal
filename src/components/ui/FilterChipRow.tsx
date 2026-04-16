@@ -36,7 +36,7 @@ function FilterChipRowInner({ tags, className }: FilterChipRowProps) {
   return (
     <div
       className={cn(
-        "sticky top-0 z-20 -mx-12 flex flex-wrap items-center gap-2 border-b border-border/60 bg-background/80 py-3 px-12 backdrop-blur-[8px]",
+        "sticky top-0 z-20 -mx-5 flex flex-wrap items-center gap-2 border-b border-border/60 bg-background/80 px-5 py-3 backdrop-blur-[8px] sm:-mx-8 sm:px-8 md:-mx-12 md:px-12",
         className,
       )}
       aria-label="Filter by tag"
@@ -81,7 +81,7 @@ function FilterChipRowSkeleton() {
   return (
     <div
       aria-hidden="true"
-      className="sticky top-0 z-20 -mx-12 flex items-center border-b border-border/60 bg-background/80 py-3 px-12 backdrop-blur-[8px] h-[44px]"
+      className="sticky top-0 z-20 -mx-5 flex h-[44px] items-center border-b border-border/60 bg-background/80 px-5 py-3 backdrop-blur-[8px] sm:-mx-8 sm:px-8 md:-mx-12 md:px-12"
     />
   );
 }

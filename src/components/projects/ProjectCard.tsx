@@ -42,7 +42,7 @@ export function ProjectCard({
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-7 transition-colors duration-200",
+        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-5 transition-colors duration-200 sm:p-7",
         "hover:bg-surface-hover hover:border-border-hover",
         className,
       )}
@@ -68,7 +68,7 @@ export function ProjectCard({
         {status ? <Meta>· {status}</Meta> : null}
       </div>
 
-      <h3 className="font-serif text-[26px] leading-[32px] tracking-[-0.015em] text-text">
+      <h3 className="font-serif text-[22px] leading-[28px] tracking-[-0.015em] text-text sm:text-[26px] sm:leading-[32px]">
         <Link
           href={`/projects/${slug}`}
           className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"

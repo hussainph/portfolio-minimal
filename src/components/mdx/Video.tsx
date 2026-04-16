@@ -28,7 +28,7 @@ export function Video({
   className,
 }: VideoProps) {
   return (
-    <figure className={cn("my-8 flex flex-col gap-2", className)}>
+    <figure className={cn("my-6 flex flex-col gap-2 sm:my-8", className)}>
       <div className="overflow-hidden rounded-card border border-border bg-sunken">
         {src ? (
           <video
@@ -47,7 +47,7 @@ export function Video({
         )}
       </div>
       {caption ? (
-        <figcaption className="font-mono text-[11px] uppercase tracking-[0.04em] text-faint">
+        <figcaption className="font-mono text-[10px] uppercase tracking-[0.04em] text-faint sm:text-[11px]">
           {caption}
         </figcaption>
       ) : null}

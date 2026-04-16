@@ -66,7 +66,7 @@ export function BottomToolbar({
               key={tab.id}
               type="button"
               className={cn(
-                "flex items-center gap-2 rounded-pill py-2.5 px-[18px] transition-colors",
+                "flex items-center gap-2 rounded-pill py-2.5 px-3 transition-colors sm:px-[18px]",
                 active
                   ? "bg-background text-text"
                   : "bg-transparent text-muted hover:text-text",
@@ -74,7 +74,7 @@ export function BottomToolbar({
               aria-current={active ? "page" : undefined}
             >
               <Icon name={tab.icon} size={16} strokeWidth={1.6} />
-              <span className="font-mono text-[11px] leading-[14px] tracking-[0.04em]">
+              <span className="hidden font-mono text-[11px] leading-[14px] tracking-[0.04em] sm:inline">
                 {tab.label}
               </span>
             </button>

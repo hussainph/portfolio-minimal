@@ -31,7 +31,7 @@ export function TextLink({
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
       className={cn(
-        "group inline-flex items-center gap-2 font-sans text-[17px] leading-[22px] tracking-[-0.03em] transition-colors duration-150",
+        "group inline-flex items-center gap-2 font-sans text-[16px] leading-[22px] tracking-[-0.03em] transition-colors duration-150 sm:text-[17px]",
         "text-text-link underline decoration-accent-teal decoration-dashed decoration-1 underline-offset-[5px]",
         "hover:text-accent-teal hover:decoration-solid hover:decoration-[1.5px]",
         "visited:text-visited visited:decoration-visited",

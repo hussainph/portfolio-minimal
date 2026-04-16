@@ -93,7 +93,7 @@ export async function Ref({ slug, children, className }: RefProps) {
         data-ref-slug={slug}
         data-ref-missing="true"
         className={cn(
-          "font-sans text-[17px] leading-[22px] tracking-[-0.03em]",
+          "font-sans text-[16px] leading-[22px] tracking-[-0.03em] sm:text-[17px]",
           isDev
             ? "rounded-xs border border-dashed border-accent-orange/60 px-1.5 py-0.5 text-accent-orange"
             : "text-muted underline decoration-dotted decoration-muted underline-offset-[5px]",
@@ -115,7 +115,7 @@ export async function Ref({ slug, children, className }: RefProps) {
       data-ref-kind={item.kind}
       data-ref-title={refTitle}
       className={cn(
-        "font-sans text-[17px] leading-[22px] tracking-[-0.03em] transition-colors duration-150",
+        "font-sans text-[16px] leading-[22px] tracking-[-0.03em] transition-colors duration-150 sm:text-[17px]",
         "text-text-link underline decoration-accent-teal decoration-dashed decoration-1 underline-offset-[5px]",
         "hover:text-accent-teal hover:decoration-solid hover:decoration-[1.5px]",
         "visited:text-visited visited:decoration-visited",

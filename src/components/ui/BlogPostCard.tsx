@@ -7,6 +7,7 @@ import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
 import { Icon } from "./Icon";
+import { EngagementButton } from "./EngagementButton";
 
 interface BlogPostCardProps {
   tags: string[];
@@ -36,7 +37,7 @@ export function BlogPostCard({
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-7 transition-colors duration-200",
+        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-5 transition-colors duration-200 sm:p-7",
         "hover:bg-surface-hover hover:border-border-hover",
         className,
       )}
@@ -47,7 +48,7 @@ export function BlogPostCard({
         style={stripeStyle}
       />
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
         {tags.map((t) => (
           <Tag
             key={t}
@@ -64,7 +65,7 @@ export function BlogPostCard({
         </Meta>
       </div>
 
-      <h3 className="font-serif text-[28px] leading-[34px] tracking-[-0.015em] text-text">
+      <h3 className="font-serif text-[22px] leading-[28px] tracking-[-0.015em] text-text sm:text-[28px] sm:leading-[34px]">
         <Link
           href={href}
           className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
@@ -78,19 +79,19 @@ export function BlogPostCard({
       </p>
 
       <div className="mt-1 flex items-center justify-between">
-        <div className="flex items-center gap-[18px] text-faint transition-colors duration-200 group-hover:text-muted">
+        <div className="flex items-center gap-3 text-faint sm:gap-4">
           {engagement.replies !== undefined ? (
-            <span className="flex items-center gap-1.5">
-              <Icon name="reply" size={14} />
-              <span className="font-mono text-[11px] leading-[14px]">
-                {engagement.replies}
-              </span>
-            </span>
+            <EngagementButton
+              icon="reply"
+              label="Reply"
+              count={engagement.replies}
+              iconSize={14}
+            />
           ) : null}
           {engagement.likes !== undefined ? (
             <LikeIndicator count={engagement.likes} tagName={primaryTag} />
           ) : null}
-          <Icon name="bookmark" size={14} />
+          <EngagementButton icon="bookmark" label="Save" iconSize={14} />
         </div>
 
         <div className="flex items-center gap-1.5 text-muted transition-[color,gap] duration-200 group-hover:gap-2.5 group-hover:text-accent-orange">
@@ -134,12 +135,13 @@ function LikeIndicator({ count, tagName }: { count: number; tagName: string }) {
   // swap via CSS custom property at the group level.
   const color = tagColor(tagName);
   return (
-    <span
-      className="flex items-center gap-1.5 transition-colors duration-200 group-hover:[color:var(--like-hover)]"
+    <EngagementButton
+      icon="like"
+      label="Like"
+      count={count}
+      iconSize={14}
+      className="hover:[color:var(--like-hover)]"
       style={{ "--like-hover": color } as React.CSSProperties}
-    >
-      <Icon name="like" size={14} />
-      <span className="font-mono text-[11px] leading-[14px]">{count}</span>
-    </span>
+    />
   );
 }

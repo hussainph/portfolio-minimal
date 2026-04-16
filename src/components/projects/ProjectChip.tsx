@@ -39,7 +39,7 @@ export function ProjectChip({
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] items-center gap-4 rounded-card border bg-surface border-border py-3 pl-5 pr-4 transition-colors duration-200",
+        "group relative flex max-w-[600px] items-center gap-3 rounded-card border bg-surface border-border py-3 pl-4 pr-3 transition-colors duration-200 sm:gap-4 sm:pl-5 sm:pr-4",
         "hover:bg-surface-hover hover:border-border-hover",
         className,
       )}
@@ -51,7 +51,7 @@ export function ProjectChip({
       />
 
       <div className="flex min-w-0 grow items-baseline gap-2">
-        <h3 className="shrink-0 font-serif text-[18px] leading-[24px] tracking-[-0.01em] text-text">
+        <h3 className="min-w-0 truncate font-serif text-[16px] leading-[22px] tracking-[-0.01em] text-text sm:shrink-0 sm:text-[18px] sm:leading-[24px]">
           <Link
             href={`/projects/${slug}`}
             className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
@@ -60,13 +60,13 @@ export function ProjectChip({
           </Link>
         </h3>
         {subtitle ? (
-          <span className="min-w-0 truncate font-sans text-[13px] leading-[20px] tracking-[-0.03em] text-muted">
+          <span className="hidden min-w-0 truncate font-sans text-[13px] leading-[20px] tracking-[-0.03em] text-muted sm:inline">
             · {subtitle}
           </span>
         ) : null}
       </div>
 
-      <div className="flex shrink-0 items-center gap-2">
+      <div className="hidden shrink-0 items-center gap-2 sm:flex">
         {tags.map((t) => (
           <Tag
             key={t}
@@ -79,12 +79,12 @@ export function ProjectChip({
           </Tag>
         ))}
         {status ? <Meta>· {status}</Meta> : null}
-        <Icon
-          name="arrow-right"
-          size={14}
-          className="text-faint transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:text-accent-orange"
-        />
       </div>
+      <Icon
+        name="arrow-right"
+        size={14}
+        className="shrink-0 text-faint transition-[color,transform] duration-200 group-hover:translate-x-0.5 group-hover:text-accent-orange"
+      />
     </article>
   );
 }

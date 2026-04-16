@@ -53,7 +53,7 @@ export function CodeBlock({
         className,
       )}
     >
-      <div className="flex items-center justify-between border-b border-border px-4 py-2">
+      <div className="flex items-center justify-between border-b border-border px-3 py-2 sm:px-4">
         <span className="font-mono text-[11px] leading-[14px] tracking-[0.04em] text-muted">
           {filename}
         </span>
