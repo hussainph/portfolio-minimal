@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { InterfaceKit } from "interface-kit/react";
+import { Agentation } from "agentation";
 import { SITE_URL } from "@/lib/siteUrl";
 import "./globals.css";
 
@@ -67,6 +68,7 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === "development" && <InterfaceKit />}
+        {process.env.NODE_ENV === "development" && <Agentation />}
       </body>
     </html>
   );
