@@ -24,6 +24,7 @@ bun run lint             # ESLint
 - **Animation:** Framer Motion, CSS Houdini `@property`, Paper canvas shaders
 - **Fonts:** Instrument Serif (display + post titles + pull quotes), DM Sans (body + UI), JetBrains Mono (tags + timestamps + code) — all via `next/font/google`
 - **Canvas shaders:** `@paper-design/shaders-react@0.0.74` (SimplexNoise shader on homepage header)
+- **Icons:** `@phosphor-icons/react@^2.1.10` (social link row, icon set)
 
 MDX is wired via `next-mdx-remote/rsc` in `src/lib/content/mdx.ts`. Content lives as `.mdx` files in `content/` (outside `src/`), compiled at runtime with `remark-gfm`, `remark-smartypants`, `rehype-pretty-code` (Shiki `github-dark-dimmed`).
 
@@ -53,7 +54,7 @@ Tokens live in [src/app/globals.css](src/app/globals.css) under `@theme`. Compon
 
 ### Key Directories
 
-- `src/components/ui/` — Design-system primitives (HeaderShader, Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, FilterChipRow, PrimaryButton, ProjectHero, BottomToolbar, Icon, Meta, Label, Separator)
+- `src/components/ui/` — Design-system primitives (HeaderShader, SocialIconRow, Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, FilterChipRow, PrimaryButton, ProjectHero, BottomToolbar, Icon, Meta, Label, Separator)
 - `src/components/projects/` — ProjectCard, ProjectChip (smaller and bitesized tiers)
 - `src/components/content/` — Per-route page templates (NotePage, PostPage, ShowcasePage, ProjectPage)
 - `src/components/feed/` — FeedList (renders filtered/sorted items)

@@ -121,6 +121,8 @@ Defined as theme tokens; use semantically.
 
 Phosphor Light weight. Rest state in `faint`. On active/interaction, icons inherit a tag hue (reply → indigo, bookmark → amber, like → rose, share → mint), derived via `tagColor()` so the color system stays unified.
 
+[SocialIconRow](../../src/components/ui/SocialIconRow.tsx) is a three-icon row for external social links (GitHub, X, email). Combines magnetic cursor attraction (pointer-tracked spring, ±8px), hover bounce (`scale 1.15, y: -2`), and weight crossfade (regular → fill). Respects `prefers-reduced-motion`.
+
 ### Separators
 
 1px solid `border` between feed items. No section shadows, no backdrop fills — just ruled lines.
@@ -161,7 +163,7 @@ Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, 
 
 | Component | Purpose |
 |-----------|---------|
-| [HeaderShader](../../src/components/ui/HeaderShader.tsx) | Client-side canvas shader banner. Paper SimplexNoise with Dark Warmth vibrant palette (`#4449CF`, `#FFD1E0`, `#F94446`, `#FFD36B`, `#FFFFFF`). Speed 0.4 (respects `prefers-reduced-motion` by setting `speed={0}`). Layered vignette (oklab radial) + bottom fade to surface. Decorative (`aria-hidden`) |
+| [HeaderShader](../../src/components/ui/HeaderShader.tsx) | Interactive Backdrop header composition. Cycles through 6 Paper shader variants (3 Dithering + 2 GrainGradient + 1 Warp presets) with scale crossfade on top-half click (aria-label: "Shuffle header shader"). Includes frosted plaque at bottom with name, bio, and SocialIconRow. Min heights: 330px (sm: 390px, lg: 420px) |
 | [Tag](../../src/components/ui/Tag.tsx) | Pill with generative hue. Polymorphic: `as="display"` (span), `as="link"` (Link), `as="filter"` (button). States: default / hover / active |
 | [TextLink](../../src/components/ui/TextLink.tsx) | Cream + dashed teal underline at rest → solid teal hover → muted teal when visited. External links show a trailing arrow |
 | [Meta](../../src/components/ui/Meta.tsx) | 11px JB Mono, `muted` or `faint` tone. For timestamps, separators, small metadata |
@@ -212,7 +214,7 @@ Only the hovered element animates — no global scheduler.
 
 ### 3. Paper canvas shaders — for ambient motion with WebGL
 
-Procedural shader motion via `@paper-design/shaders-react` (SimplexNoise). Used on [HeaderShader](../../src/components/ui/HeaderShader.tsx) for homepage banner ambient liveness. Respects `prefers-reduced-motion` by setting `speed={0}` inside `useReducedMotion()` — do not try to halt the shader via CSS; instead pass the flag to the component.
+Procedural shader motion via `@paper-design/shaders-react` (multiple types: Dithering, GrainGradient, Warp). Used on [HeaderShader](../../src/components/ui/HeaderShader.tsx) for homepage variants cycling. Respects `prefers-reduced-motion` by setting `speed={0}` inside `useReducedMotion()` — do not try to halt the shader via CSS; instead pass the flag to the component.
 
 ### 4. `prefers-reduced-motion`
 
@@ -224,15 +226,12 @@ Global rule in [globals.css](../../src/app/globals.css#L89): all `animation-name
 
 ### Header
 
-Header is a card (`rounded-md border border-border bg-surface`) with two sections:
+Header is a tall Backdrop card rendered by [HeaderShader](../../src/components/ui/HeaderShader.tsx) with two visual layers:
 
-- **Shader banner** ([HeaderShader](../../src/components/ui/HeaderShader.tsx)): Paper SimplexNoise vibrant palette, h-36 (sm:h-44, lg:h-40), with oklab vignette overlay and fade to surface bg
-- **Text content** on surface bg:
-  - Display name in Instrument Serif (36–48px, responsive)
-  - Tagline in DM Sans 400, `muted`
-  - Social links in JetBrains Mono, `faint`
+- **Top half** (click target): Paper shader variants (Dithering/GrainGradient/Warp presets) with scale crossfade (550ms) on variant advance
+- **Bottom half**: Heavily-blurred frosted plaque overlaid with name (Instrument Serif, display size), bio (DM Sans 400, `muted`), and [SocialIconRow](../../src/components/ui/SocialIconRow.tsx)
 
-Mobile/tablet: card stacks vertically above FilterChipRow. Desktop (lg:): card pins to left column (sticky), FilterChipRow + FeedList float to right column.
+Min heights: 330px (sm: 390px, lg: 420px). Mobile/tablet: card stacks vertically above FilterChipRow. Desktop (lg:): card pins to left column (sticky), FilterChipRow + FeedList float to right column.
 
 ### Tag filter chips
 
