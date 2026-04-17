@@ -23,7 +23,6 @@ function stripInlineMarkdown(raw: string): string {
 import { BentoShowcase } from "@/components/ui/BentoShowcase";
 import { BlogPostCard } from "@/components/ui/BlogPostCard";
 import { NoteCard } from "@/components/ui/NoteCard";
-import { Separator } from "@/components/ui/Separator";
 import {
   ShowcaseCard,
   type ShowcaseImage as ShowcaseCardImage,
@@ -37,9 +36,10 @@ interface FeedListProps {
 
 /**
  * Server component. Maps the content index's discriminated-union feed items
- * to the corresponding UI card primitive, inserting separators between
- * siblings. The switch uses `assertNever` in the default branch so that
- * adding a new content kind later triggers a compile error here.
+ * to the corresponding UI card primitive. Cards now carry their own
+ * frosted/shader chrome, so the feed packs them tight with no dividers.
+ * The switch uses `assertNever` in the default branch so adding a new
+ * content kind later triggers a compile error here.
  */
 export function FeedList({ items, activeTags = [] }: FeedListProps) {
   const filtered =
@@ -60,10 +60,9 @@ export function FeedList({ items, activeTags = [] }: FeedListProps) {
   }
 
   return (
-    <div className="flex flex-col">
-      {filtered.map((item, idx) => (
+    <div className="flex flex-col gap-3">
+      {filtered.map((item) => (
         <Fragment key={`${item.kind}:${item.frontmatter.slug}`}>
-          {idx > 0 ? <Separator className="my-8" /> : null}
           {renderItem(item)}
         </Fragment>
       ))}
