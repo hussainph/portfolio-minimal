@@ -1,12 +1,7 @@
 "use client";
 
-import { useRef, useState, type ComponentType } from "react";
-import {
-  motion,
-  useMotionValue,
-  useReducedMotion,
-  useSpring,
-} from "framer-motion";
+import { useState, type ComponentType } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   EnvelopeSimple,
   GithubLogo,
@@ -14,6 +9,7 @@ import {
   type IconProps as PhosphorIconProps,
 } from "@phosphor-icons/react";
 import { cn } from "@/lib/utils";
+import { BOUNCE_SPRING, useMagneticMotion } from "./useMagneticMotion";
 
 export type SocialIconKey = "github" | "x" | "email";
 
@@ -34,15 +30,6 @@ const ICONS: Record<SocialIconKey, ComponentType<PhosphorIconProps>> = {
   github: GithubLogo,
   x: XLogo,
   email: EnvelopeSimple,
-};
-
-const MAGNET_MAX_PX = 8;
-const MAGNET_PULL = 0.35;
-const MAGNET_SPRING = { stiffness: 200, damping: 15, mass: 0.6 };
-const BOUNCE_SPRING = {
-  type: "spring" as const,
-  stiffness: 400,
-  damping: 12,
 };
 
 export function SocialIconRow({
@@ -77,37 +64,17 @@ function MagneticIcon({
   delay: number;
 }) {
   const reduceMotion = useReducedMotion();
-  const ref = useRef<HTMLAnchorElement | null>(null);
   const [hovered, setHovered] = useState(false);
   const [focused, setFocused] = useState(false);
   const active = hovered || focused;
 
-  const xRaw = useMotionValue(0);
-  const yRaw = useMotionValue(0);
-  const x = useSpring(xRaw, MAGNET_SPRING);
-  const y = useSpring(yRaw, MAGNET_SPRING);
+  const { ref, motionStyle, handlers } = useMagneticMotion<HTMLAnchorElement>({
+    maxPx: 8,
+    pull: 0.35,
+    disabled: reduceMotion ?? false,
+  });
 
   const Icon = ICONS[link.icon];
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLAnchorElement>) => {
-    if (reduceMotion) return;
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    const dx = (e.clientX - cx) * MAGNET_PULL;
-    const dy = (e.clientY - cy) * MAGNET_PULL;
-    const clamp = (v: number) =>
-      Math.max(-MAGNET_MAX_PX, Math.min(MAGNET_MAX_PX, v));
-    xRaw.set(clamp(dx));
-    yRaw.set(clamp(dy));
-  };
-
-  const handlePointerLeave = () => {
-    xRaw.set(0);
-    yRaw.set(0);
-    setHovered(false);
-  };
 
   const hoverVariant = reduceMotion
     ? undefined
@@ -129,15 +96,18 @@ function MagneticIcon({
       whileFocus={hoverVariant}
       whileTap={reduceMotion ? undefined : { scale: 0.96 }}
       onPointerEnter={() => setHovered(true)}
-      onPointerMove={handlePointerMove}
-      onPointerLeave={handlePointerLeave}
+      onPointerMove={handlers.onPointerMove}
+      onPointerLeave={() => {
+        handlers.onPointerLeave();
+        setHovered(false);
+      }}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
     >
       <motion.span
         aria-hidden="true"
         className="relative grid place-items-center"
-        style={reduceMotion ? undefined : { x, y }}
+        style={motionStyle}
       >
         <span
           className="grid place-items-center"
