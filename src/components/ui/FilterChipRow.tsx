@@ -67,7 +67,7 @@ function FilterChipRowInner({ tags, className }: FilterChipRowProps) {
 
 export function FilterChipRow(props: FilterChipRowProps) {
   return (
-    <Suspense fallback={<FilterChipRowSkeleton />}>
+    <Suspense fallback={<FilterChipRowSkeleton className={props.className} />}>
       <FilterChipRowInner {...props} />
     </Suspense>
   );
@@ -76,12 +76,17 @@ export function FilterChipRow(props: FilterChipRowProps) {
 /**
  * Reserves the row height while useSearchParams suspends so the feed below
  * doesn't jump on first paint. Matches the inner row's padding + border.
+ * Forwards className so callers can override the viewport-edge bleed (e.g.
+ * neutralizing the negative margins inside a column layout).
  */
-function FilterChipRowSkeleton() {
+function FilterChipRowSkeleton({ className }: { className?: string }) {
   return (
     <div
       aria-hidden="true"
-      className="sticky top-0 z-20 -mx-5 flex h-[44px] items-center border-b border-border/60 bg-background/80 px-5 py-3 backdrop-blur-[8px] sm:-mx-8 sm:px-8 md:-mx-12 md:px-12"
+      className={cn(
+        "sticky top-0 z-20 -mx-5 flex h-[44px] items-center border-b border-border/60 bg-background/80 px-5 py-3 backdrop-blur-[8px] sm:-mx-8 sm:px-8 md:-mx-12 md:px-12",
+        className,
+      )}
     />
   );
 }

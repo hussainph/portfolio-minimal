@@ -21,8 +21,9 @@ bun run lint             # ESLint
 - **Framework:** Next.js 16 (App Router) with strict TypeScript
 - **Package manager:** Bun
 - **Styling:** Tailwind CSS v4 (CSS-first via `@theme`)
-- **Animation:** Framer Motion
+- **Animation:** Framer Motion, CSS Houdini `@property`, Paper canvas shaders
 - **Fonts:** Instrument Serif (display + post titles + pull quotes), DM Sans (body + UI), JetBrains Mono (tags + timestamps + code) — all via `next/font/google`
+- **Canvas shaders:** `@paper-design/shaders-react@0.0.74` (SimplexNoise shader on homepage header)
 
 MDX is wired via `next-mdx-remote/rsc` in `src/lib/content/mdx.ts`. Content lives as `.mdx` files in `content/` (outside `src/`), compiled at runtime with `remark-gfm`, `remark-smartypants`, `rehype-pretty-code` (Shiki `github-dark-dimmed`).
 
@@ -38,7 +39,7 @@ Tokens live in [src/app/globals.css](src/app/globals.css) under `@theme`. Compon
 
 ### Route Structure
 
-- `src/app/page.tsx` — Home feed with tag filter (`?tag=...` searchParams)
+- `src/app/page.tsx` — Home feed with sticky header card (shader banner + text on surface) and tag filter (`?tag=...` searchParams). Desktop layout (lg:) is a two-column grid: sticky header card left (30fr), FilterChipRow + FeedList right (70fr)
 - `src/app/n/[slug]/page.tsx` — Note permalink
 - `src/app/blog/[slug]/page.tsx` — Blog post
 - `src/app/showcases/[slug]/page.tsx` — Showcase detail
@@ -52,7 +53,7 @@ Tokens live in [src/app/globals.css](src/app/globals.css) under `@theme`. Compon
 
 ### Key Directories
 
-- `src/components/ui/` — Design-system primitives (Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, FilterChipRow, PrimaryButton, ProjectHero, BottomToolbar, Icon, Meta, Label, Separator)
+- `src/components/ui/` — Design-system primitives (HeaderShader, Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, FilterChipRow, PrimaryButton, ProjectHero, BottomToolbar, Icon, Meta, Label, Separator)
 - `src/components/projects/` — ProjectCard, ProjectChip (smaller and bitesized tiers)
 - `src/components/content/` — Per-route page templates (NotePage, PostPage, ShowcasePage, ProjectPage)
 - `src/components/feed/` — FeedList (renders filtered/sorted items)

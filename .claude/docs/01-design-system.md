@@ -161,6 +161,7 @@ Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, 
 
 | Component | Purpose |
 |-----------|---------|
+| [HeaderShader](../../src/components/ui/HeaderShader.tsx) | Client-side canvas shader banner. Paper SimplexNoise with Dark Warmth vibrant palette (`#4449CF`, `#FFD1E0`, `#F94446`, `#FFD36B`, `#FFFFFF`). Speed 0.4 (respects `prefers-reduced-motion` by setting `speed={0}`). Layered vignette (oklab radial) + bottom fade to surface. Decorative (`aria-hidden`) |
 | [Tag](../../src/components/ui/Tag.tsx) | Pill with generative hue. Polymorphic: `as="display"` (span), `as="link"` (Link), `as="filter"` (button). States: default / hover / active |
 | [TextLink](../../src/components/ui/TextLink.tsx) | Cream + dashed teal underline at rest → solid teal hover → muted teal when visited. External links show a trailing arrow |
 | [Meta](../../src/components/ui/Meta.tsx) | 11px JB Mono, `muted` or `faint` tone. For timestamps, separators, small metadata |
@@ -209,7 +210,11 @@ Custom properties typed as `<angle>` become interpolatable, so a conic gradient 
 
 Only the hovered element animates — no global scheduler.
 
-### 3. `prefers-reduced-motion`
+### 3. Paper canvas shaders — for ambient motion with WebGL
+
+Procedural shader motion via `@paper-design/shaders-react` (SimplexNoise). Used on [HeaderShader](../../src/components/ui/HeaderShader.tsx) for homepage banner ambient liveness. Respects `prefers-reduced-motion` by setting `speed={0}` inside `useReducedMotion()` — do not try to halt the shader via CSS; instead pass the flag to the component.
+
+### 4. `prefers-reduced-motion`
 
 Global rule in [globals.css](../../src/app/globals.css#L89): all `animation-name` values drop to `none` when the user has reduced motion set. Components should still fade/change color at a subtler threshold so affordance stays legible.
 
@@ -219,10 +224,15 @@ Global rule in [globals.css](../../src/app/globals.css#L89): all `animation-name
 
 ### Header
 
-- Display name in Instrument Serif 48px / -2%
-- Tagline in DM Sans 400, `muted`
-- Social links in JetBrains Mono, `faint`
-- (Planned) ambient radial glow behind the header using a blurred accent mix
+Header is a card (`rounded-md border border-border bg-surface`) with two sections:
+
+- **Shader banner** ([HeaderShader](../../src/components/ui/HeaderShader.tsx)): Paper SimplexNoise vibrant palette, h-36 (sm:h-44, lg:h-40), with oklab vignette overlay and fade to surface bg
+- **Text content** on surface bg:
+  - Display name in Instrument Serif (36–48px, responsive)
+  - Tagline in DM Sans 400, `muted`
+  - Social links in JetBrains Mono, `faint`
+
+Mobile/tablet: card stacks vertically above FilterChipRow. Desktop (lg:): card pins to left column (sticky), FilterChipRow + FeedList float to right column.
 
 ### Tag filter chips
 
