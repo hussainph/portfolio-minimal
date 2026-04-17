@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { GrainGradient } from "@paper-design/shaders-react";
 import { CodeBlock } from "@/components/mdx/CodeBlock";
 import { Figure } from "@/components/mdx/Figure";
 import { PullQuote } from "@/components/mdx/PullQuote";
@@ -9,7 +10,9 @@ import { ProjectChip } from "@/components/projects/ProjectChip";
 import { BlogPostCard } from "@/components/ui/BlogPostCard";
 import { BentoShowcase } from "@/components/ui/BentoShowcase";
 import { BottomToolbar } from "@/components/ui/BottomToolbar";
+import { EngagementButton } from "@/components/ui/EngagementButton";
 import { FilterChipRow } from "@/components/ui/FilterChipRow";
+import { Icon } from "@/components/ui/Icon";
 import { Label } from "@/components/ui/Label";
 import { Meta } from "@/components/ui/Meta";
 import { NoteCard } from "@/components/ui/NoteCard";
@@ -19,7 +22,9 @@ import { Separator } from "@/components/ui/Separator";
 import { ShowcaseCard } from "@/components/ui/ShowcaseCard";
 import { Tag } from "@/components/ui/Tag";
 import { TextLink } from "@/components/ui/TextLink";
-import { tagColor } from "@/lib/tagColor";
+import { cn } from "@/lib/utils";
+import { tagColor, tagHue } from "@/lib/tagColor";
+import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
 
 const FILTER_TAG_POOL = [
   "building",
@@ -68,6 +73,14 @@ export default function UITestPage() {
 
         <Section
           number="04"
+          title="Short-form density study"
+          subtitle="baseline · flat · frosted — identical copy across lanes, feel the rhythm against the long-form card"
+        >
+          <DensityStudySection />
+        </Section>
+
+        <Section
+          number="05"
           title="Primary button"
           subtitle="flat at rest · shader ring wakes on hover · disabled is honest"
         >
@@ -75,7 +88,7 @@ export default function UITestPage() {
         </Section>
 
         <Section
-          number="05"
+          number="06"
           title="Project hero"
           subtitle="headliner — two-pane, serif display, drifting shader visual"
         >
@@ -83,7 +96,7 @@ export default function UITestPage() {
         </Section>
 
         <Section
-          number="06"
+          number="07"
           title="Bottom toolbar"
           subtitle="live at the bottom of this page — scroll to test auto-hide"
         >
@@ -91,7 +104,7 @@ export default function UITestPage() {
         </Section>
 
         <Section
-          number="07"
+          number="08"
           title="Project cards"
           subtitle="showcase · smaller · bitesized"
         >
@@ -99,7 +112,7 @@ export default function UITestPage() {
         </Section>
 
         <Section
-          number="08"
+          number="09"
           title="Tag filter bar"
           subtitle="sticks above the feed · URL-driven · click the active chip to clear"
         >
@@ -107,7 +120,7 @@ export default function UITestPage() {
         </Section>
 
         <Section
-          number="09"
+          number="10"
           title="MDX primitives"
           subtitle="shared components globally available in every MDX body"
         >
@@ -788,5 +801,600 @@ function SpecimenBlock({
       </div>
       {children}
     </div>
+  );
+}
+
+/* -------------------------------------------------------------------------
+ * §04 · Short-form density study
+ *
+ * Three comparison lanes for how much chrome the feed's three primitives
+ * (note, showcase, blog post) should share. The actual NoteCard /
+ * ShowcaseCard / BlogPostCard imports stay untouched — the variants live
+ * inline below so the live home page isn't affected until one option is
+ * picked and promoted to a real component.
+ * ------------------------------------------------------------------------- */
+
+interface DensityNote {
+  tags: string[];
+  timestamp: string;
+  body: string;
+  engagement: { replies?: number; likes?: number };
+}
+
+const DENSITY_NOTES: DensityNote[] = [
+  {
+    tags: ["building"],
+    timestamp: "apr 12 · 9:42pm",
+    body: `Been messing around with structured outputs from Claude — the trick isn't constraining the model harder, it's giving it better examples of what "good" looks like. Schemas are necessary but not sufficient.`,
+    engagement: { replies: 3, likes: 12 },
+  },
+  {
+    tags: ["design", "craft"],
+    timestamp: "apr 10 · 4:18pm",
+    body: "The best onboarding isn't a tour — it's the first real task, done well. People remember competence, not narration.",
+    engagement: { replies: 1, likes: 8 },
+  },
+  {
+    tags: ["thinking"],
+    timestamp: "apr 9 · 11:02am",
+    body: "Reading Sennett. The bit about how material resistance is what makes craft legible is doing something to me. Most software is frictionless precisely because it has no craft left.",
+    engagement: { likes: 24 },
+  },
+];
+
+const DENSITY_SHOWCASE = {
+  tags: ["design"],
+  timestamp: "apr 11 · small idea",
+  body: "Ambient onboarding tooltip instead of intrusive. A small texture fragment shows up, fades. Feels way less like being yelled at.",
+  images: [{ caption: "ONBOARDING · V3" }],
+  engagement: { replies: 5, likes: 34 },
+};
+
+const DENSITY_BLOG = {
+  tags: ["design", "thinking", "ai"],
+  timestamp: "apr 8",
+  readTime: "8 min",
+  title:
+    "The Memory-Trust Paradox: why your AI product can't remember and users won't let it",
+  excerpt:
+    "I keep coming back to this idea that the fundamental tension in AI products isn't about capability at all. It's about this weird loop where the model needs context to be useful, but users don't trust it enough…",
+  engagement: { replies: 24, likes: 87 },
+};
+
+function DensityStudySection() {
+  return (
+    <div className="flex flex-col gap-12">
+      <p className="max-w-[620px] font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-muted">
+        Three treatments for the same content. Baseline is today&apos;s
+        all-cards layout. Option D pushes everyone into a translucent frosted
+        family inside an ambient radial wash. Option E keeps D&apos;s
+        short-form chrome but swaps the BlogPostCard surface for a live
+        GrainGradient shader with tag-derived colors — atmospheric weight
+        on long-form, shared frosted language on short-form.
+      </p>
+
+      <DensityLane
+        label="Baseline · current"
+        note="today — all three primitives share the same card chrome, which flattens the visual weight of long-form"
+      >
+        <BaselineStream />
+      </DensityLane>
+
+      <DensityLane
+        label="Option D · frosted everywhere"
+        note="translucent card + backdrop-blur on every primitive · ambient radial wash behind so the blur has subject matter · everything reads as one family"
+      >
+        <FrostedEverywhereStream />
+      </DensityLane>
+
+      <DensityLane
+        label="Option E · shader blog on frosted feed"
+        note="short-form chrome matches Option D (frosted notes + showcases inside the same ambient wash) · BlogPostCard swaps its frosted surface for a GrainGradient shader with tag-derived colors · hover buffs saturation and speed, text-shadow halos hold readability"
+      >
+        <ShaderStream />
+      </DensityLane>
+    </div>
+  );
+}
+
+function DensityLane({
+  label,
+  note,
+  children,
+}: {
+  label: string;
+  note: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1.5">
+        <span className="font-mono text-[11px] leading-[14px] tracking-[0.04em] text-accent-orange">
+          {label}
+        </span>
+        <span className="max-w-[520px] font-mono text-[10px] leading-[14px] tracking-[0.05em] text-faint">
+          {note}
+        </span>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function BaselineStream() {
+  return (
+    <div className="flex flex-col gap-5">
+      <NoteCard {...DENSITY_NOTES[0]!} />
+      <NoteCard {...DENSITY_NOTES[1]!} />
+      <BlogPostCard {...DENSITY_BLOG} />
+      <ShowcaseCard {...DENSITY_SHOWCASE} />
+      <NoteCard {...DENSITY_NOTES[2]!} />
+    </div>
+  );
+}
+
+function FrostedEverywhereStream() {
+  // The ambient wash is the parent's background — backdrop-blur on children
+  // then has something to sample. The real page floor is flat #0a0a0b, so
+  // picking this option means also giving the home page some ambient
+  // interest (shader, gradient, noise) for the effect to pay off.
+  return (
+    <div
+      className="relative max-w-[600px] overflow-hidden rounded-card"
+      style={{
+        backgroundImage: `
+          radial-gradient(520px 360px at 18% 22%, rgba(112, 207, 212, 0.11), transparent 60%),
+          radial-gradient(440px 360px at 82% 74%, rgba(232, 152, 120, 0.09), transparent 60%),
+          radial-gradient(360px 280px at 48% 52%, rgba(207, 152, 232, 0.06), transparent 65%)
+        `,
+      }}
+    >
+      <div className="flex flex-col gap-4 p-5">
+        <FrostedNote {...DENSITY_NOTES[0]!} />
+        <FrostedNote {...DENSITY_NOTES[1]!} />
+        <FrostedBlogPost {...DENSITY_BLOG} />
+        <FrostedShowcase {...DENSITY_SHOWCASE} />
+        <FrostedNote {...DENSITY_NOTES[2]!} />
+      </div>
+    </div>
+  );
+}
+
+function ShaderStream() {
+  // Short-form chrome is shared with Option D (same frosted notes + showcases
+  // inside the same radial ambient wash) — only the BlogPostCard swaps out
+  // its frosted surface for the shader-backed ShaderBlogPost.
+  return (
+    <div
+      className="relative max-w-[600px] overflow-hidden rounded-card"
+      style={{
+        backgroundImage: `
+          radial-gradient(520px 360px at 18% 22%, rgba(112, 207, 212, 0.11), transparent 60%),
+          radial-gradient(440px 360px at 82% 74%, rgba(232, 152, 120, 0.09), transparent 60%),
+          radial-gradient(360px 280px at 48% 52%, rgba(207, 152, 232, 0.06), transparent 65%)
+        `,
+      }}
+    >
+      <div className="flex flex-col gap-4 p-5">
+        <FrostedNote {...DENSITY_NOTES[0]!} />
+        <FrostedNote {...DENSITY_NOTES[1]!} />
+        <ShaderBlogPost {...DENSITY_BLOG} />
+        <FrostedShowcase {...DENSITY_SHOWCASE} />
+        <FrostedNote {...DENSITY_NOTES[2]!} />
+      </div>
+    </div>
+  );
+}
+
+/* ---- Shared variant prop shapes ----------------------------------------- */
+
+interface NoteVariantProps {
+  tags: string[];
+  timestamp: string;
+  body: string;
+  engagement?: { replies?: number; likes?: number };
+}
+
+interface ShowcaseVariantProps {
+  tags: string[];
+  timestamp: string;
+  body: string;
+  images: { caption: string }[];
+  engagement?: { replies?: number; likes?: number };
+}
+
+interface BlogPostVariantProps {
+  tags: string[];
+  timestamp: string;
+  readTime: string;
+  title: string;
+  excerpt: string;
+  engagement?: { replies?: number; likes?: number };
+}
+
+/**
+ * Leading stripe style used by Option D's BlogPostCard hover stripe. Single
+ * tag → solid color. Multi-tag → the 4s stripe-cycle gradient (loops
+ * seamlessly because the first color repeats at the end of the stops).
+ */
+function buildBlogPostStripeStyle(tags: string[]): React.CSSProperties {
+  if (tags.length <= 1) {
+    return { backgroundColor: tagColor(tags[0] ?? "building") };
+  }
+  const ordered = [...tags, tags[0]!];
+  const stops = ordered.map((t) => tagColor(t)).join(", ");
+  return {
+    backgroundImage: `linear-gradient(172deg, ${stops})`,
+    backgroundSize: "100% 100%",
+    backgroundRepeat: "repeat-y",
+    animation: "stripe-cycle 4s linear infinite",
+  };
+}
+
+/* ---- Option D · frosted everywhere -------------------------------------- */
+
+const FROSTED_SURFACE: React.CSSProperties = {
+  backgroundColor: "rgba(20, 20, 22, 0.42)", // #141416 at 42%
+  borderColor: "rgba(255, 255, 255, 0.06)",
+};
+
+function FrostedNote({
+  tags,
+  timestamp,
+  body,
+  engagement = {},
+}: NoteVariantProps) {
+  const railStyle = buildBlogPostStripeStyle(tags);
+  return (
+    <article
+      className="group relative flex max-w-[600px] flex-col gap-3 rounded-card border px-4 pt-4 pb-3 backdrop-blur-md transition-colors duration-200 sm:px-5 sm:pt-5 sm:pb-4"
+      style={FROSTED_SURFACE}
+    >
+      {/* Ambient glow — wider blurred sibling, fades in on hover. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute top-0 left-0 h-full w-2 rounded-l-card opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-[0.12]"
+        style={railStyle}
+      />
+      {/* Crisp rail — picks up the dynamic tag-color gradient from BlogPostCard. */}
+      <span
+        aria-hidden
+        className="absolute top-0 left-0 h-full w-[3px] rounded-l-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={railStyle}
+      />
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        {tags.map((t) => (
+          <Tag key={t} name={t}>
+            #{t}
+          </Tag>
+        ))}
+        <Meta>· {timestamp}</Meta>
+      </div>
+      <p className="font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-text sm:text-[15px] sm:leading-[25px]">
+        {body}
+      </p>
+      <div className="mt-1 flex items-center gap-3 text-faint sm:gap-4">
+        {engagement.replies !== undefined ? (
+          <EngagementButton
+            icon="reply"
+            label="Reply"
+            count={engagement.replies}
+          />
+        ) : null}
+        {engagement.likes !== undefined ? (
+          <EngagementButton icon="like" label="Like" count={engagement.likes} />
+        ) : null}
+        <EngagementButton icon="bookmark" label="Save" />
+        <EngagementButton icon="share" label="Share" />
+      </div>
+    </article>
+  );
+}
+
+function FrostedShowcase({
+  tags,
+  timestamp,
+  body,
+  images,
+  engagement = {},
+}: ShowcaseVariantProps) {
+  const primaryTag = tags[0] ?? "building";
+  const railStyle = buildBlogPostStripeStyle(tags);
+  return (
+    <article
+      className="group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border p-4 backdrop-blur-md transition-colors duration-200 sm:p-5"
+      style={FROSTED_SURFACE}
+    >
+      {/* Ambient glow — wider blurred sibling, fades in on hover. */}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute top-0 left-0 h-full w-2 rounded-l-card opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-[0.12]"
+        style={railStyle}
+      />
+      {/* Crisp rail — dynamic tag-color gradient matches BlogPostCard. */}
+      <span
+        aria-hidden
+        className="absolute top-0 left-0 h-full w-[3px] rounded-l-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={railStyle}
+      />
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        {tags.map((t) => (
+          <Tag key={t} name={t}>
+            #{t}
+          </Tag>
+        ))}
+        <Meta>· {timestamp}</Meta>
+      </div>
+      <p className="font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-text">
+        {body}
+      </p>
+      <div
+        className={cn(
+          "relative h-48 w-full overflow-hidden rounded-[3px] border border-border bg-gradient-to-br sm:h-60",
+          GLOW_NEUTRAL_BASE,
+        )}
+      >
+        <div
+          className="absolute inset-0"
+          style={{ backgroundImage: tileGlow(primaryTag, "strong") }}
+        />
+        <div className="absolute bottom-3 right-3">
+          <Label tone="faint" size="xs">
+            {images[0]?.caption ?? ""}
+          </Label>
+        </div>
+      </div>
+      <div className="flex items-center gap-3 text-faint sm:gap-4">
+        {engagement.replies !== undefined ? (
+          <EngagementButton
+            icon="reply"
+            label="Reply"
+            count={engagement.replies}
+          />
+        ) : null}
+        {engagement.likes !== undefined ? (
+          <EngagementButton icon="like" label="Like" count={engagement.likes} />
+        ) : null}
+        <EngagementButton icon="bookmark" label="Save" />
+      </div>
+    </article>
+  );
+}
+
+function FrostedBlogPost({
+  tags,
+  timestamp,
+  readTime,
+  title,
+  excerpt,
+  engagement = {},
+}: BlogPostVariantProps) {
+  return (
+    <article
+      className="group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border p-5 backdrop-blur-md transition-colors duration-200 sm:p-7"
+      style={FROSTED_SURFACE}
+    >
+      <span
+        aria-hidden
+        className="absolute top-0 left-0 h-full w-[3px] rounded-l-card opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={buildBlogPostStripeStyle(tags)}
+      />
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+        {tags.map((t) => (
+          <Tag key={t} name={t}>
+            #{t}
+          </Tag>
+        ))}
+        <Meta>
+          · {timestamp} · {readTime}
+        </Meta>
+      </div>
+      <h3 className="font-serif text-[22px] leading-[28px] tracking-[-0.015em] text-text sm:text-[28px] sm:leading-[34px]">
+        {title}
+      </h3>
+      <p className="font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body">
+        {excerpt}
+      </p>
+      <div className="mt-1 flex items-center justify-between">
+        <div className="flex items-center gap-3 text-faint sm:gap-4">
+          {engagement.replies !== undefined ? (
+            <EngagementButton
+              icon="reply"
+              label="Reply"
+              count={engagement.replies}
+              iconSize={14}
+            />
+          ) : null}
+          {engagement.likes !== undefined ? (
+            <EngagementButton
+              icon="like"
+              label="Like"
+              count={engagement.likes}
+              iconSize={14}
+            />
+          ) : null}
+          <EngagementButton icon="bookmark" label="Save" iconSize={14} />
+        </div>
+        <div className="flex items-center gap-1.5 text-muted transition-[color,gap] duration-200 group-hover:gap-2.5 group-hover:text-accent-orange">
+          <span className="font-sans text-[13px] leading-4 tracking-[-0.03em]">
+            Read
+          </span>
+          <Icon
+            name="arrow-right"
+            size={14}
+            className="transition-transform duration-200 group-hover:translate-x-0.5"
+          />
+        </div>
+      </div>
+    </article>
+  );
+}
+
+/* ---- Option E · shader blog on frosted feed -----------------------------
+ *
+ * Short-form (notes, showcases) reuses Option D's frosted chrome — same
+ * translucent surface + `backdrop-blur-md`, sharing the radial ambient
+ * wash parent container so the blur has subject matter to sample.
+ *
+ * The BlogPostCard is the only primitive that diverges: it runs Paper's
+ * GrainGradient shader in its default `corners` shape with tag-derived
+ * HSL colors and a `#0a0a0b` colorBack floor — the grain breaks smooth
+ * color into texture so it reads as atmosphere. A heavy backdrop-blur
+ * with a deep dark tint sits on top; hover crossfades to a saturation-
+ * buffed sibling and thins the overlay slightly. Title / excerpt / Read
+ * CTA carry text-shadow halos so their contrast stays intact even when
+ * the shader pokes through. The shader IS the tag-signal for long-form.
+ *
+ * `isolation: isolate` on the shader card scopes the backdrop-filter to
+ * the card's stacking context — the blur samples only the shader inside,
+ * not the ambient wash beneath.
+ * ------------------------------------------------------------------------- */
+
+/**
+ * HSL approximation of the OKLCH tag palette for the shader input. Paper's
+ * color parser accepts HSL / RGB / hex but not OKLCH, and at the blur
+ * strength we use here the perceptual drift between the two color spaces
+ * isn't visible. Hue carries the signal; saturation and lightness are
+ * tuned so the mesh feels continuous with the rest of the site.
+ *
+ * Two palettes — rest is barely perceptible, hover bumps saturation and
+ * lightness so the card comes alive when intent-to-read is signaled. The
+ * shader's speed ramps in the same way via layered MeshGradient canvases
+ * (see ShaderBlogPost).
+ */
+function shaderPaletteRest(tags: string[]): string[] {
+  const safe = tags.length > 0 ? tags : ["building"];
+  const palette: string[] = [];
+  for (const t of safe) {
+    palette.push(`hsl(${tagHue(t)}, 39%, 46%)`);
+    palette.push(`hsl(${tagHue(t)}, 23%, 24%)`);
+  }
+  // One internal neutral band — colorBack handles the true page-floor dark.
+  // GrainGradient caps at 7 colors, so for three tags (6 tag entries) this
+  // is the ceiling.
+  palette.push("#111114");
+  return palette;
+}
+
+function shaderPaletteHover(tags: string[]): string[] {
+  const safe = tags.length > 0 ? tags : ["building"];
+  const palette: string[] = [];
+  for (const t of safe) {
+    palette.push(`hsl(${tagHue(t)}, 53%, 56%)`);
+    palette.push(`hsl(${tagHue(t)}, 35%, 32%)`);
+  }
+  palette.push("#111114");
+  return palette;
+}
+
+function ShaderBlogPost({
+  tags,
+  timestamp,
+  readTime,
+  title,
+  excerpt,
+  engagement = {},
+}: BlogPostVariantProps) {
+  return (
+    <article
+      className={cn(
+        "group relative max-w-[600px] overflow-hidden rounded-card border border-border transition-colors duration-500",
+        "hover:border-border-hover",
+        // Frosted-pane alpha as a CSS var — thins slightly on hover so the
+        // buffed shader peeks through, but not enough to compromise text.
+        "[--overlay-alpha:0.76] hover:[--overlay-alpha:0.70]",
+      )}
+      style={{ isolation: "isolate" }}
+    >
+      {/* Ambient GrainGradient — desaturated, barely moving. Visible at rest. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
+      >
+        <GrainGradient
+          colorBack="#141416"
+          colors={shaderPaletteRest(tags)}
+          softness={0.85}
+          intensity={0.5}
+          noise={0.42}
+          speed={0.025}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+
+      {/* Vivid GrainGradient — saturation-buffed, slightly faster. Fades in on hover. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      >
+        <GrainGradient
+          colorBack="#141416"
+          colors={shaderPaletteHover(tags)}
+          softness={0.8}
+          intensity={0.58}
+          noise={0.4}
+          speed={0.055}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+
+      {/* Frosted pane — heavy blur + CSS-var alpha. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 backdrop-blur-3xl transition-[background-color] duration-500"
+        style={{ backgroundColor: "rgba(20, 20, 22, var(--overlay-alpha))" }}
+      />
+
+      {/* Content — text-shadow halos protect readability over the shader. */}
+      <div className="relative flex flex-col gap-3.5 p-5 sm:p-7">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+          {tags.map((t) => (
+            <Tag key={t} name={t}>
+              #{t}
+            </Tag>
+          ))}
+          <Meta className="[text-shadow:0_1px_4px_rgba(0,0,0,0.55)]">
+            · {timestamp} · {readTime}
+          </Meta>
+        </div>
+        <h3 className="font-serif text-[22px] leading-[28px] tracking-[-0.015em] text-text sm:text-[28px] sm:leading-[34px] [text-shadow:0_1px_12px_rgba(0,0,0,0.65),_0_1px_3px_rgba(0,0,0,0.4)]">
+          {title}
+        </h3>
+        <p className="font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body [text-shadow:0_1px_8px_rgba(0,0,0,0.55)]">
+          {excerpt}
+        </p>
+        <div className="mt-1 flex items-center justify-between">
+          <div className="flex items-center gap-3 text-faint sm:gap-4">
+            {engagement.replies !== undefined ? (
+              <EngagementButton
+                icon="reply"
+                label="Reply"
+                count={engagement.replies}
+                iconSize={14}
+              />
+            ) : null}
+            {engagement.likes !== undefined ? (
+              <EngagementButton
+                icon="like"
+                label="Like"
+                count={engagement.likes}
+                iconSize={14}
+              />
+            ) : null}
+            <EngagementButton icon="bookmark" label="Save" iconSize={14} />
+          </div>
+          <div className="flex items-center gap-1.5 text-muted transition-[color,gap] duration-200 group-hover:gap-2.5 group-hover:text-accent-orange">
+            <span className="font-sans text-[13px] leading-4 tracking-[-0.03em] [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]">
+              Read
+            </span>
+            <Icon
+              name="arrow-right"
+              size={14}
+              className="transition-transform duration-200 group-hover:translate-x-0.5"
+            />
+          </div>
+        </div>
+      </div>
+    </article>
   );
 }
