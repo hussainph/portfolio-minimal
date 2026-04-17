@@ -4,6 +4,11 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { tagColor } from "@/lib/tagColor";
 import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
+import {
+  buildStripeStyle,
+  FROSTED_CHROME_CLASSES,
+  FROSTED_SURFACE,
+} from "@/lib/cardChrome";
 import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
 import { Tag } from "./Tag";
 import { Meta } from "./Meta";
@@ -37,16 +42,31 @@ export function ShowcaseCard({
   className,
 }: ShowcaseCardProps) {
   const primaryTag = tags[0] ?? "building";
+  const railStyle = buildStripeStyle(tags);
   const onFilterClick = useTagFilterToggle();
 
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border border-border bg-surface p-4 transition-colors duration-200 sm:p-5",
-        "hover:bg-surface-hover hover:border-border-hover",
+        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card p-4 transition-colors duration-200 sm:p-5",
+        FROSTED_CHROME_CLASSES,
         className,
       )}
+      style={FROSTED_SURFACE}
     >
+      {/* Ambient glow — faint blurred sibling; fades in on hover. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 h-full w-2 rounded-l-card opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-[0.12]"
+        style={railStyle}
+      />
+      {/* Crisp rail — solid or animated gradient matching NoteCard. */}
+      <span
+        aria-hidden="true"
+        className="absolute top-0 left-0 h-full w-[3px] rounded-l-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={railStyle}
+      />
+
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
         {tags.map((t) => (
           <Tag

@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import {
+  buildStripeStyle,
+  FROSTED_CHROME_CLASSES,
+  FROSTED_SURFACE,
+} from "@/lib/cardChrome";
 import { tagColor } from "@/lib/tagColor";
 import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
@@ -26,6 +31,10 @@ interface BentoShowcaseProps {
  * at a fixed 280px height. The featured tile is whichever image has
  * `picked: true`, otherwise the first image. Glow hues derive from the
  * primary tag via `tileGlow()`; no per-image color choices to maintain.
+ *
+ * Shares Option E chrome with NoteCard + ShowcaseCard — frosted translucent
+ * surface, backdrop-blur, and a hover rail + ambient glow using the same
+ * dynamic `buildStripeStyle` gradient.
  */
 export function BentoShowcase({
   tags,
@@ -38,6 +47,7 @@ export function BentoShowcase({
 }: BentoShowcaseProps) {
   const primaryTag = tags[0] ?? "building";
   const accentColor = tagColor(primaryTag);
+  const railStyle = buildStripeStyle(tags);
   const onFilterClick = useTagFilterToggle();
 
   const pickedIdx = images.findIndex((image) => image.picked);
@@ -48,11 +58,25 @@ export function BentoShowcase({
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-panel border border-[#1a1a1d] bg-sunken p-4 transition-colors duration-200 sm:p-5",
-        "hover:bg-sunken-hover hover:border-border-hover",
+        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-panel p-4 transition-colors duration-200 sm:p-5",
+        FROSTED_CHROME_CLASSES,
         className,
       )}
+      style={FROSTED_SURFACE}
     >
+      {/* Ambient glow — wider blurred sibling; faint bleed on hover. */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute top-0 left-0 h-full w-2 rounded-l-panel opacity-0 blur-md transition-opacity duration-300 group-hover:opacity-[0.12]"
+        style={railStyle}
+      />
+      {/* Crisp rail — dynamic tag-color gradient matching NoteCard/ShowcaseCard. */}
+      <span
+        aria-hidden="true"
+        className="absolute top-0 left-0 h-full w-[3px] rounded-l-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        style={railStyle}
+      />
+
       <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
         {tags.map((t) => (
           <Tag
@@ -73,7 +97,7 @@ export function BentoShowcase({
         </Link>
       </div>
 
-      <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-[#e8e1d4]">
+      <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-text-link">
         {body}
       </p>
 

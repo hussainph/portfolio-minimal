@@ -1,7 +1,12 @@
 "use client";
 
 import Link from "next/link";
+import { GrainGradient } from "@paper-design/shaders-react";
 import { cn } from "@/lib/utils";
+import {
+  shaderPaletteHover,
+  shaderPaletteRest,
+} from "@/lib/cardChrome";
 import { tagColor } from "@/lib/tagColor";
 import { useTagFilterToggle } from "@/lib/useTagFilterToggle";
 import { Tag } from "./Tag";
@@ -20,6 +25,17 @@ interface BlogPostCardProps {
   className?: string;
 }
 
+/**
+ * Long-form feed card. Under the content sits a two-layer `GrainGradient`
+ * shader (rest + hover crossfade) whose tag-derived HSL palette provides
+ * the primary tag-signal for blog posts — no stripe, no rail. A heavy
+ * `backdrop-blur-3xl` pane with a surface-tinted CSS-var alpha diffuses
+ * the shader to ambient atmosphere so the serif title and excerpt hold
+ * contrast; the alpha thins slightly on hover so the buffed vivid layer
+ * peeks through. Title / excerpt / Read CTA carry `text-shadow` halos to
+ * keep readability even then. `isolation: isolate` scopes the
+ * backdrop-filter to the card so it samples only the shader inside.
+ */
 export function BlogPostCard({
   tags,
   timestamp,
@@ -32,102 +48,118 @@ export function BlogPostCard({
 }: BlogPostCardProps) {
   const primaryTag = tags[0] ?? "building";
   const onFilterClick = useTagFilterToggle();
-  const stripeStyle = buildStripeStyle(tags);
 
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3.5 rounded-card border bg-surface border-border p-5 transition-colors duration-200 sm:p-7",
-        "hover:bg-surface-hover hover:border-border-hover",
+        "group relative max-w-[600px] overflow-hidden rounded-card border border-border transition-colors duration-500",
+        "hover:border-border-hover",
+        "[--overlay-alpha:0.76] hover:[--overlay-alpha:0.70]",
         className,
       )}
+      style={{ isolation: "isolate" }}
     >
-      <span
+      {/* Ambient GrainGradient — desaturated, barely moving. */}
+      <div
         aria-hidden="true"
-        className="absolute top-0 left-0 h-full w-[3px] rounded-l-card opacity-0 transition-opacity duration-200 group-hover:opacity-100"
-        style={stripeStyle}
-      />
-
-      <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
-        {tags.map((t) => (
-          <Tag
-            key={t}
-            as="filter"
-            name={t}
-            onClick={() => onFilterClick(t)}
-            className="relative z-10"
-          >
-            #{t}
-          </Tag>
-        ))}
-        <Meta>
-          · {timestamp} · {readTime}
-        </Meta>
+        className="absolute inset-0 transition-opacity duration-500 group-hover:opacity-0"
+      >
+        <GrainGradient
+          colorBack="#141416"
+          colors={shaderPaletteRest(tags)}
+          softness={0.85}
+          intensity={0.5}
+          noise={0.42}
+          speed={0.025}
+          style={{ width: "100%", height: "100%" }}
+        />
       </div>
 
-      <h3 className="font-serif text-[22px] leading-[28px] tracking-[-0.015em] text-text sm:text-[28px] sm:leading-[34px]">
-        <Link
-          href={href}
-          className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
-        >
-          {title}
-        </Link>
-      </h3>
+      {/* Vivid GrainGradient — fades in on hover. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      >
+        <GrainGradient
+          colorBack="#141416"
+          colors={shaderPaletteHover(tags)}
+          softness={0.8}
+          intensity={0.58}
+          noise={0.4}
+          speed={0.055}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
 
-      <p className="font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body">
-        {excerpt}
-      </p>
+      {/* Frosted pane — surface-tinted overlay, thins slightly on hover. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 backdrop-blur-3xl transition-[background-color] duration-500"
+        style={{ backgroundColor: "rgba(20, 20, 22, var(--overlay-alpha))" }}
+      />
 
-      <div className="mt-1 flex items-center justify-between">
-        <div className="flex items-center gap-3 text-faint sm:gap-4">
-          {engagement.replies !== undefined ? (
-            <EngagementButton
-              icon="reply"
-              label="Reply"
-              count={engagement.replies}
-              iconSize={14}
-            />
-          ) : null}
-          {engagement.likes !== undefined ? (
-            <LikeIndicator count={engagement.likes} tagName={primaryTag} />
-          ) : null}
-          <EngagementButton icon="bookmark" label="Save" iconSize={14} />
+      {/* Content — text-shadow halos protect readability over the shader. */}
+      <div className="relative flex flex-col gap-3.5 p-5 sm:p-7">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5">
+          {tags.map((t) => (
+            <Tag
+              key={t}
+              as="filter"
+              name={t}
+              onClick={() => onFilterClick(t)}
+              className="relative z-10"
+            >
+              #{t}
+            </Tag>
+          ))}
+          <Meta className="[text-shadow:0_1px_4px_rgba(0,0,0,0.55)]">
+            · {timestamp} · {readTime}
+          </Meta>
         </div>
 
-        <div className="flex items-center gap-1.5 text-muted transition-[color,gap] duration-200 group-hover:gap-2.5 group-hover:text-accent-orange">
-          <span className="font-sans text-[13px] leading-4 tracking-[-0.03em]">
-            Read
-          </span>
-          <Icon
-            name="arrow-right"
-            size={14}
-            className="transition-transform duration-200 group-hover:translate-x-0.5"
-          />
+        <h3 className="font-serif text-[22px] leading-[28px] tracking-[-0.015em] text-text sm:text-[28px] sm:leading-[34px] [text-shadow:0_1px_12px_rgba(0,0,0,0.65),_0_1px_3px_rgba(0,0,0,0.4)]">
+          <Link
+            href={href}
+            className="text-inherit no-underline before:absolute before:inset-0 before:content-[''] before:rounded-[inherit]"
+          >
+            {title}
+          </Link>
+        </h3>
+
+        <p className="font-sans text-[15px] leading-6 tracking-[-0.03em] text-muted transition-colors duration-200 group-hover:text-body [text-shadow:0_1px_8px_rgba(0,0,0,0.55)]">
+          {excerpt}
+        </p>
+
+        <div className="mt-1 flex items-center justify-between">
+          <div className="flex items-center gap-3 text-faint sm:gap-4">
+            {engagement.replies !== undefined ? (
+              <EngagementButton
+                icon="reply"
+                label="Reply"
+                count={engagement.replies}
+                iconSize={14}
+              />
+            ) : null}
+            {engagement.likes !== undefined ? (
+              <LikeIndicator count={engagement.likes} tagName={primaryTag} />
+            ) : null}
+            <EngagementButton icon="bookmark" label="Save" iconSize={14} />
+          </div>
+
+          <div className="flex items-center gap-1.5 text-muted transition-[color,gap] duration-200 group-hover:gap-2.5 group-hover:text-accent-orange">
+            <span className="font-sans text-[13px] leading-4 tracking-[-0.03em] [text-shadow:0_1px_6px_rgba(0,0,0,0.55)]">
+              Read
+            </span>
+            <Icon
+              name="arrow-right"
+              size={14}
+              className="transition-transform duration-200 group-hover:translate-x-0.5"
+            />
+          </div>
         </div>
       </div>
     </article>
   );
-}
-
-/**
- * Stripe is a simple solid color for single-tag cards; for multi-tag cards it
- * becomes a slightly-tilted gradient that cycles through every tag's hue and
- * loops back to the first color (so the animation hand-off is seamless). The
- * 4s linear loop is fast enough to notice on hover, slow enough to stay out
- * of the way while reading the card.
- */
-function buildStripeStyle(tags: string[]): React.CSSProperties {
-  if (tags.length <= 1) {
-    return { backgroundColor: tagColor(tags[0] ?? "building") };
-  }
-  const ordered = [...tags, tags[0]!];
-  const stops = ordered.map((t) => tagColor(t)).join(", ");
-  return {
-    backgroundImage: `linear-gradient(172deg, ${stops})`,
-    backgroundSize: "100% 100%",
-    backgroundRepeat: "repeat-y",
-    animation: "stripe-cycle 4s linear infinite",
-  };
 }
 
 function LikeIndicator({ count, tagName }: { count: number; tagName: string }) {
