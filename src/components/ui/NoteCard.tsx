@@ -35,7 +35,7 @@ export function NoteCard({
   return (
     <article
       className={cn(
-        "group relative flex max-w-[600px] flex-col gap-3 rounded-card pt-4 pb-3 px-4 transition-colors duration-200 sm:pt-5 sm:pb-4 sm:px-5",
+        "group relative flex max-w-[600px] flex-col gap-3 overflow-hidden rounded-card pt-4 pb-3 px-4 transition duration-200 sm:pt-5 sm:pb-4 sm:px-5",
         FROSTED_CHROME_CLASSES,
         className,
       )}
@@ -51,7 +51,7 @@ export function NoteCard({
       {/* Crisp rail — solid color for single-tag, animated gradient for multi. */}
       <span
         aria-hidden="true"
-        className="absolute top-0 left-0 h-full w-[3px] rounded-l-xs opacity-0 transition-opacity duration-200 group-hover:opacity-100"
+        className="absolute top-0 left-0 h-full w-[3px] opacity-0 transition-opacity duration-200 group-hover:opacity-100"
         style={railStyle}
       />
 

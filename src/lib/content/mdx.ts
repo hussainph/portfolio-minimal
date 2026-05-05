@@ -3,9 +3,14 @@ import { compileMDX } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
 import remarkSmartypants from "remark-smartypants";
 import rehypePrettyCode from "rehype-pretty-code";
+import rehypeSlug from "rehype-slug";
+import GithubSlugger from "github-slugger";
+import { visit } from "unist-util-visit";
 import type { ReactElement } from "react";
 import type { MDXComponents } from "mdx/types";
+import type { Root, Heading, Text, InlineCode } from "mdast";
 import { sharedComponents } from "../../../mdx-components";
+import type { TocEntry } from "./types";
 
 const rehypePrettyCodeOptions = {
   theme: "github-dark-dimmed" as const,
@@ -13,27 +18,69 @@ const rehypePrettyCodeOptions = {
 };
 
 /**
- * Compile a raw MDX body (frontmatter already stripped) into a React element,
- * wired with the portfolio's remark/rehype plugins and MDX components map.
+ * Remark plugin factory that collects depth-2 headings into `{ id, label }`
+ * entries on a shared, call-scoped array. We pass the array in explicitly
+ * (rather than using `vfile.data`) because `next-mdx-remote` doesn't give us
+ * direct access to the processed vfile afterwards.
  *
- * Frontmatter parsing happens upstream in the loader (gray-matter). Don't set
- * `parseFrontmatter: true` here or we'd double-parse.
+ * Unified expects a plugin — `() => Transformer` — not a transformer
+ * directly, so we wrap one extra level.
+ */
+function collectToc(sink: TocEntry[]) {
+  return function plugin() {
+    return function transformer(tree: Root) {
+      const slugger = new GithubSlugger();
+      visit(tree, "heading", (node: Heading) => {
+        if (node.depth !== 2) return;
+        const label = node.children
+          .map((child) => {
+            if (child.type === "text") return (child as Text).value;
+            if (child.type === "inlineCode") return (child as InlineCode).value;
+            return "";
+          })
+          .join("")
+          .trim();
+        if (!label) return;
+        sink.push({ id: slugger.slug(label), label });
+      });
+    };
+  };
+}
+
+interface CompileResult {
+  content: ReactElement;
+  toc: TocEntry[];
+}
+
+/**
+ * Compile a raw MDX body (frontmatter already stripped) into a React element
+ * plus the collected h2 TOC.
+ *
+ * `rehype-slug` attaches deterministic ids to rendered headings so the TOC's
+ * `id` field matches the DOM anchor each heading receives. The remark
+ * collector and rehype-slug use the same `github-slugger` internally, so the
+ * slugs line up.
  */
 export async function renderMDXBody(
   source: string,
   extraComponents: MDXComponents = {},
-): Promise<ReactElement> {
+): Promise<CompileResult> {
+  const toc: TocEntry[] = [];
+
   const { content } = await compileMDX({
     source,
     components: { ...sharedComponents, ...extraComponents },
     options: {
       parseFrontmatter: false,
       mdxOptions: {
-        remarkPlugins: [remarkGfm, remarkSmartypants],
-        rehypePlugins: [[rehypePrettyCode, rehypePrettyCodeOptions]],
+        remarkPlugins: [remarkGfm, remarkSmartypants, collectToc(toc)],
+        rehypePlugins: [
+          rehypeSlug,
+          [rehypePrettyCode, rehypePrettyCodeOptions],
+        ],
       },
     },
   });
 
-  return content;
+  return { content, toc };
 }

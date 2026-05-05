@@ -8,10 +8,7 @@ import { Video } from "@/components/mdx/Video";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { ProjectChip } from "@/components/projects/ProjectChip";
 import { BlogPostCard } from "@/components/ui/BlogPostCard";
-import { BentoShowcase } from "@/components/ui/BentoShowcase";
-import { BottomToolbar } from "@/components/ui/BottomToolbar";
 import { EngagementButton } from "@/components/ui/EngagementButton";
-import { FilterChipRow } from "@/components/ui/FilterChipRow";
 import { Icon } from "@/components/ui/Icon";
 import { Label } from "@/components/ui/Label";
 import { Meta } from "@/components/ui/Meta";
@@ -19,23 +16,15 @@ import { NoteCard } from "@/components/ui/NoteCard";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { ProjectHero } from "@/components/ui/ProjectHero";
 import { Separator } from "@/components/ui/Separator";
-import { ShowcaseCard } from "@/components/ui/ShowcaseCard";
+import {
+  ShowcaseCard,
+  ShowcaseImage,
+} from "@/components/ui/ShowcaseCard";
 import { Tag } from "@/components/ui/Tag";
 import { TextLink } from "@/components/ui/TextLink";
 import { cn } from "@/lib/utils";
 import { tagColor, tagHue } from "@/lib/tagColor";
 import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
-
-const FILTER_TAG_POOL = [
-  "building",
-  "ai",
-  "code",
-  "design",
-  "thinking",
-  "notes",
-  "craft",
-  "research",
-];
 
 export default function UITestPage() {
   if (process.env.NODE_ENV === "production") notFound();
@@ -44,8 +33,6 @@ export default function UITestPage() {
     <main className="min-h-screen bg-background text-text">
       <div className="mx-auto flex max-w-[960px] flex-col gap-12 px-5 pt-10 pb-36 sm:gap-14 sm:px-8 sm:pt-14 sm:pb-44 md:gap-16 md:px-12 md:pt-16 md:pb-48">
         <Header />
-
-        <FilterChipRow tags={FILTER_TAG_POOL} />
 
         <Section number="00" title="Colors" subtitle="ground · tags · accent">
           <ColorsSection />
@@ -97,10 +84,10 @@ export default function UITestPage() {
 
         <Section
           number="07"
-          title="Bottom toolbar"
-          subtitle="live at the bottom of this page — scroll to test auto-hide"
+          title="Site nav"
+          subtitle="unified filter + nav + search — live at the bottom of every page (including this one)"
         >
-          <ToolbarSection />
+          <SiteNavSection />
         </Section>
 
         <Section
@@ -113,23 +100,12 @@ export default function UITestPage() {
 
         <Section
           number="09"
-          title="Tag filter bar"
-          subtitle="sticks above the feed · URL-driven · click the active chip to clear"
-        >
-          <FilterChipRowSection />
-        </Section>
-
-        <Section
-          number="10"
           title="MDX primitives"
           subtitle="shared components globally available in every MDX body"
         >
           <MDXPrimitivesSection />
         </Section>
       </div>
-
-      {/* The toolbar lives here — fixed, visibility hook driven. */}
-      <BottomToolbar activeTab="stream" />
     </main>
   );
 }
@@ -461,23 +437,24 @@ function PrimitivesSection() {
           tags={["design"]}
           timestamp="apr 10 · small idea"
           body="Tried a different approach to the onboarding tooltip — ambient instead of intrusive. Small texture fragment shows up and fades. Feels way less like being yelled at."
-          images={[{ caption: "ONBOARDING · V3" }]}
           engagement={{ replies: 5, likes: 34 }}
-        />
+        >
+          <ShowcaseImage caption="ONBOARDING · V3" />
+        </ShowcaseCard>
       </CardLane>
 
       <CardLane label="Bento — v4 asymmetric layout, one featured tile + two stacked alternates">
-        <BentoShowcase
+        <ShowcaseCard
           tags={["code", "building"]}
           timestamp="apr 11 · iterations"
           body="Three takes on the tool-use UI for Volli. Ended up liking v2 most — the side-rail keeps the context without hijacking the read."
-          images={[
-            { caption: "V1" },
-            { caption: "V2 ← picked", picked: true },
-            { caption: "V3" },
-          ]}
+          layout="bento"
           engagement={{ replies: 8, likes: 21 }}
-        />
+        >
+          <ShowcaseImage caption="V1" />
+          <ShowcaseImage caption="V2 ← picked" picked />
+          <ShowcaseImage caption="V3" />
+        </ShowcaseCard>
       </CardLane>
     </div>
   );
@@ -585,23 +562,28 @@ function ProjectHeroSection() {
   );
 }
 
-function ToolbarSection() {
+function SiteNavSection() {
   return (
     <div className="flex flex-col gap-4">
       <p className="max-w-[600px] font-sans text-[15px] leading-[25px] tracking-[-0.03em] text-muted">
-        The toolbar at the bottom of this page is the real component. It uses{" "}
+        The pill row at the bottom of this page is the real{" "}
+        <code className="font-mono text-[13px] text-text">SiteNav</code>. Three
+        pills: a contextual left pill (filter on home, chapters on posts,
+        sections on projects), the primary nav in the middle, and the ⌘K
+        search on the right. Hover the left pill to peek, click to expand.
+        Visibility is driven by{" "}
         <code className="font-mono text-[13px] text-text">
           useToolbarVisibility
         </code>{" "}
-        to slide out after 3 seconds of cursor inactivity (once you&apos;ve
-        scrolled past 200px), and slides back in on cursor movement, scroll, or
-        keypress. Try it — scroll, then sit still.
+        — slides out after 3s of cursor inactivity past the fold, slides back
+        in on any movement, scroll, or keypress.
       </p>
       <ul className="flex max-w-[600px] flex-col gap-1.5 font-mono text-[11px] leading-[18px] tracking-[0.04em] text-faint">
         <li>spring · stiffness 260 · damping 22 · mass 1</li>
-        <li>backdrop-filter · blur 24px · bg #14141699</li>
-        <li>auto-hide · 3000ms idle · scroll &gt; 200px</li>
-        <li>prefers-reduced-motion · simple fade, no spring</li>
+        <li>panel · backdrop-filter blur 28px · bg #101012f2</li>
+        <li>mobile · panel max-width = pill-row width (measured)</li>
+        <li>desktop · content-natural widths, inline labels on expand</li>
+        <li>⌘K · global shortcut opens the palette</li>
       </ul>
     </div>
   );
@@ -651,38 +633,6 @@ function ProjectCardsSection() {
   );
 }
 
-function FilterChipRowSection() {
-  return (
-    <div className="flex flex-col gap-4">
-      {/*
-        The page-level FilterChipRow at the top is a real instance with the
-        full sticky behavior. This specimen is a contained copy — overflow on
-        the wrapper makes it the scroll/sticky context, so the chip row pins
-        to the section, not the viewport, while you read.
-      */}
-      <div className="relative max-h-[160px] overflow-y-auto rounded-card border border-border bg-sunken px-5 py-4 sm:px-8 md:px-12">
-        <FilterChipRow tags={FILTER_TAG_POOL} />
-        <p className="mt-4 max-w-[520px] font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-body">
-          Scroll inside this frame to see the chip row stay pinned to the top
-          while the prose underneath moves. On the real home page the row
-          uses the page itself as the scroll context and a backdrop blur
-          softens whatever passes underneath.
-        </p>
-        <p className="mt-3 max-w-[520px] font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-body">
-          Multi-select: each chip toggles into/out of{" "}
-          <code className="font-mono text-[13px] text-text">{`?tags=a,b,c`}</code> and the
-          server re-renders the feed filtered by AND. Click the last active
-          chip to drop the filter.
-        </p>
-      </div>
-      <ul className="flex max-w-[600px] flex-col gap-1.5 font-mono text-[11px] leading-[18px] tracking-[0.04em] text-faint">
-        <li>position · sticky top-0 z-20 · negative gutter to bleed full-width</li>
-        <li>state · useSearchParams (Suspense-wrapped) reads ?tags csv · AND logic</li>
-        <li>toggle · click a chip to add it · click again to remove · empty set clears the query</li>
-      </ul>
-    </div>
-  );
-}
 
 function MDXPrimitivesSection() {
   // Real prose-dark wrapper so first/last-child margin resets behave like
@@ -927,7 +877,16 @@ function BaselineStream() {
       <NoteCard {...DENSITY_NOTES[0]!} />
       <NoteCard {...DENSITY_NOTES[1]!} />
       <BlogPostCard {...DENSITY_BLOG} />
-      <ShowcaseCard {...DENSITY_SHOWCASE} />
+      <ShowcaseCard
+        tags={DENSITY_SHOWCASE.tags}
+        timestamp={DENSITY_SHOWCASE.timestamp}
+        body={DENSITY_SHOWCASE.body}
+        engagement={DENSITY_SHOWCASE.engagement}
+      >
+        {DENSITY_SHOWCASE.images.map((img, idx) => (
+          <ShowcaseImage key={idx} caption={img.caption} />
+        ))}
+      </ShowcaseCard>
       <NoteCard {...DENSITY_NOTES[2]!} />
     </div>
   );

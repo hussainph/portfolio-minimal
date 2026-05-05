@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ShowcasePage } from "@/components/content/ShowcasePage";
-import { deriveExcerpt, getItemBySlug, loadAll } from "@/lib/content";
+import {
+  computeSiblingHrefs,
+  deriveExcerpt,
+  getItemBySlug,
+  loadAll,
+} from "@/lib/content";
 import type { ShowcaseItem } from "@/lib/content";
 import { SITE_URL } from "@/lib/siteUrl";
 
@@ -79,8 +84,9 @@ export default async function ShowcaseRoute({
   params: Promise<RouteParams>;
 }) {
   const { slug } = await params;
-  const item = await getItemBySlug(slug);
+  const [item, index] = await Promise.all([getItemBySlug(slug), loadAll()]);
   if (!item || item.kind !== "showcase") notFound();
 
-  return <ShowcasePage item={item} />;
+  const siblings = computeSiblingHrefs(item, index);
+  return <ShowcasePage item={item} siblings={siblings} />;
 }

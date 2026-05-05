@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PostPage } from "@/components/content/PostPage";
-import { getItemBySlug, loadAll } from "@/lib/content";
+import { computeSiblingHrefs, getItemBySlug, loadAll } from "@/lib/content";
 import type { PostItem } from "@/lib/content";
 import { SITE_URL } from "@/lib/siteUrl";
 
@@ -54,8 +54,9 @@ export default async function BlogPostRoute({
   params: Promise<RouteParams>;
 }) {
   const { slug } = await params;
-  const item = await getItemBySlug(slug);
+  const [item, index] = await Promise.all([getItemBySlug(slug), loadAll()]);
   if (!item || item.kind !== "post") notFound();
 
-  return <PostPage item={item} />;
+  const siblings = computeSiblingHrefs(item, index);
+  return <PostPage item={item} siblings={siblings} />;
 }

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { FeedList } from "@/components/feed/FeedList";
-import { BottomToolbar } from "@/components/ui/BottomToolbar";
+import { NavSetter } from "@/components/nav/NavStateContext";
 import { Meta } from "@/components/ui/Meta";
 import { tagColor } from "@/lib/tagColor";
 import { loadAll } from "@/lib/content";
@@ -68,6 +68,7 @@ export default async function TagArchiveRoute({
 
   return (
     <main className="min-h-screen bg-background text-text">
+      <NavSetter view="home" />
       <div className="mx-auto flex max-w-[720px] flex-col gap-8 px-5 pt-10 pb-36 sm:gap-9 sm:px-8 sm:pt-14 sm:pb-44 md:gap-10 md:px-12 md:pt-16 md:pb-48">
         <Link
           href="/"
@@ -89,8 +90,6 @@ export default async function TagArchiveRoute({
 
         <FeedList items={items} />
       </div>
-
-      <BottomToolbar activeTab="stream" />
     </main>
   );
 }

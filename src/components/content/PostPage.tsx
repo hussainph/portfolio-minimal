@@ -1,20 +1,31 @@
 import Link from "next/link";
-import { BottomToolbar } from "@/components/ui/BottomToolbar";
+import { NavSetter } from "@/components/nav/NavStateContext";
 import { Meta } from "@/components/ui/Meta";
 import { Tag } from "@/components/ui/Tag";
 import { formatFeedTimestamp } from "@/lib/content";
-import type { PostItem } from "@/lib/content";
+import type { PostItem, SiblingHrefs } from "@/lib/content";
 
 interface PostPageProps {
   item: PostItem;
+  siblings: SiblingHrefs;
 }
 
-export function PostPage({ item }: PostPageProps) {
-  const { frontmatter, readingTimeMinutes } = item;
+export function PostPage({ item, siblings }: PostPageProps) {
+  const { frontmatter, readingTimeMinutes, toc } = item;
   const timestamp = formatFeedTimestamp(frontmatter.published);
 
   return (
     <main className="min-h-screen bg-background text-text">
+      <NavSetter
+        view="post"
+        outline={toc}
+        prevHref={siblings.prevHref}
+        nextHref={siblings.nextHref}
+        pageMeta={{
+          slug: frontmatter.slug,
+          title: frontmatter.title,
+        }}
+      />
       <div className="mx-auto flex max-w-[720px] flex-col gap-6 px-5 pt-10 pb-36 sm:gap-7 sm:px-8 sm:pt-14 sm:pb-44 md:gap-8 md:px-12 md:pt-16 md:pb-48">
         <Link
           href="/"
@@ -42,8 +53,6 @@ export function PostPage({ item }: PostPageProps) {
 
         <article className="prose-dark">{item.content}</article>
       </div>
-
-      <BottomToolbar activeTab="stream" />
     </main>
   );
 }

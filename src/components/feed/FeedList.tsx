@@ -20,18 +20,21 @@ function stripInlineMarkdown(raw: string): string {
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .trim();
 }
-import { BentoShowcase } from "@/components/ui/BentoShowcase";
 import { BlogPostCard } from "@/components/ui/BlogPostCard";
 import { NoteCard } from "@/components/ui/NoteCard";
 import {
   ShowcaseCard,
-  type ShowcaseImage as ShowcaseCardImage,
+  ShowcaseImage,
 } from "@/components/ui/ShowcaseCard";
 
 interface FeedListProps {
   items: FeedItem[];
   /** AND-filter: rendered items must carry every listed tag. Empty = no filter. */
   activeTags?: string[];
+  /** AND-filter across content kinds. Empty = all kinds pass. */
+  activeTypes?: string[];
+  /** Case-insensitive substring match across title, excerpt, and raw body. */
+  query?: string;
 }
 
 /**
@@ -41,20 +44,33 @@ interface FeedListProps {
  * The switch uses `assertNever` in the default branch so adding a new
  * content kind later triggers a compile error here.
  */
-export function FeedList({ items, activeTags = [] }: FeedListProps) {
-  const filtered =
-    activeTags.length === 0
-      ? items
-      : items.filter((item) =>
-          activeTags.every((t) => item.frontmatter.tags.includes(t)),
-        );
+export function FeedList({
+  items,
+  activeTags = [],
+  activeTypes = [],
+  query = "",
+}: FeedListProps) {
+  const normalizedQuery = query.trim().toLowerCase();
+  const filtered = items.filter((item) => {
+    if (
+      activeTags.length > 0 &&
+      !activeTags.every((t) => item.frontmatter.tags.includes(t))
+    ) {
+      return false;
+    }
+    if (activeTypes.length > 0 && !activeTypes.includes(item.kind)) {
+      return false;
+    }
+    if (normalizedQuery && !matchesQuery(item, normalizedQuery)) {
+      return false;
+    }
+    return true;
+  });
 
   if (filtered.length === 0) {
     return (
       <div className="py-16 text-center font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
-        {activeTags.length > 0
-          ? `Nothing tagged ${activeTags.map((t) => `#${t}`).join(" + ")} yet.`
-          : "Nothing here yet — check back soon."}
+        {describeEmpty(activeTags, activeTypes, normalizedQuery)}
       </div>
     );
   }
@@ -68,6 +84,26 @@ export function FeedList({ items, activeTags = [] }: FeedListProps) {
       ))}
     </div>
   );
+}
+
+function matchesQuery(item: FeedItem, q: string): boolean {
+  const title = item.frontmatter.title?.toLowerCase() ?? "";
+  if (title.includes(q)) return true;
+  if ("excerpt" in item && item.excerpt.toLowerCase().includes(q)) return true;
+  return item.raw.toLowerCase().includes(q);
+}
+
+function describeEmpty(
+  tags: string[],
+  types: string[],
+  query: string,
+): string {
+  const bits: string[] = [];
+  if (types.length > 0) bits.push(types.join(" + "));
+  if (tags.length > 0) bits.push(tags.map((t) => `#${t}`).join(" + "));
+  if (query) bits.push(`"${query}"`);
+  if (bits.length === 0) return "Nothing here yet — check back soon.";
+  return `Nothing matches ${bits.join(" · ")} yet.`;
 }
 
 function renderItem(item: FeedItem) {
@@ -114,26 +150,6 @@ function PostRow({ item }: { item: PostItem }) {
 function ShowcaseRow({ item }: { item: ShowcaseItem }) {
   const { frontmatter } = item;
   const body = deriveExcerpt(item.raw, 200);
-  const cardImages: ShowcaseCardImage[] = frontmatter.images.map((img) => ({
-    caption: img.caption,
-    glow: img.glow,
-    picked: img.picked,
-  }));
-
-  if (frontmatter.variant === "bento" && cardImages.length === 3) {
-    return (
-      <BentoShowcase
-        href={`/showcases/${frontmatter.slug}`}
-        tags={frontmatter.tags}
-        timestamp={formatFeedTimestamp(frontmatter.published)}
-        body={body}
-        images={
-          cardImages as [ShowcaseCardImage, ShowcaseCardImage, ShowcaseCardImage]
-        }
-        engagement={frontmatter.engagement}
-      />
-    );
-  }
 
   return (
     <ShowcaseCard
@@ -141,8 +157,16 @@ function ShowcaseRow({ item }: { item: ShowcaseItem }) {
       tags={frontmatter.tags}
       timestamp={formatFeedTimestamp(frontmatter.published)}
       body={body}
-      images={cardImages}
+      layout={frontmatter.variant}
       engagement={frontmatter.engagement}
-    />
+    >
+      {frontmatter.images.map((img, idx) => (
+        <ShowcaseImage
+          key={idx}
+          caption={img.caption}
+          picked={img.picked}
+        />
+      ))}
+    </ShowcaseCard>
   );
 }

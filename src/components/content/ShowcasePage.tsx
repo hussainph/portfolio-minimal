@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BottomToolbar } from "@/components/ui/BottomToolbar";
+import { NavSetter } from "@/components/nav/NavStateContext";
 import { Label } from "@/components/ui/Label";
 import { Meta } from "@/components/ui/Meta";
 import { Tag } from "@/components/ui/Tag";
@@ -7,11 +7,12 @@ import { tagColor } from "@/lib/tagColor";
 import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
 import { cn } from "@/lib/utils";
 import { formatFeedTimestamp } from "@/lib/content";
-import type { ShowcaseItem } from "@/lib/content";
+import type { ShowcaseItem, SiblingHrefs } from "@/lib/content";
 import type { ShowcaseImage } from "@/lib/content";
 
 interface ShowcasePageProps {
   item: ShowcaseItem;
+  siblings: SiblingHrefs;
 }
 
 /**
@@ -21,13 +22,23 @@ interface ShowcasePageProps {
  * `<BentoShowcase>` inside, which would carry feed-only chrome
  * (engagement row, hover overlay link, 600px max-width).
  */
-export function ShowcasePage({ item }: ShowcasePageProps) {
-  const { frontmatter } = item;
+export function ShowcasePage({ item, siblings }: ShowcasePageProps) {
+  const { frontmatter, toc } = item;
   const timestamp = formatFeedTimestamp(frontmatter.published);
   const primaryTag = frontmatter.tags[0] ?? "building";
 
   return (
     <main className="min-h-screen bg-background text-text">
+      <NavSetter
+        view="post"
+        outline={toc}
+        prevHref={siblings.prevHref}
+        nextHref={siblings.nextHref}
+        pageMeta={{
+          slug: frontmatter.slug,
+          title: frontmatter.title ?? `showcase · ${frontmatter.slug}`,
+        }}
+      />
       <div className="mx-auto flex max-w-[720px] flex-col gap-6 px-5 pt-10 pb-36 sm:gap-7 sm:px-8 sm:pt-14 sm:pb-44 md:gap-8 md:px-12 md:pt-16 md:pb-48">
         <Link
           href="/"
@@ -62,8 +73,6 @@ export function ShowcasePage({ item }: ShowcasePageProps) {
 
         <article className="prose-dark">{item.content}</article>
       </div>
-
-      <BottomToolbar activeTab="stream" />
     </main>
   );
 }

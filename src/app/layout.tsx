@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { DM_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { InterfaceKit } from "interface-kit/react";
 import { Agentation } from "agentation";
 import { SITE_URL } from "@/lib/siteUrl";
+import { loadAll } from "@/lib/content/loader";
+import { NavStateProvider } from "@/components/nav/NavStateContext";
+import { SiteNav } from "@/components/nav/SiteNav";
 import "./globals.css";
 
 const instrumentSerif = Instrument_Serif({
@@ -55,18 +59,58 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const index = await loadAll();
+  const availableTags = Array.from(index.byTag.keys()).sort();
+
+  // Collapse every piece of content to a serialisable palette summary.
+  // Titles fall back to the first frontmatter tag for notes/showcases that
+  // skip `title`, so the palette always has something to render.
+  const paletteIndex = [
+    ...index.items.map((item) => ({
+      kind: item.kind,
+      slug: item.frontmatter.slug,
+      title:
+        item.frontmatter.title?.trim() ||
+        `${item.kind} · #${item.frontmatter.tags[0] ?? "untagged"}`,
+      tags: item.frontmatter.tags,
+      publishedISO: item.frontmatter.published.toISOString(),
+      href:
+        item.kind === "note"
+          ? `/n/${item.frontmatter.slug}`
+          : item.kind === "post"
+            ? `/blog/${item.frontmatter.slug}`
+            : `/showcases/${item.frontmatter.slug}`,
+    })),
+    ...index.projects.map((project) => ({
+      kind: "project" as const,
+      slug: project.frontmatter.slug,
+      title: project.frontmatter.title,
+      tags: project.frontmatter.tags,
+      publishedISO: project.frontmatter.published.toISOString(),
+      href: `/projects/${project.frontmatter.slug}`,
+    })),
+  ];
+
   return (
     <html
       lang="en"
       className={`${instrumentSerif.variable} ${dmSans.variable} ${jetbrainsMono.variable}`}
     >
       <body className="antialiased">
-        {children}
+        <NavStateProvider
+          availableTags={availableTags}
+          paletteIndex={paletteIndex}
+        >
+          {children}
+          <Suspense fallback={null}>
+            <SiteNav />
+          </Suspense>
+        </NavStateProvider>
         {process.env.NODE_ENV === "development" && <InterfaceKit />}
         {process.env.NODE_ENV === "development" && <Agentation />}
       </body>

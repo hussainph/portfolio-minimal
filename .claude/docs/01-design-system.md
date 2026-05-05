@@ -141,10 +141,7 @@ Phosphor Light weight. Rest state in `faint`. On active/interaction, icons inher
 |-----------|-------|-------|
 | [NoteCard](../../src/components/ui/NoteCard.tsx) | Short-form — tags, timestamp, body, optional engagement | Whole card clickable via overlay link; hover reveals tag-colored left stripe + elevated bg |
 | [BlogPostCard](../../src/components/ui/BlogPostCard.tsx) | Long-form — adds title (H2 serif), excerpt (muted), read time | Overlay link + hover nudge on "Read →" label |
-| [ShowcaseCard](../../src/components/ui/ShowcaseCard.tsx) | Design work — body + `images[]` with `{caption, glow, picked?}` | 1-tile or grid variant; overlay link pattern |
-| [BentoShowcase](../../src/components/ui/BentoShowcase.tsx) | Exactly 3 images — fixed 280px height; 1 featured (55%, left) + 2 stacked (45%, right). "FEATURED" badge on picked tile | Used for comparison sets; overlay link pattern |
-
-Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, decorative until real images arrive).
+| [ShowcaseCard](../../src/components/ui/ShowcaseCard.tsx) | Design work — unified compound with named export subcomponents. Body + optional attachments (image, video, code, embed). Supports `layout="auto\|single\|grid\|bento"` (auto picks single for 1 child, bento for 3 with one `picked`, grid otherwise). Attachments (`ShowcaseImage`, `ShowcaseVideo`, `ShowcaseCode`, `ShowcaseEmbed`) are named exports to cross Next.js RSC boundaries. Permalink heroes have their own tile renderer in [ShowcasePage.tsx](../../src/components/content/ShowcasePage.tsx) — keep tile visuals in sync when editing either. | Overlay link pattern; frontmatter `variant` controls layout |
 
 ### Project cards (smaller tier)
 
@@ -185,7 +182,7 @@ Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, 
 
 ### Overlay link pattern
 
-**Cards are clickable while inner elements stay interactive.** Implementation: `<Link>` wraps the card; its child has `before:absolute before:inset-0` so the pseudo-element becomes the clickable layer. Tag pills, buttons, and other tappable elements sit above the pseudo-element in stacking order. Applied to `NoteCard`, `BlogPostCard`, `ShowcaseCard`, `BentoShowcase`, `ProjectCard`, `ProjectChip`.
+**Cards are clickable while inner elements stay interactive.** Implementation: `<Link>` wraps the card; its child has `before:absolute before:inset-0` so the pseudo-element becomes the clickable layer. Tag pills, buttons, and other tappable elements sit above the pseudo-element in stacking order. Applied to `NoteCard`, `BlogPostCard`, `ShowcaseCard`, `ProjectCard`, `ProjectChip`.
 
 ---
 

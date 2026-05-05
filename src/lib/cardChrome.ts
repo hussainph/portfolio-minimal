@@ -15,12 +15,14 @@ export const FROSTED_SURFACE: CSSProperties = {
 };
 
 /**
- * Border + backdrop-blur classes that go with `FROSTED_SURFACE`. Border is
- * a translucent white tint (not a solid token) so it belongs to the
- * frosted family; hover lifts it slightly to signal interactivity.
+ * Inset hairline + backdrop-blur classes that go with `FROSTED_SURFACE`.
+ * The 1px tint is an inset box-shadow rather than an actual `border` so
+ * the article's border-box equals its padding-box — absolute children
+ * (the leading rail) then clip to the same outer radius the user sees,
+ * with no 1px offset. Hover lifts the tint to signal interactivity.
  */
 export const FROSTED_CHROME_CLASSES =
-  "border border-white/[0.06] backdrop-blur-md hover:border-white/[0.12]";
+  "shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)] backdrop-blur-md hover:shadow-[inset_0_0_0_1px_rgba(255,255,255,0.12)]";
 
 /**
  * Leading-rail style. Single-tag cards get a solid color; multi-tag cards
