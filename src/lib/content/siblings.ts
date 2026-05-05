@@ -1,4 +1,4 @@
-import type { ContentIndex, ContentItem } from "./types";
+import type { ContentIndex, ContentItem } from "@/lib/content/types";
 
 export interface SiblingHrefs {
   prevHref: string | null;

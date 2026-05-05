@@ -132,13 +132,12 @@ export function CommandPalette({
   );
 }
 
-function PaletteRow({
-  item,
-  onSelect,
-}: {
+interface PaletteRowProps {
   item: PaletteItem;
   onSelect: () => void;
-}) {
+}
+
+function PaletteRow({ item, onSelect }: PaletteRowProps) {
   return (
     <Command.Item
       value={`${item.kind} ${item.title} ${item.tags.join(" ")}`}
@@ -214,7 +213,11 @@ function formatKind(kind: PaletteKind): string {
   return "project";
 }
 
-function KindGlyph({ kind }: { kind: PaletteKind }) {
+interface KindGlyphProps {
+  kind: PaletteKind;
+}
+
+function KindGlyph({ kind }: KindGlyphProps) {
   const glyph =
     kind === "note" ? "·" : kind === "post" ? "¶" : kind === "showcase" ? "◰" : "◨";
   return <span className="font-mono text-[14px] leading-[14px]">{glyph}</span>;

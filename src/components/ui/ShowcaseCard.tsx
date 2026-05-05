@@ -256,19 +256,21 @@ function renderAttachments(
  * the "FEATURED" sublabel. Inner content (image, video, code, embed) is
  * passed as `children` and absolutely positioned over the glow.
  */
+interface TileFrameProps {
+  slot: TileSlot;
+  primaryTag: string;
+  caption: string;
+  picked?: boolean;
+  children?: ReactNode;
+}
+
 function TileFrame({
   slot,
   primaryTag,
   caption,
   picked,
   children,
-}: {
-  slot: TileSlot;
-  primaryTag: string;
-  caption: string;
-  picked?: boolean;
-  children?: ReactNode;
-}) {
+}: TileFrameProps) {
   const accentColor = tagColor(primaryTag);
 
   const container = cn(
@@ -315,17 +317,19 @@ function TileFrame({
   );
 }
 
+interface TileCaptionProps {
+  slot: TileSlot;
+  caption: string;
+  picked?: boolean;
+  accentColor: string;
+}
+
 function TileCaption({
   slot,
   caption,
   picked,
   accentColor,
-}: {
-  slot: TileSlot;
-  caption: string;
-  picked?: boolean;
-  accentColor: string;
-}) {
+}: TileCaptionProps) {
   if (slot === "solo") {
     return (
       <div className="absolute bottom-3 right-3">

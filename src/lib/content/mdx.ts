@@ -10,7 +10,7 @@ import type { ReactElement } from "react";
 import type { MDXComponents } from "mdx/types";
 import type { Root, Heading, Nodes } from "mdast";
 import { sharedComponents } from "../../../mdx-components";
-import type { TocEntry } from "./types";
+import type { TocEntry } from "@/lib/content/types";
 
 /**
  * Recursively flatten a heading's mdast subtree into a plain string.

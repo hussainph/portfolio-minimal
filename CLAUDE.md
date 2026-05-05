@@ -47,7 +47,9 @@ Tokens live in [src/app/globals.css](src/app/globals.css) under `@theme`. Compon
 - `src/app/projects/page.tsx` — Projects index
 - `src/app/projects/[slug]/page.tsx` — Project detail with conditional timeline
 - `src/app/tags/[tag]/page.tsx` — Tag archive (filtered feed)
+- `src/app/about/page.tsx` — About page (currently a placeholder; content TBD)
 - `src/app/(dev)/ui-test/page.tsx` — Component library specimen, dev-only (404s in production)
+- `src/app/(dev)/nav-test/page.tsx` — SiteNav specimen, dev-only (404s in production)
 - `src/app/sitemap.ts` — Dynamic XML sitemap
 - `src/app/robots.ts` — robots.txt
 

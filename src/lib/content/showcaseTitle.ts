@@ -1,4 +1,4 @@
-import type { ShowcaseItem } from "./types";
+import type { ShowcaseItem } from "@/lib/content/types";
 
 /**
  * Resolve the editorial title for a showcase. Authored frontmatter wins; if

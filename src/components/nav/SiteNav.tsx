@@ -223,15 +223,13 @@ function resolveActivePage(pathname: string): "stream" | "projects" | "about" {
 /*  Filter pill (home)                                                         */
 /* -------------------------------------------------------------------------- */
 
-function FilterPill({
-  nav,
-  pillRowWidth,
-  availableTags,
-}: {
+interface FilterPillProps {
   nav: NavController;
   pillRowWidth: number;
   availableTags: string[];
-}) {
+}
+
+function FilterPill({ nav, pillRowWidth, availableTags }: FilterPillProps) {
   const anyFilter = nav.types.size > 0 || nav.tags.length > 0;
 
   return (
@@ -252,6 +250,12 @@ function FilterPill({
   );
 }
 
+interface FilterPanelProps extends PanelRenderProps {
+  nav: NavController;
+  pillRowWidth: number;
+  availableTags: string[];
+}
+
 function FilterPanel({
   nav,
   pillRowWidth,
@@ -259,11 +263,7 @@ function FilterPanel({
   expanded,
   toggleExpanded,
   reduce,
-}: {
-  nav: NavController;
-  pillRowWidth: number;
-  availableTags: string[];
-} & PanelRenderProps) {
+}: FilterPanelProps) {
   return (
     <motion.div
       key="filter-panel"
@@ -556,15 +556,13 @@ function NestedOutlinePanel({
   );
 }
 
-function OutlineRow({
-  entry,
-  index,
-  current,
-}: {
+interface OutlineRowProps {
   entry: OutlineEntry;
   index: number;
   current: boolean;
-}) {
+}
+
+function OutlineRow({ entry, index, current }: OutlineRowProps) {
   return (
     <li>
       <a
@@ -588,7 +586,11 @@ function OutlineRow({
   );
 }
 
-function PageGlyph({ id }: { id: "stream" | "projects" | "about" }) {
+interface PageGlyphProps {
+  id: "stream" | "projects" | "about";
+}
+
+function PageGlyph({ id }: PageGlyphProps) {
   if (id === "stream") return <Icon name="menu" size={16} strokeWidth={1.6} />;
   if (id === "projects") return <Icon name="grid" size={16} strokeWidth={1.6} />;
   return <Icon name="user" size={16} strokeWidth={1.6} />;

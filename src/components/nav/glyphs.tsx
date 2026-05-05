@@ -1,6 +1,10 @@
 import { cn } from "@/lib/utils";
 
-export function Chevron({ rotated }: { rotated: boolean }) {
+interface ChevronProps {
+  rotated: boolean;
+}
+
+export function Chevron({ rotated }: ChevronProps) {
   return (
     <svg
       width="12"
@@ -78,7 +82,11 @@ export function ShareGlyph() {
   );
 }
 
-export function BookmarkGlyph({ filled = false }: { filled?: boolean }) {
+interface BookmarkGlyphProps {
+  filled?: boolean;
+}
+
+export function BookmarkGlyph({ filled = false }: BookmarkGlyphProps) {
   return (
     <svg
       width="14"
