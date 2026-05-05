@@ -1,7 +1,7 @@
 "use client";
 
 import { Command } from "cmdk";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ export function CommandPalette({
   items,
 }: CommandPaletteProps) {
   const router = useRouter();
+  const reduce = useReducedMotion();
   const [search, setSearch] = useState("");
 
   // Reset the query imperatively when we close the palette so reopening is
@@ -52,15 +53,19 @@ export function CommandPalette({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.15 }}
+          transition={{ duration: reduce ? 0 : 0.15 }}
           className="fixed inset-0 z-[70] flex items-start justify-center bg-background/60 px-4 pt-[16vh] backdrop-blur-sm"
           onClick={close}
         >
           <motion.div
-            initial={{ y: -12, opacity: 0, scale: 0.98 }}
-            animate={{ y: 0, opacity: 1, scale: 1 }}
-            exit={{ y: -8, opacity: 0, scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 320, damping: 28 }}
+            initial={reduce ? { opacity: 0 } : { y: -12, opacity: 0, scale: 0.98 }}
+            animate={reduce ? { opacity: 1 } : { y: 0, opacity: 1, scale: 1 }}
+            exit={reduce ? { opacity: 0 } : { y: -8, opacity: 0, scale: 0.98 }}
+            transition={
+              reduce
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 320, damping: 28 }
+            }
             className="w-full max-w-[560px]"
             onClick={(e) => e.stopPropagation()}
           >
@@ -70,6 +75,12 @@ export function CommandPalette({
               // render them. shouldFilter=false means the builtin filter
               // doesn't hide our matches — we've already filtered them.
               shouldFilter={false}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  e.preventDefault();
+                  close();
+                }
+              }}
               className="flex flex-col overflow-hidden rounded-card border border-border/70 bg-[#141416f2] shadow-[0_24px_60px_#0a0a0bcc] backdrop-blur-[28px]"
             >
               <div className="flex items-center gap-3 border-b border-border/60 px-5 py-4">

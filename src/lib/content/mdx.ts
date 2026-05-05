@@ -8,9 +8,23 @@ import GithubSlugger from "github-slugger";
 import { visit } from "unist-util-visit";
 import type { ReactElement } from "react";
 import type { MDXComponents } from "mdx/types";
-import type { Root, Heading, Text, InlineCode } from "mdast";
+import type { Root, Heading, Nodes } from "mdast";
 import { sharedComponents } from "../../../mdx-components";
 import type { TocEntry } from "./types";
+
+/**
+ * Recursively flatten a heading's mdast subtree into a plain string.
+ * Walks any node with `value` (text/inlineCode/html) or `children`
+ * (emphasis/strong/link/del/etc.) so that headings with nested formatting
+ * still produce a complete TOC label.
+ */
+function extractHeadingText(node: Nodes): string {
+  if ("value" in node && typeof node.value === "string") return node.value;
+  if ("children" in node && Array.isArray(node.children)) {
+    return node.children.map((child) => extractHeadingText(child)).join("");
+  }
+  return "";
+}
 
 const rehypePrettyCodeOptions = {
   theme: "github-dark-dimmed" as const,
@@ -32,14 +46,7 @@ function collectToc(sink: TocEntry[]) {
       const slugger = new GithubSlugger();
       visit(tree, "heading", (node: Heading) => {
         if (node.depth !== 2) return;
-        const label = node.children
-          .map((child) => {
-            if (child.type === "text") return (child as Text).value;
-            if (child.type === "inlineCode") return (child as InlineCode).value;
-            return "";
-          })
-          .join("")
-          .trim();
+        const label = extractHeadingText(node).trim();
         if (!label) return;
         sink.push({ id: slugger.slug(label), label });
       });

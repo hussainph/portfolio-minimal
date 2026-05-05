@@ -6,6 +6,7 @@ import {
   deriveExcerpt,
   getItemBySlug,
   loadAll,
+  resolveShowcaseTitle,
 } from "@/lib/content";
 import type { ShowcaseItem } from "@/lib/content";
 import { SITE_URL } from "@/lib/siteUrl";
@@ -19,31 +20,6 @@ export async function generateStaticParams(): Promise<RouteParams[]> {
   return index.items
     .filter((item): item is ShowcaseItem => item.kind === "showcase")
     .map((item) => ({ slug: item.frontmatter.slug }));
-}
-
-/**
- * Resolve the editorial title for a showcase. Authored frontmatter wins; if
- * absent, bento/grid showcases pick the caption of the `picked: true` tile so
- * the page name reflects the chosen direction (and not whatever happens to
- * sit at index 0). Single-variant or unpicked sets fall back to the first
- * caption, then to a slug-tagged generic.
- */
-function resolveShowcaseTitle(item: ShowcaseItem): string {
-  const authored = item.frontmatter.title?.trim();
-  if (authored) return authored;
-
-  const isMulti =
-    item.frontmatter.variant === "bento" ||
-    item.frontmatter.variant === "grid";
-  if (isMulti) {
-    const picked = item.frontmatter.images.find((img) => img.picked === true);
-    if (picked?.caption) return picked.caption;
-  }
-
-  const firstCaption = item.frontmatter.images[0]?.caption;
-  if (firstCaption) return firstCaption;
-
-  return `showcase · ${item.frontmatter.slug}`;
 }
 
 export async function generateMetadata({

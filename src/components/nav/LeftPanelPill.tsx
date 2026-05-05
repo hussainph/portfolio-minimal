@@ -56,8 +56,18 @@ export function LeftPanelPill({
   const [state, setState] = useState<PanelState>("closed");
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
-  const iconZoneRef = useRef<HTMLDivElement | null>(null);
   const reduce = useReducedMotion();
+
+  // Clear any pending peek-close timer on unmount so we don't fire `setState`
+  // on an unmounted node when the user navigates away mid-180ms.
+  useEffect(() => {
+    return () => {
+      if (hoverTimer.current) {
+        clearTimeout(hoverTimer.current);
+        hoverTimer.current = null;
+      }
+    };
+  }, []);
 
   const open = state !== "closed";
   const expanded = state === "expanded";
@@ -94,7 +104,8 @@ export function LeftPanelPill({
 
   useEffect(() => {
     if (state !== "expanded") return;
-    const handler = (e: MouseEvent) => {
+    // `pointerdown` fires for mouse, touch, and pen with a single listener.
+    const handler = (e: PointerEvent) => {
       if (
         wrapperRef.current &&
         !wrapperRef.current.contains(e.target as Node)
@@ -102,8 +113,8 @@ export function LeftPanelPill({
         setState("closed");
       }
     };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    document.addEventListener("pointerdown", handler);
+    return () => document.removeEventListener("pointerdown", handler);
   }, [state]);
 
   useEffect(() => {
@@ -121,7 +132,6 @@ export function LeftPanelPill({
       className={cn(PILL_SHELL, "relative p-1.5")}
     >
       <div
-        ref={iconZoneRef}
         className="relative"
         onMouseEnter={handleEnter}
         onMouseLeave={handleLeave}
@@ -162,10 +172,10 @@ export function LeftPanelPill({
             <motion.span
               key="signifier"
               aria-hidden="true"
-              initial={{ opacity: 0, y: 2 }}
-              animate={{ opacity: 0.55, y: 0 }}
-              exit={{ opacity: 0, y: 2 }}
-              transition={{ duration: 0.2 }}
+              initial={reduce ? { opacity: 0 } : { opacity: 0, y: 2 }}
+              animate={reduce ? { opacity: 0.55 } : { opacity: 0.55, y: 0 }}
+              exit={reduce ? { opacity: 0 } : { opacity: 0, y: 2 }}
+              transition={{ duration: reduce ? 0 : 0.2 }}
               className="pointer-events-none absolute left-1/2 top-[-10px] -translate-x-1/2 font-mono text-[9px] leading-3 tracking-[0.05em] text-faint"
             >
               ⌃

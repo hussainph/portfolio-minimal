@@ -6,7 +6,7 @@ import { Tag } from "@/components/ui/Tag";
 import { tagColor } from "@/lib/tagColor";
 import { GLOW_NEUTRAL_BASE, tileGlow } from "@/lib/tagGlow";
 import { cn } from "@/lib/utils";
-import { formatFeedTimestamp } from "@/lib/content";
+import { formatFeedTimestamp, resolveShowcaseTitle } from "@/lib/content";
 import type { ShowcaseItem, SiblingHrefs } from "@/lib/content";
 import type { ShowcaseImage } from "@/lib/content";
 
@@ -36,7 +36,7 @@ export function ShowcasePage({ item, siblings }: ShowcasePageProps) {
         nextHref={siblings.nextHref}
         pageMeta={{
           slug: frontmatter.slug,
-          title: frontmatter.title ?? `showcase · ${frontmatter.slug}`,
+          title: resolveShowcaseTitle(item),
         }}
       />
       <div className="mx-auto flex max-w-[720px] flex-col gap-6 px-5 pt-10 pb-36 sm:gap-7 sm:px-8 sm:pt-14 sm:pb-44 md:gap-8 md:px-12 md:pt-16 md:pb-48">

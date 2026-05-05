@@ -35,11 +35,19 @@ function writeToStorage(set: Set<string>) {
 function subscribe(cb: Listener) {
   if (typeof window === "undefined") return () => {};
   // Changes from this tab + other tabs (storage event) both need to wake us up.
+  // For the cross-tab case, the module-level snapshot has to be refreshed
+  // before we notify React — otherwise `getSnapshot()` returns the same
+  // reference and `useSyncExternalStore` skips the re-render.
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key !== STORAGE_KEY && e.key !== null) return;
+    current = readFromStorage();
+    cb();
+  };
   window.addEventListener(EVENT, cb);
-  window.addEventListener("storage", cb);
+  window.addEventListener("storage", handleStorage);
   return () => {
     window.removeEventListener(EVENT, cb);
-    window.removeEventListener("storage", cb);
+    window.removeEventListener("storage", handleStorage);
   };
 }
 

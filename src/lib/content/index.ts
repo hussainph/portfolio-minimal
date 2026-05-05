@@ -6,6 +6,7 @@ export type { RefPreview } from "./preview";
 export { routeFor } from "./routes";
 export { computeSiblingHrefs } from "./siblings";
 export type { SiblingHrefs } from "./siblings";
+export { resolveShowcaseTitle } from "./showcaseTitle";
 export type {
   ContentIndex,
   ContentItem,

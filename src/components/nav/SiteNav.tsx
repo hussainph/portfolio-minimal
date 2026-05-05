@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -275,7 +275,7 @@ function FilterPanel({
           ? { duration: 0.15 }
           : { type: "spring", stiffness: 380, damping: 30 }
       }
-      role="dialog"
+      role="region"
       aria-label="Filter the stream"
       className={cn(PANEL_SHELL, PANEL_LIFT_DEFAULT)}
       style={{ maxWidth: pillRowWidth }}
@@ -415,6 +415,7 @@ function NestedOutlinePanel({
   toggleExpanded,
   reduce,
 }: OutlinePillProps & PanelRenderProps) {
+  const router = useRouter();
   const headingLabel = view === "post" ? "Chapters" : "Sections";
   const nextLabel = view === "post" ? "Next post" : "Next project";
   const prevLabel = view === "post" ? "Previous post" : "Previous project";
@@ -434,7 +435,7 @@ function NestedOutlinePanel({
           ? { duration: 0.15 }
           : { type: "spring", stiffness: 380, damping: 30 }
       }
-      role="dialog"
+      role="region"
       aria-label={`${headingLabel} for this page`}
       className={cn(PANEL_SHELL, PANEL_LIFT_DEFAULT)}
       style={{ maxWidth: pillRowWidth }}
@@ -499,7 +500,7 @@ function NestedOutlinePanel({
             shortLabel="Prev"
             inline={showLabels}
             disabled={!prevHref}
-            onClick={prevHref ? () => navigate(prevHref) : undefined}
+            onClick={prevHref ? () => router.push(prevHref) : undefined}
           >
             <ChevronLeft />
           </TooltipButton>
@@ -525,7 +526,7 @@ function NestedOutlinePanel({
             shortLabel="Next"
             inline={showLabels}
             disabled={!nextHref}
-            onClick={nextHref ? () => navigate(nextHref) : undefined}
+            onClick={nextHref ? () => router.push(nextHref) : undefined}
           >
             <ChevronRight />
           </TooltipButton>
@@ -585,15 +586,6 @@ function OutlineRow({
       </a>
     </li>
   );
-}
-
-function navigate(href: string) {
-  if (typeof window === "undefined") return;
-  // Soft navigation — rely on the browser's router since Link would be heavier
-  // here and we're inside an event handler. next/navigation's useRouter.push
-  // is an option if we want prefetch, but the nav is sparse enough that a
-  // direct assignment feels right.
-  window.location.href = href;
 }
 
 function PageGlyph({ id }: { id: "stream" | "projects" | "about" }) {

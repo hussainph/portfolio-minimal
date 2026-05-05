@@ -27,6 +27,7 @@ export function computeSiblingHrefs(
     const i = projects.findIndex(
       (p) => p.frontmatter.slug === current.frontmatter.slug,
     );
+    if (i === -1) return { prevHref: null, nextHref: null };
     return {
       prevHref: projects[i + 1]
         ? `/projects/${projects[i + 1]!.frontmatter.slug}`

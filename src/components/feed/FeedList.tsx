@@ -165,6 +165,7 @@ function ShowcaseRow({ item }: { item: ShowcaseItem }) {
           key={idx}
           caption={img.caption}
           picked={img.picked}
+          src={img.src}
         />
       ))}
     </ShowcaseCard>
