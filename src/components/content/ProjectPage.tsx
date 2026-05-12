@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { FeedList } from "@/components/feed/FeedList";
-import { BottomToolbar } from "@/components/ui/BottomToolbar";
+import { NavSetter } from "@/components/nav/NavStateContext";
 import { Label } from "@/components/ui/Label";
 import { ProjectHero } from "@/components/ui/ProjectHero";
 import { Separator } from "@/components/ui/Separator";
-import type { ProjectWithTimeline } from "@/lib/content";
+import type { ProjectWithTimeline, SiblingHrefs } from "@/lib/content";
 
 interface ProjectPageProps {
   project: ProjectWithTimeline;
+  siblings: SiblingHrefs;
 }
 
 /**
@@ -16,11 +17,21 @@ interface ProjectPageProps {
  * linked feed items below the hairline. Projects with no linked content just
  * show description-only — no empty state.
  */
-export function ProjectPage({ project }: ProjectPageProps) {
-  const { frontmatter, timeline } = project;
+export function ProjectPage({ project, siblings }: ProjectPageProps) {
+  const { frontmatter, timeline, toc } = project;
 
   return (
     <main className="min-h-screen bg-background text-text">
+      <NavSetter
+        view="project"
+        outline={toc}
+        prevHref={siblings.prevHref}
+        nextHref={siblings.nextHref}
+        pageMeta={{
+          slug: frontmatter.slug,
+          title: frontmatter.title,
+        }}
+      />
       <div className="mx-auto flex max-w-[720px] flex-col gap-6 px-5 pt-10 pb-8 sm:gap-7 sm:px-8 sm:pt-14 sm:pb-10 md:gap-8 md:px-12 md:pt-16">
         <Link
           href="/projects"
@@ -75,8 +86,6 @@ export function ProjectPage({ project }: ProjectPageProps) {
           </section>
         ) : null}
       </div>
-
-      <BottomToolbar activeTab="projects" />
     </main>
   );
 }

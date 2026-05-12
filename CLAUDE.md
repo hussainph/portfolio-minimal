@@ -40,21 +40,23 @@ Tokens live in [src/app/globals.css](src/app/globals.css) under `@theme`. Compon
 
 ### Route Structure
 
-- `src/app/page.tsx` — Home feed with sticky header card (shader banner + text on surface) and tag filter (`?tag=...` searchParams). Desktop layout (lg:) is a two-column grid: sticky header card left (30fr), FilterChipRow + FeedList right (70fr)
+- `src/app/page.tsx` — Home feed with sticky header card (shader banner + text on surface). Filtering is driven by the global `SiteNav` filter pill (`?types=`, `?tags=`, `?q=` searchParams). Desktop layout (lg:) is a two-column grid: sticky header card left (30fr), FeedList right (70fr)
 - `src/app/n/[slug]/page.tsx` — Note permalink
 - `src/app/blog/[slug]/page.tsx` — Blog post
 - `src/app/showcases/[slug]/page.tsx` — Showcase detail
 - `src/app/projects/page.tsx` — Projects index
 - `src/app/projects/[slug]/page.tsx` — Project detail with conditional timeline
 - `src/app/tags/[tag]/page.tsx` — Tag archive (filtered feed)
+- `src/app/about/page.tsx` — About page (currently a placeholder; content TBD)
 - `src/app/(dev)/ui-test/page.tsx` — Component library specimen, dev-only (404s in production)
+- `src/app/(dev)/nav-test/page.tsx` — SiteNav specimen, dev-only (404s in production)
 - `src/app/sitemap.ts` — Dynamic XML sitemap
 - `src/app/robots.ts` — robots.txt
-- `src/app/api/chat/route.ts` — Stub, currently unused
 
 ### Key Directories
 
-- `src/components/ui/` — Design-system primitives (HeaderShader, SocialIconRow, Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, BentoShowcase, FilterChipRow, PrimaryButton, ProjectHero, BottomToolbar, Icon, Meta, Label, Separator)
+- `src/components/ui/` — Design-system primitives (HeaderShader, SocialIconRow, Tag, TextLink, NoteCard, BlogPostCard, ShowcaseCard, PrimaryButton, ProjectHero, Icon, Meta, Label, Separator)
+- `src/components/nav/` — Site-wide nav (SiteNav, NavStateContext, CommandPalette, LeftPanelPill, ContentTypeChips, useNavState)
 - `src/components/projects/` — ProjectCard, ProjectChip (smaller and bitesized tiers)
 - `src/components/content/` — Per-route page templates (NotePage, PostPage, ShowcasePage, ProjectPage)
 - `src/components/feed/` — FeedList (renders filtered/sorted items)
@@ -80,7 +82,7 @@ Write content as `.mdx` files in `content/notes/`, `content/posts/`, `content/sh
 
 All animations use Framer Motion. Use the `/interface-craft` skill for storyboard animations (stage DSL), live-tuning with DialKit, and polish audits.
 
-The bottom toolbar uses a spring (`stiffness: 260, damping: 22, mass: 1`) and respects `prefers-reduced-motion` (falls back to a simple fade).
+The `SiteNav` rail uses a spring (`stiffness: 260, damping: 22, mass: 1`) and respects `prefers-reduced-motion` (falls back to a simple fade).
 
 ## Git Conventions
 

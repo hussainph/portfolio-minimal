@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NotePage } from "@/components/content/NotePage";
-import { deriveExcerpt, getItemBySlug, loadAll } from "@/lib/content";
+import {
+  computeSiblingHrefs,
+  deriveExcerpt,
+  getItemBySlug,
+  loadAll,
+} from "@/lib/content";
 import type { NoteItem } from "@/lib/content";
 import { SITE_URL } from "@/lib/siteUrl";
 
@@ -55,10 +60,11 @@ export default async function NoteRoute({
   params: Promise<RouteParams>;
 }) {
   const { slug } = await params;
-  const item = await getItemBySlug(slug);
+  const [item, index] = await Promise.all([getItemBySlug(slug), loadAll()]);
   if (!item || item.kind !== "note") notFound();
 
-  return <NotePage item={item} />;
+  const siblings = computeSiblingHrefs(item, index);
+  return <NotePage item={item} siblings={siblings} />;
 }
 
 function firstLine(raw: string): string {

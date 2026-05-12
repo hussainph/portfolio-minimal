@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProjectPage } from "@/components/content/ProjectPage";
-import { loadAll } from "@/lib/content";
+import { computeSiblingHrefs, loadAll } from "@/lib/content";
 import { SITE_URL } from "@/lib/siteUrl";
 
 interface RouteParams {
@@ -54,5 +54,6 @@ export default async function ProjectDetailRoute({
   const project = index.projects.find((p) => p.frontmatter.slug === slug);
   if (!project) notFound();
 
-  return <ProjectPage project={project} />;
+  const siblings = computeSiblingHrefs(project, index);
+  return <ProjectPage project={project} siblings={siblings} />;
 }

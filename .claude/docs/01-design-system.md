@@ -141,10 +141,7 @@ Phosphor Light weight. Rest state in `faint`. On active/interaction, icons inher
 |-----------|-------|-------|
 | [NoteCard](../../src/components/ui/NoteCard.tsx) | Short-form — tags, timestamp, body, optional engagement | Whole card clickable via overlay link; hover reveals tag-colored left stripe + elevated bg |
 | [BlogPostCard](../../src/components/ui/BlogPostCard.tsx) | Long-form — adds title (H2 serif), excerpt (muted), read time | Overlay link + hover nudge on "Read →" label |
-| [ShowcaseCard](../../src/components/ui/ShowcaseCard.tsx) | Design work — body + `images[]` with `{caption, glow, picked?}` | 1-tile or grid variant; overlay link pattern |
-| [BentoShowcase](../../src/components/ui/BentoShowcase.tsx) | Exactly 3 images — fixed 280px height; 1 featured (55%, left) + 2 stacked (45%, right). "FEATURED" badge on picked tile | Used for comparison sets; overlay link pattern |
-
-Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, decorative until real images arrive).
+| [ShowcaseCard](../../src/components/ui/ShowcaseCard.tsx) | Design work — unified compound with named export subcomponents. Body + optional attachments (image, video, code, embed). Supports `layout="auto\|single\|grid\|bento"` (auto picks single for 1 child, bento for 3 with one `picked`, grid otherwise). Attachments (`ShowcaseImage`, `ShowcaseVideo`, `ShowcaseCode`, `ShowcaseEmbed`) are named exports to cross Next.js RSC boundaries. Permalink heroes have their own tile renderer in [ShowcasePage.tsx](../../src/components/content/ShowcasePage.tsx) — keep tile visuals in sync when editing either. | Overlay link pattern; frontmatter `variant` controls layout |
 
 ### Project cards (smaller tier)
 
@@ -153,11 +150,14 @@ Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, 
 | [ProjectCard](../../src/components/projects/ProjectCard.tsx) | Mid-weight project card — serif title, muted subtitle, status meta, CTA nudge | Overlay link pattern; tag chips interactive |
 | [ProjectChip](../../src/components/projects/ProjectChip.tsx) | Lightweight compact row (~40–52px) — title, optional subtitle, tags, status | Bitesized tier; overlay link pattern |
 
-### Filter & status
+### Site nav
 
 | Component | Purpose |
 |-----------|---------|
-| [FilterChipRow](../../src/components/ui/FilterChipRow.tsx) | Sticky filter row above feed. Multi-select via `?tags=a,b,c` (AND), with tag clicks toggling. Wrapped in `<Suspense>` for dynamic searchParams |
+| [SiteNav](../../src/components/nav/SiteNav.tsx) | Fixed bottom-center pill row mounted globally in `layout.tsx`. Three pills: contextual left pill (filter on home routes, outline on detail routes), primary nav (stream / projects / about), and ⌘K search trigger. Hosts the `CommandPalette`. Auto-hides after 3s idle past 200px scroll |
+| [LeftPanelPill](../../src/components/nav/LeftPanelPill.tsx) | Shared shell for hover-driven disclosure pills. Three states (closed / peek / expanded), invisible 8px bridge over the panel gap, `role="region"` on the open panel (not modal — it doesn't trap focus). Caret signifier respects `prefers-reduced-motion` |
+| [TooltipButton](../../src/components/nav/TooltipButton.tsx) | Compact icon button with optional inline label and visual hover tooltip. Uses `aria-label` for the accessible name; the floating tooltip span is `aria-hidden` (visual redundancy, not a programmatic association). Respects `prefers-reduced-motion` |
+| [CommandPalette](../../src/components/nav/CommandPalette.tsx) | ⌘K palette built on cmdk. One input, one flat list, sorted upstream (exact > prefix > tag > substring). Escape closes; click outside closes; respects `prefers-reduced-motion` |
 
 ### Primitives
 
@@ -172,7 +172,6 @@ Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, 
 | [Icon](../../src/components/ui/Icon.tsx) | Phosphor Light: reply, like, bookmark, share, arrow-right, arrow-up-right, search, menu, grid, user |
 | [PrimaryButton](../../src/components/ui/PrimaryButton.tsx) | See Motion section below. Polymorphic (`<button>` or `<a>`) |
 | [ProjectHero](../../src/components/ui/ProjectHero.tsx) | Headliner. Two-pane: editorial left (serif display title, subtitle, meta table, CTAs) + drifting shader visual right |
-| [BottomToolbar](../../src/components/ui/BottomToolbar.tsx) | Fixed bottom nav. 3 tabs (stream / projects / about) + search. Auto-hides after 3s idle past 200px scroll |
 
 ### MDX content primitives
 
@@ -185,7 +184,7 @@ Image glow variants: `warm`, `cool`, `pink`, `amber` (ambient radial gradients, 
 
 ### Overlay link pattern
 
-**Cards are clickable while inner elements stay interactive.** Implementation: `<Link>` wraps the card; its child has `before:absolute before:inset-0` so the pseudo-element becomes the clickable layer. Tag pills, buttons, and other tappable elements sit above the pseudo-element in stacking order. Applied to `NoteCard`, `BlogPostCard`, `ShowcaseCard`, `BentoShowcase`, `ProjectCard`, `ProjectChip`.
+**Cards are clickable while inner elements stay interactive.** Implementation: `<Link>` wraps the card; its child has `before:absolute before:inset-0` so the pseudo-element becomes the clickable layer. Tag pills, buttons, and other tappable elements sit above the pseudo-element in stacking order. Applied to `NoteCard`, `BlogPostCard`, `ShowcaseCard`, `ProjectCard`, `ProjectChip`.
 
 ---
 
@@ -195,7 +194,7 @@ Three animation tools, in order of preference:
 
 ### 1. Framer Motion — for component lifecycle
 
-Entry / exit / state transitions on React components. Example: BottomToolbar's auto-hide uses a spring.
+Entry / exit / state transitions on React components. Example: SiteNav's auto-hide uses a spring.
 
 ```
 spring · stiffness 260 · damping 22 · mass 1
@@ -231,23 +230,22 @@ Header is a tall Backdrop card rendered by [HeaderShader](../../src/components/u
 - **Top half** (click target): Paper shader variants (Dithering/GrainGradient/Warp presets) with scale crossfade (550ms) on variant advance
 - **Bottom half**: Heavily-blurred frosted plaque overlaid with name (Instrument Serif, display size), bio (DM Sans 400, `muted`), and [SocialIconRow](../../src/components/ui/SocialIconRow.tsx)
 
-Min heights: 330px (sm: 390px, lg: 420px). Mobile/tablet: card stacks vertically above FilterChipRow. Desktop (lg:): card pins to left column (sticky), FilterChipRow + FeedList float to right column.
+Min heights: 330px (sm: 390px, lg: 420px). Mobile/tablet: card stacks vertically above the feed. Desktop (lg:): card pins to left column (sticky), FeedList floats to right column.
 
-### Tag filter chips
+### Filtering
 
-Row of `Tag` pills above the feed. Default alphas at rest; active state fills with the tag's hue and inverts text to near-black. URL-driven (`?tag=...`) — click filters feed server-side, shareable.
+Filtering is driven by the global `SiteNav` filter pill (URL-driven: `?types=`, `?tags=`, `?q=`). Tag pills inside the panel default to alpha at rest; active state fills with the tag's hue and inverts text to near-black. Tag clicks anywhere on the page (Tag `as="filter"`) toggle the same state.
 
 ### Feed items
 
 - **Note:** tag pill + timestamp → body text → icon row
 - **Post:** tag pills + timestamp + read time → serif title (H2) → muted excerpt → icon row
-- **Showcase:** tag pills + timestamp → body text → image tile(s) with glow
-- **Bento:** same as showcase with the fixed asymmetric 3-tile layout
+- **Showcase:** tag pills + timestamp → body text → tiles. `ShowcaseCard` picks layout (`single` / `grid` / `bento`) from the frontmatter `variant`; the `bento` variant is the fixed asymmetric 3-tile layout.
 - **Separator** between every item
 
-### Bottom toolbar
+### Site nav (bottom pill row)
 
-Fixed, centered, backdrop blur (`backdrop-filter: blur(24px); bg #14141699`). Auto-hide after 3s idle past 200px scroll. Returns on cursor motion, scroll, or keypress.
+Fixed, centered, backdrop blur (`backdrop-filter: blur(24px); bg #14141699`). Auto-hide after 3s idle past 200px scroll. Returns on cursor motion, scroll, or keypress. See `SiteNav` in the components section above for the full surface.
 
 ---
 
@@ -261,7 +259,7 @@ Applies to UI chrome too — button labels, empty states, specimen subtitles. If
 
 ## When this doc needs an update
 
-- New component lands in [src/components/ui/](../../src/components/ui/) — add a row to Components
+- New component lands in [src/components/ui/](../../src/components/ui/) or [src/components/nav/](../../src/components/nav/) — add a row to Components
 - New design token added to [globals.css](../../src/app/globals.css) — add to the relevant scale table
 - New animation pattern introduced — extend the Motion section
 - Type scale tweaked on the specimen — reconcile the Type Scale table

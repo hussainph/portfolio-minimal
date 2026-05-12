@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { ProjectChip } from "@/components/projects/ProjectChip";
-import { BottomToolbar } from "@/components/ui/BottomToolbar";
+import { NavSetter } from "@/components/nav/NavStateContext";
 import { Label } from "@/components/ui/Label";
 import { ProjectHero } from "@/components/ui/ProjectHero";
 import { loadAll } from "@/lib/content";
@@ -48,6 +48,7 @@ export default async function ProjectsIndexRoute() {
 
   return (
     <main className="min-h-screen bg-background text-text">
+      <NavSetter view="home" />
       <div className="mx-auto flex max-w-[720px] flex-col gap-10 px-5 pt-10 pb-36 sm:gap-12 sm:px-8 sm:pt-14 sm:pb-44 md:gap-14 md:px-12 md:pt-16 md:pb-48">
         <Link
           href="/"
@@ -89,8 +90,6 @@ export default async function ProjectsIndexRoute() {
           />
         ) : null}
       </div>
-
-      <BottomToolbar activeTab="projects" />
     </main>
   );
 }

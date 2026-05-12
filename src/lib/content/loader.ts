@@ -124,7 +124,7 @@ async function compileBody(raw: RawEntry, primaryTag: string) {
 }
 
 async function buildFeedItem(raw: RawEntry, fm: FeedFrontmatter): Promise<FeedItem> {
-  const content = await compileBody(raw, fm.tags[0] ?? "building");
+  const { content, toc } = await compileBody(raw, fm.tags[0] ?? "building");
   const readingTimeMinutes = computeReadingTimeMinutes(raw.body);
 
   if (fm.type === "note") {
@@ -135,6 +135,7 @@ async function buildFeedItem(raw: RawEntry, fm: FeedFrontmatter): Promise<FeedIt
       content,
       readingTimeMinutes,
       filePath: raw.relPath,
+      toc,
     };
     return item;
   }
@@ -149,6 +150,7 @@ async function buildFeedItem(raw: RawEntry, fm: FeedFrontmatter): Promise<FeedIt
       readingTimeMinutes,
       filePath: raw.relPath,
       excerpt,
+      toc,
     };
     return item;
   }
@@ -160,12 +162,13 @@ async function buildFeedItem(raw: RawEntry, fm: FeedFrontmatter): Promise<FeedIt
     content,
     readingTimeMinutes,
     filePath: raw.relPath,
+    toc,
   };
   return item;
 }
 
 async function buildProjectItem(raw: RawEntry, fm: ProjectFrontmatter): Promise<ProjectItem> {
-  const content = await compileBody(raw, fm.tags[0] ?? "building");
+  const { content, toc } = await compileBody(raw, fm.tags[0] ?? "building");
   const readingTimeMinutes = computeReadingTimeMinutes(raw.body);
   return {
     kind: "project",
@@ -174,6 +177,7 @@ async function buildProjectItem(raw: RawEntry, fm: ProjectFrontmatter): Promise<
     content,
     readingTimeMinutes,
     filePath: raw.relPath,
+    toc,
   };
 }
 
