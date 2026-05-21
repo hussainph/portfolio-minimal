@@ -9,7 +9,7 @@ import { parseTagSearchParams } from "@/lib/tagParams";
 const SOCIAL_LINKS: SocialLink[] = [
   {
     icon: "github",
-    href: "https://github.com/hphalasiya",
+    href: "https://github.com/hussainph",
     label: "GitHub profile",
   },
   {
@@ -19,7 +19,7 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     icon: "email",
-    href: "mailto:hussain@phalasiya.dev",
+    href: "mailto:me@hussain.ph",
     label: "Email Hussain",
   },
 ];
