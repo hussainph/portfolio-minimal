@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { FeedList } from "@/components/feed/FeedList";
 import { NavSetter } from "@/components/nav/NavStateContext";
-import { Label } from "@/components/ui/Label";
+import { ProjectDetailPanes } from "@/components/projects/ProjectDetailPanes";
 import { ProjectHero } from "@/components/ui/ProjectHero";
-import { Separator } from "@/components/ui/Separator";
 import type { ProjectWithTimeline, SiblingHrefs } from "@/lib/content";
+import { cn } from "@/lib/utils";
 
 interface ProjectPageProps {
   project: ProjectWithTimeline;
@@ -12,13 +12,15 @@ interface ProjectPageProps {
 }
 
 /**
- * Detail template for `/projects/[slug]`. Full-width hero at top, a narrower
- * reading column for the MDX description, and a conditional timeline of
- * linked feed items below the hairline. Projects with no linked content just
- * show description-only — no empty state.
+ * Detail template for `/projects/[slug]`. Full-width hero on top, then a
+ * two-column pane below — body MDX on the left, timeline on the right —
+ * each scrolling independently on desktop. Mobile collapses the pane to a
+ * Story/Stream tab bar. Projects with no linked content render the body
+ * full-width with no tab bar.
  */
 export function ProjectPage({ project, siblings }: ProjectPageProps) {
   const { frontmatter, timeline, toc } = project;
+  const hasTimeline = timeline.length > 0;
 
   return (
     <main className="min-h-screen bg-background text-text">
@@ -62,29 +64,16 @@ export function ProjectPage({ project, siblings }: ProjectPageProps) {
 
       <div
         id="project-body"
-        className="mx-auto max-w-[720px] px-5 pt-8 pb-36 sm:px-8 sm:pt-10 sm:pb-44 md:px-12 md:pb-48"
+        className={cn(
+          "mx-auto px-5 pt-8 pb-36 sm:px-8 sm:pt-10 sm:pb-44 md:px-12 md:pb-48",
+          hasTimeline ? "max-w-[1140px]" : "max-w-[720px]",
+        )}
       >
-        <article className="prose-dark">{project.content}</article>
-
-        {timeline.length > 0 ? (
-          <section
-            id="project-timeline"
-            className="mt-16 flex flex-col gap-8"
-          >
-            <Separator />
-            <div className="flex flex-col gap-2">
-              <Label tone="faint">TIMELINE</Label>
-              <h2 className="font-serif text-[22px] leading-[28px] tracking-[-0.015em] text-text sm:text-[25px] sm:leading-[31px] md:text-[28px] md:leading-[34px]">
-                The thread
-              </h2>
-              <p className="font-sans text-[14px] leading-[22px] tracking-[-0.03em] text-muted">
-                Every note, post, and showcase tagged to this project, newest
-                first.
-              </p>
-            </div>
-            <FeedList items={timeline} />
-          </section>
-        ) : null}
+        <ProjectDetailPanes
+          body={project.content}
+          timeline={hasTimeline ? <FeedList items={timeline} /> : null}
+          streamCount={timeline.length}
+        />
       </div>
     </main>
   );
