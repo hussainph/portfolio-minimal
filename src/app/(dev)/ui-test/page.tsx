@@ -609,23 +609,20 @@ function ProjectCardsSection() {
         />
       </CardLane>
 
-      <CardLane label="Smaller tier — ProjectCard, mid-weight, CTA nudge on hover">
+      <CardLane label="Smaller tier — ProjectCard, simplified grid card">
         <ProjectCard
           slug="structured-output-playground"
           tags={["code", "ai"]}
           title="Structured output playground"
-          subtitle="A browser tool for poking at JSON-mode outputs across models. You paste a schema, it shows you where the model is about to lie."
           status="v0.2 · iterating"
-          ctaLabel="See the thread"
         />
       </CardLane>
 
-      <CardLane label="Bitesized tier — ProjectChip, compact one-line row">
+      <CardLane label="Bitesized tier — ProjectChip, mini-card for the grid">
         <ProjectChip
           slug="weekend-loop"
           title="Weekend Loop"
           tags={["code", "building"]}
-          subtitle="A 48-hour experiment in a feed that never stops loading."
           status="shipped · retired"
         />
       </CardLane>
