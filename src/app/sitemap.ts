@@ -2,6 +2,8 @@ import type { MetadataRoute } from "next";
 import { loadAll } from "@/lib/content";
 import { SITE_URL } from "@/lib/siteUrl";
 
+export const dynamic = "force-static";
+
 /**
  * Enumerate every routable URL on the site. Index routes (home, projects,
  * tag archives) get a recent `lastModified` so crawlers re-check often;
