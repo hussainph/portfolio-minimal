@@ -46,7 +46,7 @@ export default async function ProjectsIndexRoute() {
       <div className="mx-auto flex max-w-[1140px] flex-col gap-10 px-5 pt-10 pb-36 sm:gap-12 sm:px-8 sm:pt-14 sm:pb-44 md:gap-14 md:px-12 md:pt-16 md:pb-48">
         <Link
           href="/"
-          className="inline-flex w-fit items-center gap-1.5 font-mono text-[11px] leading-[14px] tracking-[0.04em] text-faint no-underline transition-colors duration-150 hover:text-muted"
+          className="inline-flex w-fit items-center gap-1.5 font-sans text-[13px] leading-[18px] tracking-[-0.03em] text-faint no-underline transition-colors duration-150 hover:text-muted"
         >
           <span aria-hidden="true">←</span>
           <span>back</span>
@@ -56,11 +56,19 @@ export default async function ProjectsIndexRoute() {
           <h1 className="font-serif text-[32px] leading-[36px] tracking-[-0.02em] text-text sm:text-[40px] sm:leading-[44px] md:text-[48px] md:leading-[52px]">
             Projects
           </h1>
-          <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
-            What I&apos;m working on, what I shipped, what I&apos;m breaking.
-            Headliners up top, then the mid-weight swings, then the weekend stuff.
+          <p className="font-sans text-[15px] leading-[23px] tracking-[-0.03em] text-muted text-pretty">
+            Things I&apos;ve built, mostly to find out whether the idea held up.
+            Newest first — which isn&apos;t the same as best first, but it&apos;s
+            the ordering I can actually defend.
           </p>
         </header>
+
+        {projects.length === 0 ? (
+          <p className="py-16 text-center font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
+            Nothing here yet — it&apos;s all still in the half-built stage.
+            Check back.
+          </p>
+        ) : null}
 
         {featured ? (
           <ProjectHero
