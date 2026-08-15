@@ -63,16 +63,16 @@ export default async function ProjectsIndexRoute() {
 
         {featured ? (
           <ProjectHero
-            badge={featured.frontmatter.badge}
+            variant="lead"
             tags={featured.frontmatter.tags}
             title={featured.frontmatter.title}
             subtitle={featured.frontmatter.subtitle}
+            status={featured.frontmatter.status}
             meta={featured.frontmatter.meta ?? []}
             primaryCta={{
               label: featured.frontmatter.primaryCta?.label ?? "Open project",
               href: `/projects/${featured.frontmatter.slug}`,
             }}
-            visualBadge={featured.frontmatter.visualBadge}
           />
         ) : null}
 

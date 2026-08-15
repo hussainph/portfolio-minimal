@@ -46,10 +46,11 @@ export function ProjectPage({ project, siblings }: ProjectPageProps) {
 
       <div className="mx-auto max-w-[960px] px-5 sm:px-8 md:px-12">
         <ProjectHero
-          badge={frontmatter.badge}
+          variant="detail"
           tags={frontmatter.tags}
           title={frontmatter.title}
           subtitle={frontmatter.subtitle}
+          status={frontmatter.status}
           meta={frontmatter.meta ?? []}
           primaryCta={
             frontmatter.primaryCta ?? {
@@ -58,7 +59,6 @@ export function ProjectPage({ project, siblings }: ProjectPageProps) {
             }
           }
           secondaryCta={frontmatter.secondaryCta}
-          visualBadge={frontmatter.visualBadge}
         />
       </div>
 
