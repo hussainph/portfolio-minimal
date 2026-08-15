@@ -47,6 +47,7 @@ export function ProjectPage({ project, siblings }: ProjectPageProps) {
       <div className="mx-auto max-w-[960px] px-5 sm:px-8 md:px-12">
         <ProjectHero
           variant="detail"
+          seed={frontmatter.slug}
           tags={frontmatter.tags}
           title={frontmatter.title}
           subtitle={frontmatter.subtitle}

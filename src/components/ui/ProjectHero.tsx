@@ -15,7 +15,13 @@ export interface ProjectHeroCta {
 }
 
 interface ProjectHeroProps {
-  /** Drives the ambient glow hue. Not rendered as pills — the color is the tag. */
+  /**
+   * Unique per project (the slug). Drives the dominant glow hue, so two
+   * projects that share a first tag still look like different projects.
+   * Falls back to the first tag when omitted.
+   */
+  seed?: string;
+  /** Tints the secondary bloom and the status dot. Not rendered as pills. */
   tags: string[];
   title: string;
   subtitle: string;
@@ -44,6 +50,7 @@ interface ProjectHeroProps {
  * suppressed under `prefers-reduced-motion` by the global rule in globals.css.
  */
 export function ProjectHero({
+  seed,
   tags,
   title,
   subtitle,
@@ -55,9 +62,10 @@ export function ProjectHero({
   className,
 }: ProjectHeroProps) {
   const isLead = variant === "lead";
-  const primaryHue = tagColor(tags[0] ?? "building", 0.17);
-  const secondaryHue = tagColor(tags[1] ?? tags[0] ?? "building", 0.09);
-  const dotColor = tagColor(tags[0] ?? "building");
+  const accent = tags[0] ?? "building";
+  const primaryHue = tagColor(seed ?? accent, 0.17);
+  const secondaryHue = tagColor(accent, 0.09);
+  const dotColor = tagColor(accent);
 
   // The status line already says what a `status` meta row would say, so drop
   // the duplicate rather than printing it twice in two different voices.
@@ -89,7 +97,7 @@ export function ProjectHero({
               className="size-1.5 shrink-0 rounded-full"
               style={{
                 backgroundColor: dotColor,
-                boxShadow: `0 0 9px ${tagColor(tags[0] ?? "building", 0.55)}`,
+                boxShadow: `0 0 9px ${tagColor(accent, 0.55)}`,
               }}
             />
             <span>{status}</span>
