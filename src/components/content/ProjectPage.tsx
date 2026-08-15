@@ -37,7 +37,7 @@ export function ProjectPage({ project, siblings }: ProjectPageProps) {
       <div className="mx-auto flex max-w-[720px] flex-col gap-6 px-5 pt-10 pb-8 sm:gap-7 sm:px-8 sm:pt-14 sm:pb-10 md:gap-8 md:px-12 md:pt-16">
         <Link
           href="/projects"
-          className="inline-flex w-fit items-center gap-1.5 font-mono text-[11px] leading-[14px] tracking-[0.04em] text-faint no-underline transition-colors duration-150 hover:text-muted"
+          className="inline-flex w-fit items-center gap-1.5 font-sans text-[13px] leading-[18px] tracking-[-0.03em] text-faint no-underline transition-colors duration-150 hover:text-muted"
         >
           <span aria-hidden="true">←</span>
           <span>all projects</span>
