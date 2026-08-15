@@ -19,6 +19,8 @@ export async function generateStaticParams(): Promise<RouteParams[]> {
     .map((tag) => ({ tag }));
 }
 
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {
