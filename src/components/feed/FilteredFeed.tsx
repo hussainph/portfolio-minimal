@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, Suspense, useEffect, useState, type ReactNode } from "react";
+import { Fragment, Suspense, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   describeEmptyFeed,
@@ -29,54 +29,51 @@ interface FilteredFeedProps {
  * `content/*.mdx` from. So the server renders every card at build time and
  * this component decides which ones to mount.
  *
- * The `useSearchParams()` call lives in a separate child behind its own
- * Suspense boundary on purpose: during static prerendering Next bails the
- * nearest boundary to client rendering, and we want that blast radius to be
- * the (empty) sync component rather than the feed itself. Keeping the cards
- * outside it means the full stream still ships inside the prerendered HTML.
+ * `useSearchParams()` lives in `FilteredRows`, a child behind its own
+ * Suspense boundary: during static prerendering Next bails the nearest
+ * boundary to client rendering, and we want that blast radius scoped there
+ * rather than swallowing the whole feed. The Suspense fallback renders the
+ * *unfiltered* list, so every card still ships inside the prerendered HTML —
+ * and because the child reads the filter during render instead of lifting it
+ * in an effect, the hydration pass paints the correct subset immediately
+ * instead of painting everything and reflowing a tick later.
  */
 export function FilteredFeed({ entries }: FilteredFeedProps) {
-  const [filter, setFilter] = useState<FeedFilterState>(EMPTY_FEED_FILTER);
+  return (
+    <Suspense
+      fallback={<FeedRows entries={entries} filter={EMPTY_FEED_FILTER} />}
+    >
+      <FilteredRows entries={entries} />
+    </Suspense>
+  );
+}
 
+function FilteredRows({ entries }: { entries: FeedEntry[] }) {
+  const filter = parseFeedFilter(
+    new URLSearchParams(useSearchParams().toString()),
+  );
+  return <FeedRows entries={entries} filter={filter} />;
+}
+
+interface FeedRowsProps {
+  entries: FeedEntry[];
+  filter: FeedFilterState;
+}
+
+function FeedRows({ entries, filter }: FeedRowsProps) {
   const visible = entries.filter((entry) =>
     matchesFeedFilter(entry.meta, filter),
   );
 
-  return (
-    <>
-      <Suspense fallback={null}>
-        <FeedFilterSync onChange={setFilter} />
-      </Suspense>
-      {visible.length === 0 ? (
-        <div className="py-16 text-center font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
-          {describeEmptyFeed(filter)}
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {visible.map((entry) => (
-            <Fragment key={entry.meta.key}>{entry.node}</Fragment>
-          ))}
-        </div>
-      )}
-    </>
+  return visible.length === 0 ? (
+    <div className="py-16 text-center font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
+      {describeEmptyFeed(filter)}
+    </div>
+  ) : (
+    <div className="flex flex-col gap-3">
+      {visible.map((entry) => (
+        <Fragment key={entry.meta.key}>{entry.node}</Fragment>
+      ))}
+    </div>
   );
-}
-
-/**
- * Reads the filter out of the URL and lifts it. Renders nothing — it exists
- * purely so `useSearchParams()` sits behind its own Suspense boundary.
- */
-function FeedFilterSync({
-  onChange,
-}: {
-  onChange: (filter: FeedFilterState) => void;
-}) {
-  const params = useSearchParams();
-  const serialized = params.toString();
-
-  useEffect(() => {
-    onChange(parseFeedFilter(new URLSearchParams(serialized)));
-  }, [serialized, onChange]);
-
-  return null;
 }
