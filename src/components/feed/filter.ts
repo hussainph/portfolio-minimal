@@ -1,3 +1,4 @@
+import type { ContentKind } from "@/components/nav/types";
 import type { FeedItem } from "@/lib/content";
 
 /**
@@ -9,7 +10,7 @@ import type { FeedItem } from "@/lib/content";
 export interface FeedItemMeta {
   /** Stable render key — `${kind}:${slug}`, matching the old FeedList key. */
   key: string;
-  kind: "note" | "post" | "showcase";
+  kind: ContentKind;
   tags: string[];
   /** Pre-lowercased haystack: title + excerpt + raw body, newline-joined. */
   search: string;
@@ -19,7 +20,7 @@ export interface FeedFilterState {
   /** AND-filter: a row must carry every listed tag. Empty = no filter. */
   tags: string[];
   /** OR-filter across content kinds. Empty = all kinds pass. */
-  types: string[];
+  types: ContentKind[];
   /** Case-insensitive substring match, already trimmed + lowercased. */
   query: string;
 }
@@ -30,7 +31,7 @@ export const EMPTY_FEED_FILTER: FeedFilterState = {
   query: "",
 };
 
-const KINDS = ["note", "post", "showcase"] as const;
+const KINDS: ContentKind[] = ["note", "post", "showcase"];
 
 /**
  * Collapse a feed item to its filterable surface. Mirrors the fields the old
@@ -104,11 +105,9 @@ function parseTags(raw: string[]): string[] {
   return out;
 }
 
-function parseTypes(raw: string[]): string[] {
+function parseTypes(raw: string[]): ContentKind[] {
   return raw
     .flatMap((s) => s.split(","))
     .map((s) => s.trim())
-    .filter((s): s is (typeof KINDS)[number] =>
-      (KINDS as readonly string[]).includes(s),
-    );
+    .filter((s): s is ContentKind => (KINDS as string[]).includes(s));
 }

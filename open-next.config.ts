@@ -7,6 +7,9 @@ import staticAssetsIncrementalCache from "@opennextjs/cloudflare/overrides/incre
 // incremental cache. Without this the routes built via generateStaticParams —
 // /projects/[slug], /blog/[slug], /n/[slug], /showcases/[slug], /tags/[tag] —
 // have nowhere to read their prerendered output from and 404.
+//
+// staticAssetsIncrementalCache throws at runtime if "use cache"/cacheComponents
+// is ever enabled — revisit this override before turning that on.
 export default defineCloudflareConfig({
   incrementalCache: staticAssetsIncrementalCache,
 });
