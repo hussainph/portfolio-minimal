@@ -45,6 +45,7 @@ export function ProjectDetailPanes({
 
       <section
         aria-label="Story"
+        tabIndex={0}
         className={cn(
           tab === "story" ? "block" : "hidden",
           "lg:block lg:flex-1 lg:h-full lg:overflow-y-auto lg:pr-10 lg:pb-12",
@@ -62,6 +63,7 @@ export function ProjectDetailPanes({
 
       <section
         aria-label="Stream"
+        tabIndex={0}
         className={cn(
           tab === "stream" ? "block" : "hidden",
           "lg:block lg:w-[40%] lg:shrink-0 lg:h-full lg:overflow-y-auto lg:pl-10 lg:pb-12",
