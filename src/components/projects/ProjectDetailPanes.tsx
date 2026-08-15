@@ -16,9 +16,15 @@ interface ProjectDetailPanesProps {
 /**
  * Below-hero surface on `/projects/[slug]`. Desktop (`lg:`+): two columns
  * side-by-side, each independently scrollable inside a viewport-bounded pane.
- * Mobile: a tab bar (Story / Stream) toggles between the two stacks.
- * When there's no timeline, falls back to a single full-width body column
- * with no tab bar — same shape as the original page.
+ * Mobile: a pair of toggle buttons (Story / Stream) swaps between the two
+ * stacks. When there's no timeline, falls back to a single full-width body
+ * column with no toggle — same shape as the original page.
+ *
+ * The toggles are `aria-pressed` buttons, not ARIA tabs. Real tabs owe screen
+ * reader users `aria-controls`, `role="tabpanel"` on the panels, and
+ * arrow-key roving focus; this control is two buttons that show and hide
+ * sections, so it's described as what it is rather than borrowing a pattern
+ * it doesn't implement. The sections keep their own `aria-label`s.
  */
 export function ProjectDetailPanes({
   body,
@@ -78,7 +84,7 @@ function TabBar({
 }) {
   return (
     <div
-      role="tablist"
+      role="group"
       aria-label="Project sections"
       className="sticky top-0 z-10 -mx-5 flex items-center gap-1.5 border-b border-border bg-background/90 px-5 py-2 backdrop-blur-md sm:-mx-8 sm:px-8"
     >
@@ -111,8 +117,7 @@ function TabButton({
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={active}
+      aria-pressed={active}
       onClick={onClick}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1 font-mono text-[11px] leading-[14px] tracking-[0.02em] transition-colors duration-150",
