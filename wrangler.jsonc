@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "portfolio-minimal",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2025-09-01",
+  // nodejs_compat: the Next server bundle reaches for node: builtins.
+  // global_fetch_strictly_public: makes same-origin fetch() from the worker
+  // go back out through the public internet, which is what OpenNext expects.
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  "services": [
+    {
+      "binding": "WORKER_SELF_REFERENCE",
+      "service": "portfolio-minimal"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}
