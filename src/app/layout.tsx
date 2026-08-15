@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { DM_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
-import { InterfaceKit } from "interface-kit/react";
-import { Agentation } from "agentation";
+import { DevTools } from "@/components/DevTools";
 import { SITE_URL } from "@/lib/siteUrl";
 import { loadAll } from "@/lib/content/loader";
 import { NavStateProvider } from "@/components/nav/NavStateContext";
@@ -111,8 +110,7 @@ export default async function RootLayout({
             <SiteNav />
           </Suspense>
         </NavStateProvider>
-        {process.env.NODE_ENV === "development" && <InterfaceKit />}
-        {process.env.NODE_ENV === "development" && <Agentation />}
+        <DevTools />
       </body>
     </html>
   );

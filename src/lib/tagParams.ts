@@ -19,14 +19,6 @@ export function parseTagsQuery(
   );
 }
 
-/** Reads both `tags` (csv) and legacy `tag` keys and merges. */
-export function parseTagSearchParams(params: {
-  tags?: string | string[];
-  tag?: string | string[];
-}): string[] {
-  return dedupe([...parseTagsQuery(params.tags), ...parseTagsQuery(params.tag)]);
-}
-
 /** Returns the query suffix — empty string when no tags are active. */
 export function serializeTagsQuery(tags: string[]): string {
   const clean = dedupe(tags);
