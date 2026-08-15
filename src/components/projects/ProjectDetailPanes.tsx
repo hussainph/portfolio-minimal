@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type ActiveTab = "story" | "stream";
@@ -32,6 +32,37 @@ export function ProjectDetailPanes({
   streamCount,
 }: ProjectDetailPanesProps) {
   const [tab, setTab] = useState<ActiveTab>("story");
+  const storyRef = useRef<HTMLElement>(null);
+
+  // The SiteNav outline links to headings inside the story pane, which is
+  // `display: none` on mobile whenever Stream is showing. The browser can't
+  // scroll to a target it isn't rendering, so those links did nothing. Swap
+  // back to Story first, then scroll once the pane is actually laid out.
+  useEffect(() => {
+    const showHashTarget = () => {
+      const id = window.location.hash.slice(1);
+      if (!id) return;
+
+      let decoded = id;
+      try {
+        decoded = decodeURIComponent(id);
+      } catch {
+        // Malformed escape sequence — fall back to the raw fragment.
+      }
+
+      const target = document.getElementById(decoded);
+      if (!target || !storyRef.current?.contains(target)) return;
+
+      setTab("story");
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ block: "start" });
+      });
+    };
+
+    showHashTarget();
+    window.addEventListener("hashchange", showHashTarget);
+    return () => window.removeEventListener("hashchange", showHashTarget);
+  }, []);
 
   if (!timeline || streamCount === 0) {
     return <article className="prose-dark">{body}</article>;
@@ -44,6 +75,7 @@ export function ProjectDetailPanes({
       </div>
 
       <section
+        ref={storyRef}
         aria-label="Story"
         tabIndex={0}
         className={cn(
