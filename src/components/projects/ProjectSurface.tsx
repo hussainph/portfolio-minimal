@@ -12,19 +12,21 @@ import { cn } from "@/lib/utils";
  * focused. Cards are visual-first at rest — title, subtitle, imagery — and
  * status/tags ride in on interaction.
  *
- * The default state is *revealed*, then `(hover: hover)` hides it. That way
- * touch devices, which have no hover to give, show the meta at rest rather
- * than hiding it behind a gesture they can't perform. `group-focus-within`
- * covers keyboard users following the overlay link.
+ * The resting state is the same on every device on purpose. Un-hiding this on
+ * touch would make phones the one place the grid *isn't* visual-first, and the
+ * card is a link to a page carrying all of it anyway. The strip's height is
+ * reserved either way, so at rest it simply reads as bottom padding and the
+ * reveal costs no layout shift.
  *
- * `motion-reduce` keeps the fade but drops the travel.
+ * `group-focus-within` means keyboard users tabbing the overlay link get the
+ * same reveal as a pointer. `motion-reduce` keeps the fade, drops the travel.
  */
 export const REVEAL_CLASSES = cn(
-  "pointer-events-none flex items-center gap-2 overflow-hidden opacity-100 translate-y-0",
+  "pointer-events-none flex items-center gap-2 overflow-hidden",
+  "translate-y-2 opacity-0",
   "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.34,1.28,0.64,1)]",
-  "[@media(hover:hover)]:translate-y-2 [@media(hover:hover)]:opacity-0",
-  "[@media(hover:hover)]:group-hover:translate-y-0 [@media(hover:hover)]:group-hover:opacity-100",
-  "[@media(hover:hover)]:group-focus-within:translate-y-0 [@media(hover:hover)]:group-focus-within:opacity-100",
+  "group-hover:translate-y-0 group-hover:opacity-100",
+  "group-focus-within:translate-y-0 group-focus-within:opacity-100",
   "motion-reduce:translate-y-0 motion-reduce:transition-[opacity]",
 );
 
