@@ -49,7 +49,6 @@ export default async function Home() {
     meta: buildFeedItemMeta(item),
     node: renderFeedItem(item),
   }));
-  const knownTags = Array.from(index.byTag.keys());
 
   return (
     <main className="min-h-screen bg-background text-text">
@@ -59,7 +58,7 @@ export default async function Home() {
           <Header />
         </aside>
         <div className="flex flex-col gap-10 sm:gap-12 md:gap-14 lg:gap-10">
-          <FilteredFeed entries={entries} knownTags={knownTags} />
+          <FilteredFeed entries={entries} />
         </div>
       </div>
     </main>

@@ -2,7 +2,6 @@
 
 import { Fragment, Suspense, useEffect, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { notFound } from "next/navigation";
 import {
   describeEmptyFeed,
   matchesFeedFilter,
@@ -20,8 +19,6 @@ export interface FeedEntry {
 
 interface FilteredFeedProps {
   entries: FeedEntry[];
-  /** Every tag the content index knows about. An unknown `?tags=` 404s. */
-  knownTags: string[];
 }
 
 /**
@@ -38,13 +35,8 @@ interface FilteredFeedProps {
  * the (empty) sync component rather than the feed itself. Keeping the cards
  * outside it means the full stream still ships inside the prerendered HTML.
  */
-export function FilteredFeed({ entries, knownTags }: FilteredFeedProps) {
+export function FilteredFeed({ entries }: FilteredFeedProps) {
   const [filter, setFilter] = useState<FeedFilterState>(EMPTY_FEED_FILTER);
-
-  // Parity with the old server route, which 404'd on a tag that no content
-  // carries. Now it resolves after hydration, so the HTTP status is 200 and
-  // only the rendered output is the not-found page.
-  if (filter.tags.some((t) => !knownTags.includes(t))) notFound();
 
   const visible = entries.filter((entry) =>
     matchesFeedFilter(entry.meta, filter),
