@@ -22,6 +22,8 @@ export async function generateStaticParams(): Promise<RouteParams[]> {
     .map((item) => ({ slug: item.frontmatter.slug }));
 }
 
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {

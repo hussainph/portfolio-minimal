@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/siteUrl";
 
+export const dynamic = "force-static";
+
 /**
  * Default-allow with two carve-outs: `/ui-test` is the dev specimen page that
  * 404s in production anyway, and `/api/*` is internal surface that has no

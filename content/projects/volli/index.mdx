@@ -1,0 +1,50 @@
+---
+type: project
+slug: volli
+title: Volli
+subtitle: "A desktop app where the ticket is the plan, the workspace, and the review surface. Built with the same agents it runs."
+tier: showcase
+published: 2026-07-07
+tags: [building, ai, code]
+status: lean v1 · frozen aug 2026
+badge: Now · flagship
+meta:
+  - label: status
+    value: v1 frozen · rehearsing the demo
+  - label: scale
+    value: ~289k lines · 1,230 commits · 5½ weeks
+  - label: stack
+    value: electron · react · pi · sqlite
+---
+
+## What it is
+
+Volli is a local-first macOS app for planning and running AI-agent coding work. There's a kanban board of tickets, and each ticket is more than a card — it's the plan, the starting context the agent receives, an isolated git worktree where the work happens, the live diff you review, and the history of what was done. The pitch I keep coming back to is that the ticket *is* the workspace. You write what should happen, an agent session runs against it, and the change set shows up right next to the conversation that produced it.
+
+Sessions are durable in a way that took me embarrassingly long to get right — they survive the process dying, the terminal being recreated, the whole app relaunching. The conversation is a ledger, not a live process's mood.
+
+## Why I'm building it
+
+Every agent tool I used had the same gap: the planning happened somewhere (a doc, my head, a chat that scrolled away) and the doing happened somewhere else, and the context between them just… evaporated. You'd end up re-explaining the task to the agent that was supposed to already know it. So Volli's whole bet is that if the ticket carries the plan and the context and the review surface, nothing has to be re-explained, and the history of a project becomes something you can actually read later.
+
+The second bet is more opinionated, and I go back and forth on whether it's brave or stubborn: Volli supports exactly *one* structured agent runtime — Pi, an open-source coding-agent substrate — instead of an adapter layer for every CLI on the market. I actually built it the other way first; OpenCode was the original backend, and I ripped it out mid-flight once I realized I was spending my time on capability-parity plumbing instead of the product. Claude Code, Codex, whatever you like — they still run in Volli's embedded terminals, just as manual companions rather than the structured executor. One brain, many hands. Ask me in six months if that was right.
+
+## The part that still feels surreal
+
+The tool for running coding agents was largely built by coding agents. The commit log has me, Claude, and Codex as authors — 1,230 commits and 104 merged PRs in about five and a half weeks, with a peak week of 361 commits. I was dogfooding the workflow Volli exists to support while building Volli, which is either very elegant or a snake eating its own tail, and honestly it depends on the day.
+
+(It also started life as a Swift app. The Electron rewrite happened on day two, and the Swift original survives only as ported docs. Pour one out.)
+
+## Details I'm weirdly proud of
+
+- **The terminal isn't xterm.js.** It's `restty`, a Ghostty-derived WebGPU renderer paired with node-pty. Overkill? Possibly. But terminals are the surface you stare at all day and I wanted one that didn't feel like a webpage pretending.
+
+- **The colors are computed, not picked.** The entire theme derives at render time from a few color stops plus vibrancy and grain, run through the APCA perceptual-contrast algorithm. There is exactly one hand-picked constant in the whole system — ember `#E8652A` — and CI fails if the generated CSS drifts. I feel like this is either the most principled design system I've made or an elaborate way to avoid choosing colors.
+
+- **A 206px animation bug, closed with a measurement, not a vibe.** The chat composer slid 206 pixels every time the command picker opened. Root cause was one stray Framer Motion `layout="position"` prop. The fix ships with a requestAnimationFrame probe proving 0.000px of composer movement across nine scenarios — because settled-geometry checks can't catch this class of bug, you have to sample *during* the animation frames. That lesson cost me a day and I wrote it down so it never costs me another one.
+
+- **The smoke tests spend real money.** 49 end-to-end scripts drive the actual packaged `.dmg` — not dev mode — and one of them burns a real billed agent turn to prove the chat loop works all the way through. A test suite that costs cents per run sounds wrong until the alternative is finding out at demo time.
+
+## Where it stands
+
+The lean v1 checklist is done — durable chat loop, ask-the-user cards, slash-command picker, sub-125ms session start, a packaged `.dmg` that passes the smoke suite. One box left unchecked, and it's not a feature: a live end-to-end rehearsal, me driving, no intervention. After that, the roadmap says open-source launch, then cloud. But I've learned not to narrate roadmaps like they're facts, so — v1 first. The rehearsal is the release.

@@ -13,6 +13,8 @@ export async function generateStaticParams(): Promise<RouteParams[]> {
   return index.projects.map((p) => ({ slug: p.frontmatter.slug }));
 }
 
+export const dynamicParams = false;
+
 export async function generateMetadata({
   params,
 }: {
