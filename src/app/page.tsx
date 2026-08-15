@@ -12,8 +12,15 @@ import { loadAll } from "@/lib/content";
  * dynamic route would try to read `content/*.mdx` off a filesystem that
  * doesn't exist at request time on Cloudflare Workers. Every card is rendered
  * at build time instead and `<FilteredFeed>` hides the non-matching ones.
+ *
+ * Deliberately NOT `export const dynamic = "force-static"`. The route already
+ * prerenders as ○ now that nothing here reads searchParams, and the directive
+ * actively breaks the nav: under force-static Next server-renders
+ * `useSearchParams()` as empty *into the static HTML* instead of deferring the
+ * boundary to the client, so SiteNav's filter pill — whose active state reads
+ * `?types=`/`?tags=` — hydrates against markup that disagrees with the real
+ * URL and throws React #418. Check the build's route table, not a directive.
  */
-export const dynamic = "force-static";
 
 const SOCIAL_LINKS: SocialLink[] = [
   {
