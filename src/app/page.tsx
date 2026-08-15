@@ -1,10 +1,19 @@
-import { notFound } from "next/navigation";
-import { FeedList } from "@/components/feed/FeedList";
+import { FilteredFeed } from "@/components/feed/FilteredFeed";
+import { buildFeedItemMeta } from "@/components/feed/filter";
+import { renderFeedItem } from "@/components/feed/renderFeedItem";
 import { HeaderShader } from "@/components/ui/HeaderShader";
 import type { SocialLink } from "@/components/ui/SocialIconRow";
 import { NavSetter } from "@/components/nav/NavStateContext";
 import { loadAll } from "@/lib/content";
-import { parseTagSearchParams } from "@/lib/tagParams";
+
+/**
+ * `/` is fully prerendered. The feed's `?types=`/`?tags=`/`?q=` filtering used
+ * to run here off `searchParams`, which forced the route dynamic — and a
+ * dynamic route would try to read `content/*.mdx` off a filesystem that
+ * doesn't exist at request time on Cloudflare Workers. Every card is rendered
+ * at build time instead and `<FilteredFeed>` hides the non-matching ones.
+ */
+export const dynamic = "force-static";
 
 const SOCIAL_LINKS: SocialLink[] = [
   {
@@ -27,22 +36,13 @@ const SOCIAL_LINKS: SocialLink[] = [
 const BIO =
   "Building stuff, mostly in the AI-product corner of the internet. This is where I keep the half-formed notes, the longer pieces I haven't quite talked myself out of, and the projects that are still learning to stand up.";
 
-interface HomeProps {
-  searchParams: Promise<{
-    tags?: string | string[];
-    tag?: string | string[];
-    types?: string | string[];
-    q?: string;
-  }>;
-}
-
-export default async function Home({ searchParams }: HomeProps) {
-  const [index, raw] = await Promise.all([loadAll(), searchParams]);
-  const activeTags = parseTagSearchParams(raw);
-  const unknown = activeTags.find((t) => !index.byTag.has(t));
-  if (unknown) notFound();
-  const activeTypes = parseTypesParam(raw.types);
-  const query = typeof raw.q === "string" ? raw.q.trim().toLowerCase() : "";
+export default async function Home() {
+  const index = await loadAll();
+  const entries = index.items.map((item) => ({
+    meta: buildFeedItemMeta(item),
+    node: renderFeedItem(item),
+  }));
+  const knownTags = Array.from(index.byTag.keys());
 
   return (
     <main className="min-h-screen bg-background text-text">
@@ -52,25 +52,11 @@ export default async function Home({ searchParams }: HomeProps) {
           <Header />
         </aside>
         <div className="flex flex-col gap-10 sm:gap-12 md:gap-14 lg:gap-10">
-          <FeedList
-            items={index.items}
-            activeTags={activeTags}
-            activeTypes={activeTypes}
-            query={query}
-          />
+          <FilteredFeed entries={entries} knownTags={knownTags} />
         </div>
       </div>
     </main>
   );
-}
-
-function parseTypesParam(raw: string | string[] | undefined): string[] {
-  if (!raw) return [];
-  const list = Array.isArray(raw) ? raw : [raw];
-  return list
-    .flatMap((s) => s.split(","))
-    .map((s) => s.trim())
-    .filter((s) => s === "note" || s === "post" || s === "showcase");
 }
 
 function Header() {
