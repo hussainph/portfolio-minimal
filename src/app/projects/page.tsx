@@ -5,7 +5,6 @@ import { ProjectChip } from "@/components/projects/ProjectChip";
 import { NavSetter } from "@/components/nav/NavStateContext";
 import { ProjectHero } from "@/components/ui/ProjectHero";
 import { loadAll } from "@/lib/content";
-import type { ProjectWithTimeline } from "@/lib/content";
 import { SITE_URL } from "@/lib/siteUrl";
 
 const PROJECTS_DESCRIPTION =
@@ -31,13 +30,15 @@ export default async function ProjectsIndexRoute() {
   const index = await loadAll();
   const projects = index.projects;
 
-  const featuredIdx = projects.findIndex(
-    (p) => p.frontmatter.tier === "showcase",
-  );
-  const featured = featuredIdx >= 0 ? projects[featuredIdx] : null;
-  const grid = featured
-    ? projects.filter((_, i) => i !== featuredIdx)
-    : projects;
+  // `index.projects` is sorted newest-first by the loader, so "the lead" is
+  // the most recent showcase-tier project rather than whatever the filesystem
+  // handed back first. Every *other* showcase project gets a major card —
+  // they used to fall through to the mid-weight grid and quietly lose their
+  // tier, which made a deliberate frontmatter choice look like a bug.
+  const showcases = projects.filter((p) => p.frontmatter.tier === "showcase");
+  const [featured, ...majors] = showcases;
+  const smaller = projects.filter((p) => p.frontmatter.tier === "smaller");
+  const bitesized = projects.filter((p) => p.frontmatter.tier === "bitesized");
 
   return (
     <main className="min-h-screen bg-background text-text">
@@ -45,7 +46,7 @@ export default async function ProjectsIndexRoute() {
       <div className="mx-auto flex max-w-[1140px] flex-col gap-10 px-5 pt-10 pb-36 sm:gap-12 sm:px-8 sm:pt-14 sm:pb-44 md:gap-14 md:px-12 md:pt-16 md:pb-48">
         <Link
           href="/"
-          className="inline-flex w-fit items-center gap-1.5 font-mono text-[11px] leading-[14px] tracking-[0.04em] text-faint no-underline transition-colors duration-150 hover:text-muted"
+          className="inline-flex w-fit items-center gap-1.5 font-sans text-[13px] leading-[18px] tracking-[-0.03em] text-faint no-underline transition-colors duration-150 hover:text-muted"
         >
           <span aria-hidden="true">←</span>
           <span>back</span>
@@ -55,59 +56,82 @@ export default async function ProjectsIndexRoute() {
           <h1 className="font-serif text-[32px] leading-[36px] tracking-[-0.02em] text-text sm:text-[40px] sm:leading-[44px] md:text-[48px] md:leading-[52px]">
             Projects
           </h1>
-          <p className="font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
-            What I&apos;m working on, what I shipped, what I&apos;m breaking.
-            Headliners up top, then the mid-weight swings, then the weekend stuff.
+          <p className="font-sans text-[15px] leading-[23px] tracking-[-0.03em] text-muted text-pretty">
+            Things I&apos;ve built, mostly to find out whether the idea held up.
+            Newest first — which isn&apos;t the same as best first, but it&apos;s
+            the ordering I can actually defend.
           </p>
         </header>
 
+        {projects.length === 0 ? (
+          <p className="py-16 text-center font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
+            Nothing here yet — it&apos;s all still in the half-built stage.
+            Check back.
+          </p>
+        ) : null}
+
         {featured ? (
           <ProjectHero
-            badge={featured.frontmatter.badge}
+            variant="lead"
+            seed={featured.frontmatter.slug}
             tags={featured.frontmatter.tags}
             title={featured.frontmatter.title}
             subtitle={featured.frontmatter.subtitle}
+            status={featured.frontmatter.status}
             meta={featured.frontmatter.meta ?? []}
             primaryCta={{
               label: featured.frontmatter.primaryCta?.label ?? "Open project",
               href: `/projects/${featured.frontmatter.slug}`,
             }}
-            visualBadge={featured.frontmatter.visualBadge}
           />
         ) : null}
 
-        {grid.length > 0 ? (
+        {majors.length > 0 ? (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+            {majors.map((project) => (
+              <ProjectCard
+                key={project.frontmatter.slug}
+                weight="major"
+                slug={project.frontmatter.slug}
+                tags={project.frontmatter.tags}
+                title={project.frontmatter.title}
+                subtitle={project.frontmatter.subtitle}
+                status={project.frontmatter.status}
+              />
+            ))}
+          </div>
+        ) : null}
+
+        {smaller.length > 0 ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3">
-            {grid.map((project) => (
-              <GridEntry key={project.frontmatter.slug} project={project} />
+            {smaller.map((project) => (
+              <ProjectCard
+                key={project.frontmatter.slug}
+                weight="compact"
+                slug={project.frontmatter.slug}
+                tags={project.frontmatter.tags}
+                title={project.frontmatter.title}
+                subtitle={project.frontmatter.subtitle}
+                status={project.frontmatter.status}
+              />
+            ))}
+          </div>
+        ) : null}
+
+        {bitesized.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+            {bitesized.map((project) => (
+              <ProjectChip
+                key={project.frontmatter.slug}
+                slug={project.frontmatter.slug}
+                title={project.frontmatter.title}
+                tags={project.frontmatter.tags}
+                status={project.frontmatter.status}
+              />
             ))}
           </div>
         ) : null}
       </div>
     </main>
-  );
-}
-
-function GridEntry({ project }: { project: ProjectWithTimeline }) {
-  const { frontmatter } = project;
-
-  if (frontmatter.tier === "bitesized") {
-    return (
-      <ProjectChip
-        slug={frontmatter.slug}
-        title={frontmatter.title}
-        tags={frontmatter.tags}
-        status={frontmatter.status}
-      />
-    );
-  }
-
-  return (
-    <ProjectCard
-      slug={frontmatter.slug}
-      tags={frontmatter.tags}
-      title={frontmatter.title}
-      status={frontmatter.status}
-    />
   );
 }

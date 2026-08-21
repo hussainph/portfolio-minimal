@@ -2,7 +2,7 @@
 type: project
 slug: consulting-sandbox
 title: Consulting Sandbox
-subtitle: "AI stakeholders who won't answer lazy questions. A consulting course you can't cram for."
+subtitle: "TODO — one-liner. (Old draft: AI stakeholders who won't answer lazy questions.)"
 tier: showcase
 published: 2026-02-25
 tags: [building, ai, design]
@@ -13,31 +13,28 @@ meta:
   - label: built
     value: feb – may 2026 · solo
   - label: tests
-    value: 298 passing, last I counted
+    value: 298 passing
 ---
+
+{/* STUB — rewrite in your own words. Facts below are real, mined from the repo. */}
 
 ## What it is
 
-Consulting Sandbox is a training platform I built for Wilfrid Laurier University's StartUp Lab. A professor writes a short prompt describing a fictional company and a business problem, and the system generates the whole engagement from it — a company backstory, an org chart of AI "employees" who each have their own personality and their own agenda, and a grading rubric. Students then work it like an actual consulting gig: they interview the employees over text or voice in a Slack-style inbox, dig for the real problem (which is hidden, and nobody volunteers it), and submit deliverables that get feedback from the same stakeholders they've been interviewing all term.
+- AI consulting-training platform for Wilfrid Laurier's StartUp Lab
+- Professor writes a short prompt → system generates company backstory, org chart of AI employee personas, grading rubric
+- Students interview the personas (text + ElevenLabs voice) in a Slack-style inbox, dig for a hidden core problem, submit deliverables, get AI stakeholder feedback + rubric grades
 
-## The idea underneath it
+## The design idea
 
-The thing I kept circling back to while designing this is that consulting skill isn't really about knowing answers — it's about knowing what to ask. A static case study PDF can't teach that. The PDF hands you all the information up front and then asks you what you'd do with it, which is sort of the exact opposite of the job.
+- Consulting skill = knowing what to ask; personas deliberately withhold from vague questions and open up when the student shows business understanding
+- Personas have designed tension (curt exec who hates fishing expeditions vs. junior who overshares)
+- Every student gets a private snapshot of the company at session start — template/session split carries the product
 
-So the employees are deliberately built to withhold. Ask Margaret — the curt exec persona in one of the seeded companies — something vague, and she pushes back; she doesn't have time for fishing expeditions. Show her you actually understand cooperative governance and she warms up and starts telling you things her job description says she shouldn't. Her junior colleague is the opposite: enthusiastic, overshares, mildly frustrated with the "old guard" on the board. You learn pretty fast that different people in an org need different questions, which — I feel like that's the actual lesson, and the AI is just the delivery mechanism.
+## Raw material (keep or cut)
 
-And every student gets their own private snapshot of the company at session start, so your classmate can't spoil the mystery, and your chat history is genuinely yours. That one design decision (templates get copied into per-student sessions, never shared) ended up carrying most of the product on its back.
-
-## How it's built
-
-Next.js 16 with tRPC and Prisma on Supabase, BetterAuth for the multi-tenant org stuff, Mastra wrapping Claude for the agents — one agent instance per employee persona — and ElevenLabs for the voice calls. Voice and text share one brain: the same prompt-builder feeds both, so an employee behaves like the same person whether you call or message them. With one deliberate exception — voice transcripts never get fed back into future prompts, because a client can submit any transcript it wants, and I wasn't about to ship a prompt-injection loop to a university.
-
-## The week I almost shipped a data leak
-
-Honest story: before the big spring release I ran three independent security reviews on it, and all three surfaced the same root cause — session access was gated on the organization, not the owner. Which meant a student could, in theory, read a classmate's notes, their messages, even reset their project state. There was also a subtler one: the instructor-only "ground truth" answer was silently riding along in server payloads, invisible in the UI but sitting right there in DevTools for any student curious enough to look.
-
-I fixed all of it — a proper access helper, regression tests, suite went from 287 to 298 — but the thing that stuck with me is that the UI never looked wrong. Everything demoed beautifully the whole time. I guess the lesson is that the boring invisible parts are the actual product, and the pretty inbox is just the part people compliment.
-
-## Where it stands
-
-Shipped and working — auth, authoring wizard, chat, voice, deliverables, grading, an AODA/WCAG accessibility pass (a real legal requirement for university software in Ontario, not a nice-to-have). It's the most complete thing I've built end to end, which is a weird sentence to write about a fake consulting firm full of fake employees. But the fake employees are kind of the point.
+- ~18k lines TS, 114 commits, feb–may 2026; test suite grew 143 → 298
+- Stack: Next.js 16, tRPC, Prisma + Supabase, BetterAuth multi-tenant orgs, Mastra wrapping Claude (one agent per persona), ElevenLabs voice via raw REST (official SDK ripped out — it force-upgraded a dep that broke Turbopack)
+- Voice + text share one prompt-builder brain; voice transcripts deliberately never fed back into prompts (client can submit any transcript = prompt-injection loop)
+- The security story: three independent reviews converged on one root cause — session access gated on org, not owner; a classmate could read notes/messages or reset your project. Also the instructor-only "ground truth" answer rode along in SSR payloads, visible in DevTools. All fixed pre-launch, 287→298 tests
+- Full AODA/WCAG 2.0 AA accessibility pass (an actual Ontario legal requirement for university software)
+- Honest commit log: "finally succeeded after 12 chats" (the mobile sidebar), same-day self-rejected v2 redesign

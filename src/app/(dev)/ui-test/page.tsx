@@ -541,22 +541,21 @@ function ProjectHeroSection() {
   return (
     <div className="flex flex-col gap-4">
       <ProjectHero
-        badge="Now · headliner"
+        variant="lead"
         tags={["building", "ai", "design"]}
         title="Clawbox"
         subtitle="An arcade you can program. Physics, prizes, and a hand that learns to want things."
+        status="v0.4 · launching may"
         meta={[
-          { label: "status", value: "v0.4 · launching may" },
           { label: "posts", value: "28 — notes, designs, builds" },
           { label: "latest", value: "shader physics · apr 13" },
         ]}
         primaryCta={{ label: "Open project", href: "#clawbox" }}
         secondaryCta={{ label: "See the stream", href: "#stream" }}
-        visualBadge="live shader · hover to interact"
       />
       <p className="max-w-[600px] font-mono text-[10px] leading-4 tracking-[0.04em] text-faint">
-        data-driven: pass tags, title, subtitle, meta rows, and CTAs — the
-        visual + badges are props-only, no Clawbox-specific copy is hardcoded.
+        data-driven: pass tags, title, subtitle, status, meta, and CTAs. The
+        glow hue is hashed from the first tag — no per-project art needed.
       </p>
     </div>
   );
@@ -592,20 +591,19 @@ function SiteNavSection() {
 function ProjectCardsSection() {
   return (
     <div className="flex flex-col gap-10">
-      <CardLane label="Showcase tier — ProjectHero, full two-pane headliner">
+      <CardLane label="Showcase tier — ProjectHero, the single-surface headliner">
         <ProjectHero
-          badge="Now · headliner"
+          variant="lead"
           tags={["building", "ai", "design"]}
           title="Clawbox"
           subtitle="An arcade you can program. Physics, prizes, and a hand that learns to want things."
+          status="v0.4 · launching may"
           meta={[
-            { label: "status", value: "v0.4 · launching may" },
             { label: "posts", value: "3 — notes, designs, builds" },
             { label: "latest", value: "shader physics · apr 13" },
           ]}
           primaryCta={{ label: "Open project", href: "#clawbox-card" }}
           secondaryCta={{ label: "See the stream", href: "#clawbox-card" }}
-          visualBadge="live shader · hover to interact"
         />
       </CardLane>
 

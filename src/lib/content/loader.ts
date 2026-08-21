@@ -265,6 +265,15 @@ export const loadAll = cache(async (): Promise<ContentIndex> => {
     (a, b) => b.frontmatter.published.getTime() - a.frontmatter.published.getTime(),
   );
 
+  // Projects arrive in `readdir` order, which is filesystem- and OS-dependent.
+  // Anything that reads `index.projects` positionally — the projects index
+  // picking a lead, the sitemap, static params — would otherwise shuffle
+  // between machines. Sort newest-first so the order is a property of the
+  // content, not of the disk.
+  projectItems.sort(
+    (a, b) => b.frontmatter.published.getTime() - a.frontmatter.published.getTime(),
+  );
+
   const projects = buildProjectIndex(projectItems, feedItems);
   const bySlug = buildBySlug(feedItems, projectItems);
   const byTag = buildByTag(feedItems);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type ActiveTab = "story" | "stream";
@@ -16,9 +16,15 @@ interface ProjectDetailPanesProps {
 /**
  * Below-hero surface on `/projects/[slug]`. Desktop (`lg:`+): two columns
  * side-by-side, each independently scrollable inside a viewport-bounded pane.
- * Mobile: a tab bar (Story / Stream) toggles between the two stacks.
- * When there's no timeline, falls back to a single full-width body column
- * with no tab bar — same shape as the original page.
+ * Mobile: a pair of toggle buttons (Story / Stream) swaps between the two
+ * stacks. When there's no timeline, falls back to a single full-width body
+ * column with no toggle — same shape as the original page.
+ *
+ * The toggles are `aria-pressed` buttons, not ARIA tabs. Real tabs owe screen
+ * reader users `aria-controls`, `role="tabpanel"` on the panels, and
+ * arrow-key roving focus; this control is two buttons that show and hide
+ * sections, so it's described as what it is rather than borrowing a pattern
+ * it doesn't implement. The sections keep their own `aria-label`s.
  */
 export function ProjectDetailPanes({
   body,
@@ -26,6 +32,37 @@ export function ProjectDetailPanes({
   streamCount,
 }: ProjectDetailPanesProps) {
   const [tab, setTab] = useState<ActiveTab>("story");
+  const storyRef = useRef<HTMLElement>(null);
+
+  // The SiteNav outline links to headings inside the story pane, which is
+  // `display: none` on mobile whenever Stream is showing. The browser can't
+  // scroll to a target it isn't rendering, so those links did nothing. Swap
+  // back to Story first, then scroll once the pane is actually laid out.
+  useEffect(() => {
+    const showHashTarget = () => {
+      const id = window.location.hash.slice(1);
+      if (!id) return;
+
+      let decoded = id;
+      try {
+        decoded = decodeURIComponent(id);
+      } catch {
+        // Malformed escape sequence — fall back to the raw fragment.
+      }
+
+      const target = document.getElementById(decoded);
+      if (!target || !storyRef.current?.contains(target)) return;
+
+      setTab("story");
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ block: "start" });
+      });
+    };
+
+    showHashTarget();
+    window.addEventListener("hashchange", showHashTarget);
+    return () => window.removeEventListener("hashchange", showHashTarget);
+  }, []);
 
   if (!timeline || streamCount === 0) {
     return <article className="prose-dark">{body}</article>;
@@ -38,7 +75,9 @@ export function ProjectDetailPanes({
       </div>
 
       <section
+        ref={storyRef}
         aria-label="Story"
+        tabIndex={0}
         className={cn(
           tab === "story" ? "block" : "hidden",
           "lg:block lg:flex-1 lg:h-full lg:overflow-y-auto lg:pr-10 lg:pb-12",
@@ -56,6 +95,7 @@ export function ProjectDetailPanes({
 
       <section
         aria-label="Stream"
+        tabIndex={0}
         className={cn(
           tab === "stream" ? "block" : "hidden",
           "lg:block lg:w-[40%] lg:shrink-0 lg:h-full lg:overflow-y-auto lg:pl-10 lg:pb-12",
@@ -78,7 +118,7 @@ function TabBar({
 }) {
   return (
     <div
-      role="tablist"
+      role="group"
       aria-label="Project sections"
       className="sticky top-0 z-10 -mx-5 flex items-center gap-1.5 border-b border-border bg-background/90 px-5 py-2 backdrop-blur-md sm:-mx-8 sm:px-8"
     >
@@ -111,8 +151,7 @@ function TabButton({
   return (
     <button
       type="button"
-      role="tab"
-      aria-selected={active}
+      aria-pressed={active}
       onClick={onClick}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1 font-mono text-[11px] leading-[14px] tracking-[0.02em] transition-colors duration-150",
