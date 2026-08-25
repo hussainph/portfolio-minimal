@@ -41,7 +41,7 @@ const SOCIAL_LINKS: SocialLink[] = [
 ];
 
 const BIO =
-  "Building stuff, mostly in the AI-product corner of the internet. This is where I keep the half-formed notes, the longer pieces I haven't quite talked myself out of, and the projects that are still learning to stand up.";
+  "I'm a product builder building Volli, and on the odd occasion, I will choose to talk about the things I build here. Welcome to my little corner of the internet :)";
 
 export default async function Home() {
   const index = await loadAll();

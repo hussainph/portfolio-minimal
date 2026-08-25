@@ -8,7 +8,7 @@ import { loadAll } from "@/lib/content";
 import { SITE_URL } from "@/lib/siteUrl";
 
 const PROJECTS_DESCRIPTION =
-  "What I'm working on, what I shipped, what I'm breaking.";
+  "Breaking, building and sometimes, even buying.";
 
 export const metadata: Metadata = {
   title: "Projects",
@@ -56,17 +56,11 @@ export default async function ProjectsIndexRoute() {
           <h1 className="font-serif text-[32px] leading-[36px] tracking-[-0.02em] text-text sm:text-[40px] sm:leading-[44px] md:text-[48px] md:leading-[52px]">
             Projects
           </h1>
-          <p className="font-sans text-[15px] leading-[23px] tracking-[-0.03em] text-muted text-pretty">
-            Things I&apos;ve built, mostly to find out whether the idea held up.
-            Newest first — which isn&apos;t the same as best first, but it&apos;s
-            the ordering I can actually defend.
-          </p>
         </header>
 
         {projects.length === 0 ? (
           <p className="py-16 text-center font-sans text-[15px] leading-[22px] tracking-[-0.03em] text-muted">
-            Nothing here yet — it&apos;s all still in the half-built stage.
-            Check back.
+            I seem to have run out of projects to talk about. It&apos;s a glitch in the Matrix, don&apos;t worry.
           </p>
         ) : null}
 

@@ -74,7 +74,7 @@ export function describeEmptyFeed(filter: FeedFilterState): string {
   if (filter.tags.length > 0)
     bits.push(filter.tags.map((t) => `#${t}`).join(" + "));
   if (filter.query) bits.push(`"${filter.query}"`);
-  if (bits.length === 0) return "Nothing here yet — check back soon.";
+  if (bits.length === 0) return "Nothing here yet.";
   return `Nothing matches ${bits.join(" · ")} yet.`;
 }
 

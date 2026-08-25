@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/Label";
 import { SITE_URL } from "@/lib/siteUrl";
 
 const ABOUT_DESCRIPTION =
-  "A page about the person behind this feed. A few more words than a bio, a few fewer than a memoir.";
+  "A little about who I am.";
 
 export const metadata: Metadata = {
   title: "About",
@@ -44,14 +44,18 @@ export default function AboutRoute() {
         </header>
 
         <article className="prose-dark">
-          {/* STUB — write this in your own words. Beats to consider: who you
-              are, the three projects (Volli / Consulting Sandbox / Clawbox),
-              the through-line, and the fact you're looking. */}
+          {/* Write below. */}
           <p>
-            I&apos;m Hussain. I build AI products. The longer version of this
-            page is being written; the <Link href="/">stream</Link> and the{" "}
-            <Link href="/projects">projects</Link> are the real story anyway.
+            I&apos;m Hussain. I grew up in Kuwait, moved to Canada in 2019.
+            I mainly write about tech and design, with the odd deviation into other topics that pique my interest.
+
+            I appreciate you for taking the time to visit my little corner of the internet.
           </p>
+          <br />
+          <p>
+            I have two degrees in <span className="font-sans weight-bold">Computer Science</span> and <span className="font-sans weight-bold">Business</span> from <span className="font-serif --tracking loose">Wilfrid Laurier University</span>.
+          </p>
+          <br />
           <p>
             If you want to talk, I&apos;m at{" "}
             <a href="mailto:hussainphalasiya@gmail.com">
