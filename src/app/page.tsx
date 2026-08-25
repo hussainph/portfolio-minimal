@@ -30,7 +30,7 @@ const SOCIAL_LINKS: SocialLink[] = [
   },
   {
     icon: "x",
-    href: "https://twitter.com/hphalasiya",
+    href: "https://twitter.com/hussainph_",
     label: "X profile",
   },
   {

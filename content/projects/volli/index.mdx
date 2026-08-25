@@ -2,42 +2,34 @@
 type: project
 slug: volli
 title: Volli
-subtitle: "TODO — one-liner. (Old draft: ticket = plan + workspace + review surface, built with the agents it runs.)"
+subtitle: "A kanban-style workspace for orchestrating dozens of parallel agent sessions."
 tier: showcase
 published: 2026-07-07
 tags: [building, ai, code]
-status: lean v1 · frozen aug 2026
+status: v0.1.1
 badge: Now · flagship
 meta:
   - label: status
-    value: v1 frozen · rehearsing the demo
-  - label: scale
-    value: ~289k lines · 1,230 commits · 5½ weeks
+    value: v0.1.1
   - label: stack
-    value: electron · react · pi · sqlite
+    value: electron · react · vite+ · pi · better-sqlite3
 ---
 
-{/* STUB — rewrite in your own words. Facts below are real, mined from the repo. */}
+## What is it?
 
-## What it is
+Volli is an open-source macOS app for planning and running AI-agent coding work. I built it on a "zoom-in or zoom-out" philosophy: let an orchestrator manage my sessions in parallel, or let me manage my engineering process myself, or let me work with raw code easily. A large part of the product design is dedicated to integrating these three modes neatly. Volli is free forever for local singleplayer use.
 
-- Local-first macOS app for planning and running AI-agent coding work
-- The ticket carries everything: plan, starting context, an isolated git worktree, the live diff/change-set review, the project history
-- Sessions are durable event ledgers — survive process death, terminal recreation, app relaunch
+## Why build it?
 
-## Why
+I built Volli because my workflow for long-term engineering projects was increasingly fragmented; I was using Linear to do task-tracking, cmux to manage my terminal sessions across my coding agents, and keeping a Zed instance open for code changes. Once I fell into a rhythm in terms of orchestrating tasks to build software long-term, I realized I could package it up into a better UX for myself.
 
-- Context evaporates between planning and doing in every agent tool
-- Deliberately ONE structured runtime (Pi) instead of an adapter layer — OpenCode was the original backend, ripped out mid-build ("Session 7", ~aug 8) to stop doing capability-parity plumbing
-- Claude Code / Codex / etc. still run in embedded terminals as manual companions
+Also, Volli is a love letter to every app experience I've enjoyed over the past few years in this wild AI era. It's an amalgamation of great ideas, made to fit how I work with agents.
 
-## Raw material (keep or cut)
-
-- ~289k lines TS, 1,230 commits, 104 merged PRs in ~5.5 weeks; peak week: 361 commits
-- Commit authors include "Claude" and "Codex" — the tool for running coding agents was built by coding agents
-- Started life as a Swift app; Electron rewrite happened on day two
-- Terminal is `restty`, a Ghostty-derived WebGPU renderer — not xterm.js
-- Theme is fully computed (APCA contrast math from a few color stops; CI fails if generated CSS drifts); exactly one hand-picked constant: ember `#E8652A`
-- The 206px bug: composer slid every time the command picker opened; one stray Framer `layout="position"`; fix proven with a rAF probe — 0.000px movement across 9 scenarios
-- 49 e2e smoke scripts drive the actual packaged .dmg; one spends a real billed agent turn per run
-- Sub-125ms session start; v1 checklist done; last open item is a live end-to-end rehearsal, no intervention
+## Timeline
+- Volli v1 was built over Christmas 2025 (a.k.a. when "coding was solved") as a cloud-native, knowledge work web product.
+- I later backed off that idea when I realized most individual consumers aren't trying to organize their lives in agent kanban boards.
+- In July 2026, I niched down to a macOS native app specifically focused on orchestrating AI-agent coding work.
+- Started Volli v2 as a cmux+kanban-style app to manage terminal sessions, but realized there was more product opportunity and flexibility if I integrated one core harness (Pi) instead.
+- Now building on top of the Pi harness to provide a unified, AI-agent-focused coding experience.
+- Current day: Volli is live in alpha! I'm working on adding subagent support, MCP integrations, better agent automations and more UX improvements.
+- Next: multiplayer, mobile and cloud support! We're trying to close the lid, physically and proverbially. The goal is to make it so you can coordinate and check in with your agents from anywhere, all while sharing work with your team.

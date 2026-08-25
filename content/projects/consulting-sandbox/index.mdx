@@ -2,39 +2,25 @@
 type: project
 slug: consulting-sandbox
 title: Consulting Sandbox
-subtitle: "TODO — one-liner. (Old draft: AI stakeholders who won't answer lazy questions.)"
+subtitle: "An educational sandbox powered by AI agent personas, used to train students on interpersonal decision-making."
 tier: showcase
-published: 2026-02-25
+published: 2026-04-25
 tags: [building, ai, design]
 status: shipped · spring 2026
 meta:
   - label: for
     value: StartUp Lab · Wilfrid Laurier University
   - label: built
-    value: feb – may 2026 · solo
-  - label: tests
-    value: 298 passing
+    value: feb – may 2026
 ---
 
-{/* STUB — rewrite in your own words. Facts below are real, mined from the repo. */}
+## What is it?
 
-## What it is
+The Consulting Sandbox was an app designed to "invert" the traditional business case study by simulating stakeholder environments within a business using AI agents. In simpler terms, instead of reading a business case, you talk to simulated individuals associated with the business to figure out exactly what's wrong with the company. This way, you exercise the ability to think critically in live conversation while still exercising the business student in you.
 
-- AI consulting-training platform for Wilfrid Laurier's StartUp Lab
-- Professor writes a short prompt → system generates company backstory, org chart of AI employee personas, grading rubric
-- Students interview the personas (text + ElevenLabs voice) in a Slack-style inbox, dig for a hidden core problem, submit deliverables, get AI stakeholder feedback + rubric grades
+## Why build it?
 
-## The design idea
+My team at the Lab was put in charge of creating a new Consulting program for undergrad business students. However, we recognized in our early pilots that younger students struggled to manage meetings with stakeholders; they were often quiet and struggled to engage stakeholders, which left companies feeling a little confused as to whether they got the message across. Of course, we couldn't train students ourselves as a team of 2.5-ish people, so I decided to pull out the engineer in me to build this app as a way to close the training gap.
 
-- Consulting skill = knowing what to ask; personas deliberately withhold from vague questions and open up when the student shows business understanding
-- Personas have designed tension (curt exec who hates fishing expeditions vs. junior who overshares)
-- Every student gets a private snapshot of the company at session start — template/session split carries the product
-
-## Raw material (keep or cut)
-
-- ~18k lines TS, 114 commits, feb–may 2026; test suite grew 143 → 298
-- Stack: Next.js 16, tRPC, Prisma + Supabase, BetterAuth multi-tenant orgs, Mastra wrapping Claude (one agent per persona), ElevenLabs voice via raw REST (official SDK ripped out — it force-upgraded a dep that broke Turbopack)
-- Voice + text share one prompt-builder brain; voice transcripts deliberately never fed back into prompts (client can submit any transcript = prompt-injection loop)
-- The security story: three independent reviews converged on one root cause — session access gated on org, not owner; a classmate could read notes/messages or reset your project. Also the instructor-only "ground truth" answer rode along in SSR payloads, visible in DevTools. All fixed pre-launch, 287→298 tests
-- Full AODA/WCAG 2.0 AA accessibility pass (an actual Ontario legal requirement for university software)
-- Honest commit log: "finally succeeded after 12 chats" (the mobile sidebar), same-day self-rejected v2 redesign
+## Status
+I actually ended up creating a brand new job role at the University (Innovation Solutions Developer!) through this project. I wasn't a traditional "developer" in my main role at the Lab, even though I oversaw our Software Dev Internship program and was building other software for the university before this. I got to pitch this to various professors at the University and beyond, and we were even discussing licensing agreements for the finished product to other schools. I ended up leaving the Lab shortly after these discussions to visit my parents and focus on other opportunities.
