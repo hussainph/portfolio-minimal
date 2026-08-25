@@ -48,8 +48,8 @@ export default function AboutRoute() {
           <p>
             I&apos;m Hussain. I grew up in Kuwait, moved to Canada in 2019.
             I mainly write about tech and design, with the odd deviation into other topics that pique my interest.
-
-            I appreciate you for taking the time to visit my little corner of the internet.
+            I&apos;m currently working on <a href="https://volli.app">Volli</a>, which is my take on the future of agentic coding.
+            I appreciate you for taking the time to visit my little corner of the internet ❤️
           </p>
           <br />
           <p>
