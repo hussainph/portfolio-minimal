@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { PRESS_FEEDBACK } from "@/lib/motion";
 import { tagColor } from "@/lib/tagColor";
 
 export type TagState = "default" | "hover" | "active";
@@ -62,7 +63,10 @@ export function Tag(props: TagProps) {
   const sharedClass = cn(
     "inline-flex items-center rounded-pill border py-1.5 px-3 font-mono text-[11px] leading-[14px] sm:py-1",
     resolved === "active" ? "font-bold text-background" : null,
-    isInteractive ? "cursor-pointer transition-colors duration-150" : null,
+    // `PRESS_FEEDBACK` includes the color transition these pills used to get
+    // from `transition-colors`; see the note on the constant before splitting
+    // the two back apart.
+    isInteractive ? cn("cursor-pointer", PRESS_FEEDBACK) : null,
     className,
   );
 

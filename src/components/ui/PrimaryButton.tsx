@@ -39,10 +39,18 @@ export function PrimaryButton(props: PrimaryButtonProps) {
 
   const shellClass = cn(
     "group relative inline-flex rounded-md p-[1.5px] no-underline",
-    "transition-[filter] duration-200",
+    "transition-[filter,transform] duration-200",
     disabled
       ? "cursor-not-allowed opacity-50"
-      : "hover:shadow-[0_0_24px_#FFB84422,0_0_48px_#7B7EFF18]",
+      : cn(
+          "hover:shadow-[0_0_24px_#FFB84422,0_0_48px_#7B7EFF18]",
+          // Press feedback, but not via PRESS_FEEDBACK: this shell already
+          // owns a `filter` transition for the hover bloom, and the shared
+          // constant would overwrite it (both set transition-property).
+          // Same 0.96 and the same reduced-motion guard, folded into the
+          // transition this component already had.
+          "ease-house active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100",
+        ),
     className,
   );
 

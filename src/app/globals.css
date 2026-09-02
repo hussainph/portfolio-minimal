@@ -32,6 +32,12 @@
   --radius-card: 4px;
   --radius-panel: 10px;
   --radius-pill: 9999px;
+
+  /* Motion — the house ease-out curve. Was duplicated as a raw array in
+     HeaderShader and SocialIconRow before it had a name; `src/lib/motion.ts`
+     exports the same numbers for Framer Motion call sites, which can't read
+     CSS custom properties. Change both together. */
+  --ease-house: cubic-bezier(0.2, 0.6, 0.3, 1);
 }
 
 html,
@@ -106,6 +112,20 @@ body {
   *::before,
   *::after {
     animation-name: none !important;
+  }
+}
+
+/* In-page anchor navigation — the SiteNav outline panel links to headings via
+   plain `#id` anchors, which the browser jumps to instantly by default. On a
+   long post that jump costs the reader their sense of position.
+
+   Written as `no-preference` rather than a `reduce` override on purpose: the
+   reduced-motion block above only nulls `animation-name` and would not catch
+   a scroll behavior, so the guard has to be part of the rule itself rather
+   than bolted on after it. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
   }
 }
 

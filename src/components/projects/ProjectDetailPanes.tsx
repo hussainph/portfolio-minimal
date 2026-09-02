@@ -1,9 +1,43 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { PANE_SWAP, PRESS_FEEDBACK } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 type ActiveTab = "story" | "stream";
+
+const WIDE = "(min-width: 1024px)";
+
+function subscribeWide(cb: () => void) {
+  const mq = window.matchMedia(WIDE);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+}
+
+/**
+ * Tracks the `lg:` breakpoint, where the two panes stop being a toggle and
+ * become side-by-side columns.
+ *
+ * Mirrors `useIsDesktop` but at 1024px rather than 640px, and the server
+ * snapshot returns `true` for the same reason: the prerendered HTML then
+ * contains *both* panes, exactly as it does today, so the markup stays
+ * complete for crawlers and for anyone who never runs the JS. Mobile clients
+ * re-render to the single-pane form on hydration.
+ */
+function useIsWide() {
+  return useSyncExternalStore(
+    subscribeWide,
+    () => window.matchMedia(WIDE).matches,
+    () => true,
+  );
+}
 
 interface ProjectDetailPanesProps {
   body: ReactNode;
@@ -33,6 +67,8 @@ export function ProjectDetailPanes({
 }: ProjectDetailPanesProps) {
   const [tab, setTab] = useState<ActiveTab>("story");
   const storyRef = useRef<HTMLElement>(null);
+  const isWide = useIsWide();
+  const reduce = useReducedMotion();
 
   // The SiteNav outline links to headings inside the story pane, which is
   // `display: none` on mobile whenever Stream is showing. The browser can't
@@ -55,7 +91,17 @@ export function ProjectDetailPanes({
 
       setTab("story");
       requestAnimationFrame(() => {
-        target.scrollIntoView({ block: "start" });
+        // Matches the `scroll-behavior: smooth` rule in globals.css. The
+        // media query is read here rather than trusted to the global
+        // reduced-motion block, which only nulls `animation-name` and would
+        // not catch an imperative scroll.
+        const smooth = window.matchMedia(
+          "(prefers-reduced-motion: no-preference)",
+        ).matches;
+        target.scrollIntoView({
+          block: "start",
+          behavior: smooth ? "smooth" : "auto",
+        });
       });
     };
 
@@ -68,16 +114,37 @@ export function ProjectDetailPanes({
     return <article className="prose-dark">{body}</article>;
   }
 
+  // On mobile the swap used to be a `block`/`hidden` teleport, throwing away
+  // the left/right relationship the two panes have on desktop. Each pane now
+  // arrives from the side it occupies at `lg:` — Story from the left, Stream
+  // from the right — so the toggle reads as moving between two places.
+  //
+  // Note what this deliberately does NOT do: unmount the inactive pane. The
+  // hash-navigation effect above needs the Story pane in the DOM to find a
+  // heading by id and to run `storyRef.current.contains()`. Swapping panes
+  // with AnimatePresence would leave `getElementById` returning null whenever
+  // Stream was showing, and every outline link on mobile would silently do
+  // nothing — the exact bug the comment above says was already fixed once.
+  // Both panes stay mounted; only the visible one animates.
+  const paneAnim = (side: ActiveTab) => {
+    if (isWide || reduce) return undefined;
+    return tab === side
+      ? { opacity: 1, x: 0 }
+      : { opacity: 0, x: side === "story" ? -8 : 8 };
+  };
+
   return (
     <div className="flex flex-col gap-6 lg:h-[calc(100dvh-12rem)] lg:flex-row lg:gap-0 lg:overflow-hidden">
       <div className="lg:hidden">
         <TabBar tab={tab} onChange={setTab} streamCount={streamCount} />
       </div>
 
-      <section
+      <motion.section
         ref={storyRef}
         aria-label="Story"
         tabIndex={0}
+        animate={paneAnim("story")}
+        transition={PANE_SWAP}
         className={cn(
           tab === "story" ? "block" : "hidden",
           "lg:block lg:flex-1 lg:h-full lg:overflow-y-auto lg:pr-10 lg:pb-12",
@@ -86,23 +153,25 @@ export function ProjectDetailPanes({
         <article className="prose-dark mx-auto max-w-[640px] lg:mx-0">
           {body}
         </article>
-      </section>
+      </motion.section>
 
       <div
         aria-hidden="true"
         className="hidden lg:block lg:w-px lg:shrink-0 lg:self-stretch lg:bg-border"
       />
 
-      <section
+      <motion.section
         aria-label="Stream"
         tabIndex={0}
+        animate={paneAnim("stream")}
+        transition={PANE_SWAP}
         className={cn(
           tab === "stream" ? "block" : "hidden",
           "lg:block lg:w-[40%] lg:shrink-0 lg:h-full lg:overflow-y-auto lg:pl-10 lg:pb-12",
         )}
       >
         {timeline}
-      </section>
+      </motion.section>
     </div>
   );
 }
@@ -154,7 +223,8 @@ function TabButton({
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1 font-mono text-[11px] leading-[14px] tracking-[0.02em] transition-colors duration-150",
+        "inline-flex items-center gap-1.5 rounded-pill border px-3 py-1 font-mono text-[11px] leading-[14px] tracking-[0.02em]",
+        PRESS_FEEDBACK,
         active
           ? "border-text/80 bg-text text-background"
           : "border-border bg-transparent text-muted hover:border-border-hover hover:text-text",
