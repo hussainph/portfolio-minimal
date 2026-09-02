@@ -4,6 +4,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { PRESS_FEEDBACK } from "@/lib/motion";
+import { useHasHover } from "./useHasHover";
 
 export const PILL_SHELL =
   "flex items-center rounded-pill bg-[#14141699] backdrop-blur-[24px] border border-[#2e2e328a] shadow-[0_12px_40px_#0a0a0bab]";
@@ -57,6 +59,7 @@ export function LeftPanelPill({
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const reduce = useReducedMotion();
+  const hasHover = useHasHover();
 
   // Clear any pending peek-close timer on unmount so we don't fire `setState`
   // on an unmounted node when the user navigates away mid-180ms.
@@ -86,7 +89,11 @@ export function LeftPanelPill({
 
   const handleLeave = () => {
     hoverTimer.current = setTimeout(() => {
-      if (state === "peek") setState("closed");
+      // Functional update, not `if (state === "peek")`. The old form closed
+      // over `state` as it was at mouse-leave, so clicking to expand inside
+      // the 180ms window left a timer still holding "peek" — which then fired
+      // and closed the panel the click had just opened.
+      setState((prev) => (prev === "peek" ? "closed" : prev));
     }, 180);
   };
 
@@ -133,8 +140,10 @@ export function LeftPanelPill({
     >
       <div
         className="relative"
-        onMouseEnter={handleEnter}
-        onMouseLeave={handleLeave}
+        // Touch browsers synthesise mouseenter on tap, which opened the peek
+        // panel and then let the click toggle it straight back — a flicker.
+        onMouseEnter={hasHover ? handleEnter : undefined}
+        onMouseLeave={hasHover ? handleLeave : undefined}
         onFocusCapture={handleEnter}
         onBlurCapture={(e) => {
           if (!e.currentTarget.contains(e.relatedTarget as Node)) handleLeave();
@@ -149,7 +158,8 @@ export function LeftPanelPill({
         >
           <span
             className={cn(
-              "flex items-center justify-center rounded-pill py-2.5 px-3.5 transition-colors duration-150",
+              "flex items-center justify-center rounded-pill py-2.5 px-3.5",
+              PRESS_FEEDBACK,
               open
                 ? "bg-background/70 text-text"
                 : active

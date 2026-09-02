@@ -1,11 +1,17 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { ReactNode } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import { PRESS_FEEDBACK } from "@/lib/motion";
 import { tagColor } from "@/lib/tagColor";
 import { Icon } from "@/components/ui/Icon";
 import { useToolbarVisibility } from "@/components/ui/useToolbarVisibility";
@@ -23,6 +29,21 @@ import { useBookmarks } from "./useBookmarks";
 import { useIsDesktop } from "./useIsDesktop";
 import { useNavContext } from "./NavStateContext";
 import { useNavState, type NavController } from "./useNavState";
+import {
+  DATA_XS,
+  PANEL_HEADING,
+  TAG_LABEL,
+  UI_LABEL,
+  UI_LABEL_SM,
+} from "./typography";
+import {
+  PANEL_ENTER,
+  PANEL_ENTER_REDUCED,
+  PANEL_EXIT,
+  PANEL_EXIT_REDUCED,
+  PANEL_SPRING,
+  TOOLBAR_SPRING,
+} from "./motion";
 import {
   BookmarkGlyph,
   Chevron,
@@ -42,18 +63,31 @@ interface SiteNavProps {
   onOpenPalette?: () => void;
 }
 
-const STATE_VARIANTS = {
-  visible: { y: 0, opacity: 1 },
-  peek: { y: 28, opacity: 1 },
-  hidden: { y: 80, opacity: 0 },
-};
-
-const SPRING = { type: "spring" as const, stiffness: 260, damping: 22, mass: 1 };
+/**
+ * Show/hide states for the rail.
+ *
+ * Built per-render from `reduce` rather than declared as a module constant,
+ * because reduced motion has to change the *values* and not merely the
+ * transition. The old code swapped only the transition, so a reader who had
+ * asked for less motion still got the full 80px of travel — just tweened over
+ * 200ms instead of sprung. This mirrors how `FilteredFeed` handles it.
+ *
+ * `pointerEvents` is part of the state for a reason: `opacity: 0` alone still
+ * accepts clicks, so under reduced motion (where the rail no longer travels
+ * off-screen) the hidden toolbar would sit invisible over the foot of the
+ * page and swallow taps.
+ */
+function toolbarVariants(reduce: boolean): Variants {
+  return {
+    visible: { y: 0, opacity: 1, pointerEvents: "auto" },
+    hidden: { y: reduce ? 0 : 80, opacity: 0, pointerEvents: "none" },
+  };
+}
 
 const PRIMARY_PAGES = [
-  { id: "stream" as const, label: "stream", href: "/" },
-  { id: "projects" as const, label: "projects", href: "/projects" },
-  { id: "about" as const, label: "about", href: "/about" },
+  { id: "stream" as const, label: "Stream", href: "/" },
+  { id: "projects" as const, label: "Projects", href: "/projects" },
+  { id: "about" as const, label: "About", href: "/about" },
 ];
 
 export function SiteNav({ onOpenPalette }: SiteNavProps) {
@@ -135,8 +169,8 @@ export function SiteNav({ onOpenPalette }: SiteNavProps) {
     <>
       <motion.div
         animate={visibility}
-        variants={STATE_VARIANTS}
-        transition={reduce ? { duration: 0.2 } : SPRING}
+        variants={toolbarVariants(!!reduce)}
+        transition={reduce ? { duration: 0.2 } : TOOLBAR_SPRING}
         initial="visible"
         className="fixed bottom-7 left-1/2 z-50 -translate-x-1/2"
       >
@@ -166,15 +200,20 @@ export function SiteNav({ onOpenPalette }: SiteNavProps) {
                   key={page.id}
                   href={page.href}
                   className={cn(
-                    "flex items-center gap-2 rounded-pill px-3 py-2.5 transition-colors sm:px-[18px]",
+                    "flex items-center gap-2 rounded-pill px-3 py-2.5 sm:px-[18px]",
+                    PRESS_FEEDBACK,
                     active
                       ? "bg-background text-text"
                       : "bg-transparent text-muted hover:text-text",
                   )}
                   aria-current={active ? "page" : undefined}
+                  // The label span is `hidden` below sm: and `Icon` is
+                  // aria-hidden, so without this the link has no accessible
+                  // name on mobile.
+                  aria-label={page.label}
                 >
                   <PageGlyph id={page.id} />
-                  <span className="hidden font-mono text-[11px] leading-[14px] tracking-[0.04em] sm:inline">
+                  <span className={cn("hidden sm:inline", UI_LABEL)}>
                     {page.label}
                   </span>
                 </Link>
@@ -188,7 +227,12 @@ export function SiteNav({ onOpenPalette }: SiteNavProps) {
             className={cn(PILL_SHELL, "p-1.5")}
             aria-label="Search (⌘K)"
           >
-            <span className="flex items-center justify-center py-2.5 px-3.5 text-muted hover:text-text transition-colors">
+            <span
+              className={cn(
+                "flex items-center justify-center py-2.5 px-3.5 text-muted hover:text-text",
+                PRESS_FEEDBACK,
+              )}
+            >
               <Icon name="search" size={16} strokeWidth={1.6} />
             </span>
           </button>
@@ -267,18 +311,17 @@ function FilterPanel({
   return (
     <motion.div
       key="filter-panel"
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 6 }}
-      transition={
-        reduce
-          ? { duration: 0.15 }
-          : { type: "spring", stiffness: 380, damping: 30 }
-      }
+      // Grows from the pill that opened it rather than from its own middle.
+      // The panel is pinned `left-0` above the trigger, so bottom-left is the
+      // corner that stays put.
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.97 }}
+      animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.97 }}
+      transition={reduce ? { duration: 0.15 } : PANEL_SPRING}
       role="region"
       aria-label="Filter the stream"
       className={cn(PANEL_SHELL, PANEL_LIFT_DEFAULT)}
-      style={{ maxWidth: pillRowWidth }}
+      style={{ maxWidth: pillRowWidth, transformOrigin: "bottom left" }}
     >
       <AnimatePresence initial={false}>
         {expanded ? (
@@ -288,37 +331,29 @@ function FilterPanel({
             animate={{
               height: "auto",
               opacity: 1,
-              transition: reduce
-                ? { duration: 0.18 }
-                : {
-                    height: { duration: 0.28, ease: [0.2, 0.6, 0.3, 1] },
-                    opacity: { duration: 0.2, ease: "easeOut" },
-                  },
+              transition: reduce ? PANEL_ENTER_REDUCED : PANEL_ENTER,
             }}
             exit={{
               height: 0,
               opacity: 0,
-              transition: reduce
-                ? { duration: 0.12 }
-                : {
-                    height: { duration: 0.18, ease: [0.4, 0, 1, 1] },
-                    opacity: { duration: 0.12, ease: "easeIn" },
-                  },
+              transition: reduce ? PANEL_EXIT_REDUCED : PANEL_EXIT,
             }}
             className="overflow-hidden"
           >
             <div className="flex flex-col gap-2 border-b border-border/60 px-3 py-3">
               <div className="flex items-center justify-between gap-3">
-                <span className="font-mono text-[10px] leading-3 tracking-[0.08em] uppercase text-faint">
-                  Tags
-                </span>
+                <span className={cn(PANEL_HEADING, "text-faint")}>Tags</span>
                 {nav.tags.length > 0 ? (
                   <button
                     type="button"
                     onClick={nav.clearTags}
-                    className="font-mono text-[10px] leading-3 tracking-[0.04em] text-muted transition-colors hover:text-accent-orange"
+                    className={cn(
+                      UI_LABEL_SM,
+                      "text-muted hover:text-accent-orange",
+                      PRESS_FEEDBACK,
+                    )}
                   >
-                    clear
+                    Clear
                   </button>
                 ) : null}
               </div>
@@ -333,7 +368,9 @@ function FilterPanel({
                       onClick={() => nav.toggleTag(t)}
                       aria-pressed={active}
                       className={cn(
-                        "rounded-pill border px-2.5 py-1 font-mono text-[11px] leading-[14px] tracking-[0.02em] transition-colors duration-150",
+                        "rounded-pill border px-2.5 py-1",
+                        PRESS_FEEDBACK,
+                        TAG_LABEL,
                         active ? "font-bold text-background" : null,
                       )}
                       style={{
@@ -360,7 +397,8 @@ function FilterPanel({
           aria-expanded={expanded}
           aria-label={expanded ? "Collapse tag filters" : "Expand tag filters"}
           className={cn(
-            "ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted transition-colors duration-150",
+            "ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted",
+            PRESS_FEEDBACK,
             "hover:bg-background/60 hover:text-text",
             expanded ? "bg-background/40 text-text" : null,
           )}
@@ -427,18 +465,15 @@ function NestedOutlinePanel({
   return (
     <motion.div
       key="nested-outline-panel"
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 6 }}
-      transition={
-        reduce
-          ? { duration: 0.15 }
-          : { type: "spring", stiffness: 380, damping: 30 }
-      }
+      // See FilterPanel: grows from the trigger's corner, not its own centre.
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.97 }}
+      animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, scale: 1 }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, y: 6, scale: 0.97 }}
+      transition={reduce ? { duration: 0.15 } : PANEL_SPRING}
       role="region"
       aria-label={`${headingLabel} for this page`}
       className={cn(PANEL_SHELL, PANEL_LIFT_DEFAULT)}
-      style={{ maxWidth: pillRowWidth }}
+      style={{ maxWidth: pillRowWidth, transformOrigin: "bottom left" }}
     >
       {hasOutline ? (
         <AnimatePresence initial={false}>
@@ -449,31 +484,21 @@ function NestedOutlinePanel({
               animate={{
                 height: "auto",
                 opacity: 1,
-                transition: reduce
-                  ? { duration: 0.18 }
-                  : {
-                      height: { duration: 0.28, ease: [0.2, 0.6, 0.3, 1] },
-                      opacity: { duration: 0.2, ease: "easeOut" },
-                    },
+                transition: reduce ? PANEL_ENTER_REDUCED : PANEL_ENTER,
               }}
               exit={{
                 height: 0,
                 opacity: 0,
-                transition: reduce
-                  ? { duration: 0.12 }
-                  : {
-                      height: { duration: 0.18, ease: [0.4, 0, 1, 1] },
-                      opacity: { duration: 0.12, ease: "easeIn" },
-                    },
+                transition: reduce ? PANEL_EXIT_REDUCED : PANEL_EXIT,
               }}
               className="overflow-hidden"
             >
               <div className="flex flex-col gap-1 border-b border-border/60 px-3 py-3 min-w-[240px]">
                 <div className="flex items-center justify-between pb-1 gap-3">
-                  <span className="font-mono text-[10px] leading-3 tracking-[0.08em] uppercase text-faint">
+                  <span className={cn(PANEL_HEADING, "text-faint")}>
                     {headingLabel} · {outline.length}
                   </span>
-                  <span className="font-mono text-[10px] leading-3 tracking-[0.04em] text-muted">
+                  <span className={cn(DATA_XS, "text-muted")}>
                     {currentIndex + 1} / {outline.length}
                   </span>
                 </div>
@@ -543,7 +568,8 @@ function NestedOutlinePanel({
                 : `Expand ${headingLabel.toLowerCase()}`
             }
             className={cn(
-              "ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted transition-colors duration-150",
+              "ml-auto flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-muted",
+              PRESS_FEEDBACK,
               "hover:bg-background/60 hover:text-text",
               expanded ? "bg-background/40 text-text" : null,
             )}
@@ -569,16 +595,17 @@ function OutlineRow({ entry, index, current }: OutlineRowProps) {
         href={`#${entry.id}`}
         aria-current={current ? "location" : undefined}
         className={cn(
-          "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left transition-colors duration-150",
+          "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left",
+          PRESS_FEEDBACK,
           current
             ? "bg-background/60 text-text"
             : "text-muted hover:bg-background/40 hover:text-text",
         )}
       >
-        <span className="font-mono text-[10px] leading-3 tracking-[0.05em] text-faint w-4 shrink-0">
+        <span className={cn(DATA_XS, "text-faint w-4 shrink-0")}>
           {String(index + 1).padStart(2, "0")}
         </span>
-        <span className="text-[13px] leading-4 tracking-[-0.01em]">
+        <span className="font-sans text-[13px] leading-4 tracking-[-0.01em]">
           {entry.label}
         </span>
       </a>

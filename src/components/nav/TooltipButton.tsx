@@ -3,6 +3,8 @@
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { EASE_HOUSE, PRESS_FEEDBACK } from "@/lib/motion";
+import { UI_LABEL_SM } from "./typography";
 
 interface TooltipButtonProps {
   label: string;
@@ -47,7 +49,9 @@ export function TooltipButton({
             : { type: "spring", stiffness: 420, damping: 32 }
         }
         className={cn(
-          "flex h-9 items-center justify-center rounded-full transition-colors duration-150",
+          "flex h-9 items-center justify-center rounded-full",
+          // `active:` is gated on `disabled` so a dead button doesn't dip.
+          disabled ? "transition-colors duration-150" : PRESS_FEEDBACK,
           inline ? "gap-1.5 px-2.5" : "w-9",
           active ? "bg-text/10 text-text" : "text-muted",
           disabled
@@ -62,15 +66,21 @@ export function TooltipButton({
           {inline ? (
             <motion.span
               key="label"
-              initial={{ opacity: 0, width: 0 }}
-              animate={{ opacity: 1, width: "auto" }}
-              exit={{ opacity: 0, width: 0 }}
+              // Only opacity. This used to animate `width` from 0 to "auto",
+              // which forces layout every frame on four buttons at once — and
+              // it was redundant: the parent already carries Framer's `layout`,
+              // so the button's width transition is measured and animated
+              // there. The two were doing the same job twice, and fighting.
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
               transition={
-                reduce
-                  ? { duration: 0 }
-                  : { duration: 0.22, ease: [0.2, 0.6, 0.3, 1] }
+                reduce ? { duration: 0 } : { duration: 0.22, ease: EASE_HOUSE }
               }
-              className="overflow-hidden whitespace-nowrap font-mono text-[11px] leading-[14px] tracking-[0.02em]"
+              className={cn(
+                "overflow-hidden whitespace-nowrap",
+                UI_LABEL_SM,
+              )}
             >
               {shortLabel ?? label}
             </motion.span>
@@ -86,7 +96,8 @@ export function TooltipButton({
           aria-hidden="true"
           className={cn(
             "pointer-events-none absolute left-1/2 -top-2 z-[60] -translate-x-1/2 -translate-y-full whitespace-nowrap",
-            "rounded-md border border-[#2e2e328a] bg-[#101012f2] px-2 py-1 font-mono text-[10px] leading-3 tracking-[0.04em] text-text",
+            "rounded-md border border-[#2e2e328a] bg-[#101012f2] px-2 py-1 text-text",
+            UI_LABEL_SM,
             "opacity-0 shadow-[0_8px_20px_#0a0a0bcc] backdrop-blur-[28px] backdrop-saturate-150",
             "transition-opacity duration-150",
             "group-hover:opacity-100 group-focus-within:opacity-100",

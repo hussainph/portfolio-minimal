@@ -1,6 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { PRESS_FEEDBACK } from "@/lib/motion";
+import { UI_LABEL, UI_LABEL_SM } from "./typography";
 import type { ContentKind } from "./types";
 
 interface ContentTypeChipsProps {
@@ -10,10 +12,10 @@ interface ContentTypeChipsProps {
   className?: string;
 }
 
-export const CONTENT_KINDS: { id: ContentKind; label: string; plural: string }[] = [
-  { id: "note", label: "note", plural: "notes" },
-  { id: "post", label: "writing", plural: "writing" },
-  { id: "showcase", label: "showcase", plural: "showcases" },
+export const CONTENT_KINDS: { id: ContentKind; label: string }[] = [
+  { id: "note", label: "Note" },
+  { id: "post", label: "Writing" },
+  { id: "showcase", label: "Showcase" },
 ];
 
 const KIND_GLYPH: Record<ContentKind, string> = {
@@ -45,10 +47,11 @@ export function ContentTypeChips({
             aria-pressed={active}
             onClick={() => onToggle(k.id)}
             className={cn(
-              "group/chip inline-flex items-center gap-1.5 rounded-pill border transition-colors duration-150",
+              "group/chip inline-flex items-center gap-1.5 rounded-pill border",
+              PRESS_FEEDBACK,
               size === "sm"
-                ? "px-2.5 py-1 font-mono text-[11px] leading-[14px] tracking-[0.02em]"
-                : "px-3 py-1.5 font-sans text-[12px] leading-[16px] tracking-[-0.02em]",
+                ? cn("px-2.5 py-1", UI_LABEL_SM)
+                : cn("px-3 py-1.5", UI_LABEL),
               active
                 ? "border-text/80 bg-text text-background"
                 : empty
